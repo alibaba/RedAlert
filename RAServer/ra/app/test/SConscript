@@ -1,0 +1,27 @@
+# -*- mode: python -*-
+
+# Inherit the environment from my parent.
+Import('env')
+
+# Make a copy of the environment, so my changes are limited in this directory and sub-directories.
+env = env.Clone()
+
+
+env.Append(LIBS=['cppunit'])
+
+ra_app_test_sources=  [
+    env['RA_DO_TEST'],
+    'RaAppTest.cpp',
+    ]
+
+libsname = [
+    'contrib_filesystem', 'contrib_fetcher',
+    'ra_app', 'ra_service', 'ra_process', 'ra_alarm', 'ra_fetcher', 'ra_tree',
+    'ra_config', 'ra_test_util', 'ra_util', 'ra_common',
+    'log4cplus',  'curl', 'sqlite3', 'cppunit', 'dl'
+]
+
+ra_app_test = env.UnitTest(target = 'ra_app_test',
+                           source = ra_app_test_sources,
+                           LIBS = libsname)
+

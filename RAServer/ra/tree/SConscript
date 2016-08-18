@@ -1,0 +1,26 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+libtree_sources = [
+    'MetricTree.cpp',
+    'TreeManager.cpp',
+    'RequestPackage.cpp',
+    'ProcessPackage.cpp',
+     ]
+
+tree_libs = ['ra_util', 'ra_app', 'ra_service']
+libsname = [
+    'ra_app', 'ra_service',
+    'ra_config', 'ra_util', 'ra_common',
+    'log4cplus',
+    'protobuf', 'curl', 'sqlite3', 'cppunit', 'dl'
+]
+
+env.compileAndInstallLibrary(target = 'ra_tree',  
+                            sources = libtree_sources,        
+                            package = 'red_alert',  
+                            libs = tree_libs)            
+ 
+env.SConscript(dirs='test', exports='env')

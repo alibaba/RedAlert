@@ -1,0 +1,34 @@
+# -*- mode: python -*-
+
+# Inherit the environment from my parent.
+Import('env')
+
+# Make a copy of the environment, so my changes are limited in this directory and sub-directories.
+env = env.Clone()
+
+
+env.Append(LIBS=['cppunit'])
+
+ra_config_test_sources=  [
+    env['RA_DO_TEST'],
+    'DeviationPolicyItemTest.cpp',
+    'AvailabilityPolicyItemTest.cpp',
+    'ThresholdPolicyItemTest.cpp',
+    'ConfigDownloaderTest.cpp',
+    'HostItemTest.cpp',
+    'PolicyConfigTest.cpp',
+    'TimeRangeTest.cpp',
+    'BootstrapConfigTest.cpp',
+    'ShieldConfigTest.cpp',
+    'CyclePolicyItemTest.cpp',
+    'ConfigWrapperTest.cpp',
+    'RedAlertConfigTest.cpp',
+    'DataSourceConfigTest.cpp',
+    'PolicyConfigItemBaseTest.cpp',
+    ]
+
+libsname = ['ra_fetcher', 'ra_config', 'ra_common','contrib_filesystem', 'ra_util', 'log4cplus', 'cppunit']
+ra_config_test = env.UnitTest(target = 'ra_config_test',
+                              source = ra_config_test_sources,
+                              LIBS = libsname)
+

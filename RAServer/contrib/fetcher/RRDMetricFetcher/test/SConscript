@@ -1,0 +1,26 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+env.Append(LIBS=['cppunit'])
+
+source = [
+    env['RA_DO_TEST'],
+    'RRDMetricFetcherTest.cpp',
+]
+
+libs = [
+    'contrib_filesystem',
+    'ra_fetcher',
+    'ra_common',
+    'ra_util',
+    'ra_test_util',
+    'rrd_fetcher',
+   'log4cplus',
+   'cppunit'
+]
+
+env.UnitTest(target = 'rrd_fetcher_test',
+             source = source,
+             LIBS = libs)

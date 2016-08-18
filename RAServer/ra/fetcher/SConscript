@@ -1,0 +1,20 @@
+# -*- mode: python -*-
+Import('env')
+env = env.Clone()
+source = [
+    'MetricNode.cpp',
+    'MetricTreeUtil.cpp',
+]
+
+libs = [
+    'ra_common', 'dl',
+]
+
+
+env.compileAndInstallLibrary(target = 'ra_fetcher',
+                            sources = source,
+                            package = 'red_alert',
+                            libs = libs)
+
+
+env.SConscript(dirs='test', exports='env')

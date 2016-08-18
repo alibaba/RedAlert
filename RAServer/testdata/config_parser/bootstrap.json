@@ -1,0 +1,7 @@
+{
+"aliMonitorUrl":"alimonitorurl",
+"alarmQueueSize":1024,
+"fetcherResPoolSize":1024,
+"loopInterval":5,
+"reloadInterval":3600
+}

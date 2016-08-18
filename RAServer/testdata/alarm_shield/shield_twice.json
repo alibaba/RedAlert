@@ -1,0 +1,12 @@
+[
+{
+"group":"grp_0",
+"metric":"metric_0",
+"endTime":"2010-11-11 22:22:00"
+},
+{
+"group":"grp_1",
+"metric":"metric_1",
+"endTime":"2010-11-11 22:22:01"
+}
+]

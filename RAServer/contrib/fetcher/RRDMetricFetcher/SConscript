@@ -1,0 +1,21 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+source = [
+    'RRDMetricFetcher.cpp',
+]
+
+libs = [
+    'ra_fetcher', 'ra_common',
+    'rrd', 'dl',
+]
+
+env.compileAndInstallLibrary(target = 'rrd_fetcher',
+                            sources = source,
+                            package = 'red_alert',
+                            libs = libs)
+
+#env.SConscript(dirs='test', exports='env')
+

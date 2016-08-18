@@ -1,0 +1,15 @@
+# -*- mode: python -*-
+import re,os
+Import('env')
+env = env.Clone()
+
+env.generateFile(env['RA_TOP_DIR'] + '/ra/test/test.h', env['RA_TOP_DIR'] + '/ra/test/test.h.in')
+
+if env['mode'] == 'debug':
+    env.Append(CCFLAGS = ['-DDEBUG'])
+
+
+# List my sub-directories.
+
+env.SConscript(dirs='contrib', exports='env')
+env.SConscript(dirs='ra', exports='env')

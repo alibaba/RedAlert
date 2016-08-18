@@ -1,0 +1,125 @@
+log4cplus 1.2.0
+---------------
+
+  - Fixed SourceForge bug #324, MinGW compilation issue. Use
+    `InterlockedExchangeAdd` instead of `InterlockedAdd`. The former is
+    supported by older MinGW.
+    
+  - Fixed GitHub bug #137. Fix missing thread's alternative name.
+
+
+log4cplus 1.2.0-RC6
+-------------------
+
+  - Fixed Visual Studio build issue #322 related to WinSock functions being
+    used and second about C++11 syntax. **This forces minimum version of
+    Windows supported by this release to Windows XP SP2.**
+
+  - Added `DatePattern` property to `DailyRollingFileAppender` configuration
+    -- This property specifies filename suffix pattern to use for periodical
+    backups of the logfile. (Alexey Morozov)
+
+  - Added `RollOnClose` property to `DailyRollingFileAppender` and
+    `TimeBasedRollingFileAppender` configuration -- This property specifies
+    whether to rollover log files upon shutdown. By default it's set to
+    `true` to retain compatibility with legacy code. (Alexey Morozov)
+
+  - Normalized line endings, used `.gitattributes` to enforce it.
+
+
+log4cplus 1.2.0-RC5
+-------------------
+
+  - Various scripts and documentation cleanups.
+
+  - Fix sockets and memory leak in loggingserver discussed in GitHub
+    issue #112.
+
+  - CMake improvements.
+
+
+log4cplus 1.2.0-RC4
+-------------------
+
+  - Fixed `init_priority` GCC attribute detection and use issue.
+
+  - Fixed "most vexing parse" issue with `LOG4CPLUS_C_STR_TO_TSTRING(STRING)`
+    when `STRING` is an identifier.`
+
+  - Fixed `AcceptOnMatch` property function in filters default to true value.
+
+  - Fixed GitHub bug #92. `DailyRollingFileAppender` rollover time was
+    drifting.
+
+  - Fixed GitHub bug #86. Create directories for lock file if CreateDirs is
+    specified.
+
+  - Allow turning off library name decoration in CMake builds. See also
+    GitHub issue #98.
+
+log4cplus 1.2.0-RC3
+-------------------
+
+  - Fixed various issues related to unspecified behaviors which manifested
+    when log4cplus was compiled using Clang.
+
+  - SysLogAppender now recognize `SyslogHost` property as synonym for `host`
+    property.
+
+  - Improved compatibility of `TTCCLayout` with log4j's. Added
+    `ThreadPrinting`, `CategoryPrefixing` and `ContextPrinting` configuration
+    properties.
+
+  - Allow negative maximal length in pattern specifier to make trimming of
+    end instead of beginning possible. E.g., allow `%.-1p` to get initial
+    letters of log level.
+
+  - New appender `TimeBasedRollingFileAppender`. (Alexander Malinin)
+
+  - `LOG4CPLUS_*_FMT()` macros can now be invoked with just formatting
+    string, without additional arguments. (Zhang Shengfa)
+
+  - Insert to/from string/log level conversion functions to the beginning of
+    vector to favour user defined log levels and conversion functions.
+
+log4cplus 1.2.0-RC2
+-------------------
+
+  - Fixed bug #298. -- int to pointer cast error on Xcode 5.1.
+
+  - Updated `android/android.toolchain.cmake`.
+
+  - Documented issue and work-around for Android's emutls issue.
+
+  - Do not set SOVERSION and VERSION properties for CMake based Android
+builds.
+
+
+log4cplus 1.2.0-RC1
+-------------------
+
+  - TraceLogger and associated `LOG4CPLUS_TRACE_*()` macros now record
+function name in generated event.
+
+  - Added Qt5 based `Qt5DebugAppender`.
+
+  - Added prototype of Python bindings using Swig 2.0+.
+
+  - Autotools based build system has been converted from `Makefile` per
+directory to single `Makefile` for the whole project mode.
+
+  - Plain text documentation files have been converted to Markdown (with
+Pandoc's extensions).
+
+  - `FileAppender` can now create missing directories in log file path, if
+this is enabled by `CreateDirs` property.
+
+  - Added `MSTTSAppender` that uses Windows' text-to-speech engine.
+
+  - `SysLogAppender` can now log into remote `syslog` instance using TCP in
+addition to previously supported UDP.
+
+  - Added Autotest based testsuite running and verifying output of existing
+`tests/` directory tests. Improved tests coverage.
+
+  - Many other small and bigger improvements.

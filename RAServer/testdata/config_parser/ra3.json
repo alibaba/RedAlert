@@ -1,0 +1,94 @@
+{
+"threshold": [
+{
+"group":"default",
+"metric":"test_1",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"upBound":4.0,
+"downBound":10.0
+},
+
+{
+"group":"default",
+"metric":"test_2",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"upBound":4.0,
+"downBound":10.0
+},
+
+{
+"group":"default",
+"metric":"test_3",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"upBound":4.0,
+"downBound":10.0
+}
+],
+
+"trend": [
+{
+"group":"default",
+"metric":"test_2",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"ascDiffRatio":0.2,
+"ascDiffValue":10.0,
+"descDiffRatio":0.2,
+"descDiffValue":10.0
+}
+],
+
+"availability": [
+{
+"group":"default",
+"metric":"test_3",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"maxBadNodeNum":1,
+"maxMissNodeNum":1
+}
+],
+
+"singularity": [
+{
+"group":"default",
+"metric":"test_2",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"ascDiffRatio":0.2,
+"ascDiffValue":10.0,
+"descDiffRatio":0.2,
+"descDiffValue":10.0
+}
+],
+
+"cycle": [
+{
+"group":"default",
+"metric":"test_1",
+"alarmLevel": "warning",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 300,
+"ascDiffRatio":0.2,
+"ascDiffValue":10.0,
+"descDiffRatio":0.2,
+"descDiffValue":10.0
+}
+]
+}

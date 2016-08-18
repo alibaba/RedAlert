@@ -1,0 +1,22 @@
+# -*- mode: python -*-
+import os, sys
+# Inherit the environment from my parent.
+Import('env')
+
+# Make a copy of the environment, so my changes are limited in this directory and sub-directories.
+
+env = env.Clone()
+
+env.generateFile(env['RA_TOP_DIR'] + '/ra/common/Config.h', os.path.join(env['RA_TOP_DIR'], 'ra/common/Config.h.in'))
+
+# List my sub-directories
+env.SConscript(dirs='app', exports='env')
+env.SConscript(dirs='util', exports='env')
+env.SConscript(dirs='common', exports='env')
+env.SConscript(dirs='config', exports='env')
+env.SConscript(dirs='service', exports='env')
+env.SConscript(dirs='tree', exports='env')
+env.SConscript(dirs='alarm', exports='env')
+env.SConscript(dirs='process', exports='env')
+env.SConscript(dirs='fetcher', exports='env')
+env.SConscript(dirs='test_util', exports='env')

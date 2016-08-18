@@ -1,0 +1,13 @@
+{
+"aliMonitorUrl":"alimonitorurl",
+"alarmThreadNum":1,
+"alarmQueueSize":1024,
+"fetcherResPoolSize":10240,
+"loopInterval":5,
+"reloadInterval":3600,
+"workerThreadNum":1,
+"defAlarmGroup":"group",
+"defAlarmLevel":"warn",
+"amonitorAgentPort":10086,
+"sampleInterval_s":15
+}

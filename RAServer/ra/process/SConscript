@@ -1,0 +1,32 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+libprocess_sources = [
+    'FetcherManager.cpp',
+    'FetcherWorkItem.cpp',
+    'CheckerWorkItem.cpp',
+    'NormalizedMetricData.cpp',
+    'PolicyChecker.cpp',
+    'ThresholdPolicyChecker.cpp',
+    'AvailabilityPolicyChecker.cpp',
+    'CyclePolicyChecker.cpp',
+    'SingularityPolicyChecker.cpp',
+    'TrendPolicyChecker.cpp',
+    'PolicyCheckerFactory.cpp',
+    'TrendData.cpp',
+    'CheckerManager.cpp',
+     ]
+
+process_libs = [
+    'ra_alarm', 'ra_fetcher', 'ra_tree',
+    'ra_config', 'ra_util', 
+    'log4cplus', 'curl', 'sqlite3', 'cppunit', 'dl'
+]
+
+env.compileAndInstallLibrary(target = 'ra_process',   
+                            sources = libprocess_sources,         
+                            package = 'red_alert',   
+                            libs = process_libs)             
+env.SConscript(dirs='test', exports='env')

@@ -1,0 +1,5 @@
+FetcherManager.cpp:217:        processPackage->getResponseVec();
+PolicyChecker.cpp:172:    const vector<RetrieveMetricsResponse2Ptr>& responVec = _processPackage->getResponseVec();
+test/FetcherManagerTest.cpp:212:    vector<RetrieveMetricsResponse2Ptr>& responVec = ptr->getResponseVec();
+test/PolicyCheckerTest.cpp:161:    vector<RetrieveMetricsResponse2Ptr>& responVec = processPackage->getResponseVec();
+test/PolicyCheckerTest.cpp:188:    vector<RetrieveMetricsResponse2Ptr>& responVec = processPackage->getResponseVec();

@@ -1,0 +1,22 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+libalarm_sources = [
+    'AlarmManager.cpp',
+    'AlarmMsg.cpp',
+    'AlarmWorkItem.cpp',
+    'MailSender.cpp',
+    'InternalAlarmMsg.cpp',
+]
+
+alarm_libs = [
+    'idn', 'ssl', 'crypto', 'dl', 'z', 'ldap', 'rt', 'ra_fetcher', 'ra_common', 'ra_util','curl',
+]
+
+env.compileAndInstallLibrary(target = 'ra_alarm',
+                            sources = libalarm_sources,
+                            package = 'red_alert',
+                            libs = alarm_libs)
+
+env.SConscript(dirs='test', exports='env')

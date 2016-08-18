@@ -1,0 +1,25 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+source = [
+    'MetricFetcherFactory.cpp',
+]
+
+libs = [
+    'graphite_fetcher', 'rrd_fetcher',
+    'dummy_fetcher', 'ra_common', 'dl','log4cplus'
+]
+
+
+env.compileAndInstallLibrary(target = 'contrib_fetcher',
+                            sources = source,
+                            package = 'red_alert',
+                            libs = libs)
+
+
+env.SConscript(dirs='DummyMetricFetcher', exports='env')
+env.SConscript(dirs='GraphiteMetricFetcher', exports='env')
+env.SConscript(dirs='RRDMetricFetcher', exports='env')
+

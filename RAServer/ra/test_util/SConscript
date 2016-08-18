@@ -1,0 +1,25 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+libtest_util_sources = [
+    'TestUtil.cpp',
+    'FakePolicyChecker.cpp',
+    'FakeMetricFetcher.cpp',
+    'SimpleMetricFetcher.cpp',
+]
+
+test_util_libs = [
+    'ra_process', 'ra_alarm', 'ra_fetcher', 'ra_tree',
+    'ra_config', 'ra_util', 'ra_common',
+    'log4cplus',  'curl', 'sqlite3', 'cppunit', 'dl'
+]
+
+ra_test_util = env.SharedLibrary(target = 'ra_test_util',
+             source = libtest_util_sources,
+             package = 'ra',
+             dirInPackage = 'lib64',
+             LIBS = test_util_libs)
+
+env.Install(env["RA_LIB_DIR"], ra_test_util)

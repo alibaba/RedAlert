@@ -1,0 +1,36 @@
+{
+"threshold": [
+{
+"group":"default",
+"metric":"s.n.m1",
+"alarmLevel": "alimonitor",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 0,
+"upBound": 10.0,
+"downBound": 4.0
+}
+],
+"trend": [
+],
+"availability": [
+],
+"singularity": [
+],
+"cycle": [
+{
+"group":"default",
+"metric":"s.n.m2",
+"alarmLevel": "mail",
+"alarmGroup": "dev",
+"fetchInterval_s": 60,
+"minAlarmInterval_s": 0,
+"ascDiffRatio":0.2,
+"ascDiffValue":10.0,
+"descDiffRatio":0.2,
+"descDiffValue":10.0,
+"cycleTime_s":60
+}
+
+]
+}

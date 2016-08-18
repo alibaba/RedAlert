@@ -1,0 +1,20 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+source = [
+    'FileSystemFactory.cpp',
+]
+
+libs = [
+    'local_filesystem', 'dl',
+]
+
+env.compileAndInstallLibrary(target = 'contrib_filesystem',
+                            sources = source,
+                            package = 'red_alert',
+                            libs = libs)
+
+env.SConscript(dirs='LocalFileSystem', exports='env')
+

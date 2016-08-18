@@ -1,0 +1,17 @@
+{
+    "eagleEyeUrl":"tcp:127.0.0.1:15776",
+    "aliMonitorUrl":"tcp:127.0.0.1:15776",
+    "alarmThreadNum":1,
+    "alarmQueueSize":1024,
+    "loopInterval":5,    
+    "reloadInterval":900,
+    "workerThreadNum":4,
+    "defAlarmGroup":"shenma_ra_internal_alarm",
+    "defAlarmLevel":"alimonitor",
+    "amonitorAgentPort":10086,
+    "sampleInterval_s":5,
+    "mailUser":"shenma-alarm@alibaba-inc.com",
+    "mailPassword":"ShenmaV587",
+    "mailServerUrl":"smtps://smtp.alibaba-inc.com"
+    xxxxxxxxxxxx
+}

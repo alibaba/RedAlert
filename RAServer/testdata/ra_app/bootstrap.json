@@ -1,0 +1,22 @@
+{
+    "aliMonitorUrl":"tcp:127.0.0.1:15776",
+    "alarmThreadNum":1,
+    "alarmQueueSize":1024,
+    "checkerThreadNum":2,
+    "checkerQueueSize":2048,
+    "fetcherThreadNum":4,
+    "fetcherQueueSize":4096,
+    "retrieveMetricsPointCount":7,
+    "maxRandomLastRetriveTimeValueSec":25,
+    "reloadTreeIntervalSec":900,
+    "internalAlarmGroup":"shenma_ra_internal_alarm",
+    "internalAlarmLevel":"alimonitor",
+    "interalMinAlarmInterval":45,
+    "amonitorAgentPort":10086,
+    "mailUser":"shenma-alarm",
+    "mailPassword":"passwd",
+    "mailServerUrl":"smtp://mail.abc.com:300",
+    "sendOkCodeIntervalSec" : 25,
+    "heartbeatHost" : "127.0.0.1",
+    "heartbeatPort" : 18083
+}

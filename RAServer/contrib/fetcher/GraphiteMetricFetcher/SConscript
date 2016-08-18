@@ -1,0 +1,19 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+source = [
+    'GraphiteMetricFetcher.cpp',
+]
+
+libs = [
+    'ra_fetcher', 'ra_common', 'dl',
+]
+
+env.compileAndInstallLibrary(target = 'graphite_fetcher',
+                            sources = source,
+                            package = 'red_alert',
+                            libs = libs)
+
+env.SConscript(dirs='test', exports='env')

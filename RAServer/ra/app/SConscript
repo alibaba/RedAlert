@@ -1,0 +1,33 @@
+# -*- mode: python -*-
+
+# Inherit the environment from my parent.
+Import('env')
+
+# Make a copy of the environment, so my changes are limited in this directory and sub-directories.
+env = env.Clone()
+
+libapp_sources = [
+    'RaApp.cpp',
+]
+
+app_libs = ['ra_config', 'contrib_filesystem']
+
+env.compileAndInstallLibrary(target = 'ra_app',
+                            sources = libapp_sources,
+                            package = "red_alert",
+                            libs = app_libs)
+ra_app_sources = [
+    'main.cpp',
+]
+
+libsname = ['contrib_filesystem','contrib_fetcher','ra_app', 'ra_config', 'ra_service',
+            'ra_common', 'ra_tree', 'ra_process', 'ra_alarm',
+            'ra_fetcher', 'ra_util', 'glib-2.0','xml2',
+            'event', 'curl', 'jansson', 'rrd',  'log4cplus']
+
+env.compileAndInstallBinary(target = "red_alert_app",
+                           sources = ra_app_sources,
+                           package = "red_alert",
+                           libs = libsname)
+env.installToPackage("red_alert","red_alert.sh", "usr/local/bin")
+env.SConscript(dirs='test', exports='env')

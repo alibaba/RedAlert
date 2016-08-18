@@ -1,0 +1,23 @@
+# -*- mode: python -*-
+
+Import('env')
+env = env.Clone()
+
+libservice_sources = [
+    'ListMetricHandler.cpp',
+    'LoadConfigHandler.cpp',
+    'HeartbeatClient.cpp',
+]
+
+service_libs = [
+    'ra_app',
+    'ra_config', 'ra_util', 'ra_common',
+    'event',  'log4cplus', 'curl', 'sqlite3', 'cppunit', 'dl'
+]
+
+                                                    
+env.compileAndInstallLibrary(target = 'ra_service',  
+                            sources = libservice_sources,        
+                            package = 'red_alert',  
+                            libs = service_libs) 
+env.SConscript(dirs='test', exports='env')

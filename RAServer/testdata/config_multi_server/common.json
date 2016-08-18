@@ -1,0 +1,16 @@
+{
+"hosts":[
+{
+"ip":"ip1",
+"service":"host1",
+"id":1,
+"weight":100
+},
+{
+"ip":"ip2",
+"servicee":"host2",
+"id":2,
+"weight":200
+}
+]
+}

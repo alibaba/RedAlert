@@ -1,0 +1,45 @@
+# -*- mode: python -*-
+import sys, os, platform, time, copy
+Help("""
+Usage:
+compile: scons
+test: scons test
+package: scons package
+You can set mode=debug or release, when build, and the prefix is used to find the so and header files. 
+""")
+
+prefix = ARGUMENTS.get("prefix", "")
+libpath = ARGUMENTS.get("libpath", "")
+includeheader = ARGUMENTS.get("includeheader", "")
+installroot = ARGUMENTS.get("installroot", "")
+curDir = os.getcwd()
+installroot = curDir + "/installroot"
+prefix = curDir + '/_external'
+mode = ARGUMENTS.get("mode", "release")
+os.environ['ra_build_options'] = '''
+heapchecktype = 'tcmalloc'
+mode = '%s'                 
+enable_strip = False 
+coverage = False                  
+prefix = '%s'
+libpath = '%s'
+includeheader = '%s'
+installroot = '%s'
+version = '0.5.2'
+''' %(mode, prefix, libpath, includeheader, installroot)
+
+SetOption('duplicate', 'soft-copy')
+
+env = Environment(tools=['default', 'ra_scons'])
+env.SConscript(
+    dirs='.',
+    exports='env',
+    variant_dir=env['RA_BUILD_DIR'],
+    duplicate=1)
+
+
+dependLibs = [ 'curl','event','jansson','log4cplus']
+
+env.installDependLibrary("red_alert", dependLibs, "usr/local/lib64")
+env.installToPackage("red_alert", env["RA_TOP_DIR"] + "/conf/ra_log.conf", "usr/local/etc")
+env.package("red_alert")

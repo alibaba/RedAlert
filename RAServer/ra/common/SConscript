@@ -1,0 +1,26 @@
+# -*- mode: python -*-
+
+import os
+
+Import('env')
+env = env.Clone()
+
+libcommon_sources = [
+    "AlarmLog.cpp",
+    "HttpClient.cpp",
+    "HttpServer.cpp",
+    "Json.cpp",
+]
+
+libsname = [
+    'log4cplus', 
+    'event', 'jansson',
+    'curl', 'sqlite3', 'dl', 'rt'
+]
+
+env.compileAndInstallLibrary(target = 'ra_common',
+                            sources = libcommon_sources,
+                            package = 'red_alert',
+                            libs = libsname)
+
+env.SConscript(dirs='test', exports='env')

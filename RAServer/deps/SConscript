@@ -1,0 +1,16 @@
+# -*- mode: python -*-
+import os, sys
+# Inherit the environment from my parent.
+Import('env')
+
+# Make a copy of the environment, so my changes are limited in this directory and sub-directories.
+env = env.Clone()
+
+env["install_path"] = os.path.join(env["TOP_DIR"], "_external/usr/local")
+
+# List my sub-directories.
+libevent = env.SConscript(dirs='libevent', exports='env')
+libcurl = env.SConscript(dirs='curl', exports='env')
+libjansson = env.SConscript(dirs='jansson', exports='env')
+liblog4cplus = env.SConscript(dirs='log4cplus', exports='env')
+Return('libevent libcurl libjansson liblog4cplus')
