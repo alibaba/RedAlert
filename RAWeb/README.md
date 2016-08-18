@@ -76,7 +76,7 @@ As long as `DEFAULT` section has been configued, `Parameter` section would be ge
     	"disable_account": true   
 	};
 
-*NOTE:* If you don't need authentication, please set `disable_account` option true. As loog as `false` setted, `buc_sso_url` works to verify identidy.
+*NOTE:* If you don't need authentication, please set `disable_account` option true. As long as `false` setted, `buc_sso_url` works to verify identidy.
   
 Running
 -------
@@ -118,7 +118,7 @@ Web service could alse be deployed on [Apache Server](https://httpd.apache.org/d
     		</Director>
 	</VirtualHost>
 
-*Note!* Apache's group should hve been authorized on this Directory. Maybe, `sudo chmod www-data:www-data your-rrot`.   
+*Note!* Apache's group should hve been authorized on this Directory. Maybe, `sudo chmod www-data:www-data your-root`.   
  
 Move the `.conf` to `/etc/httpd/conf.d`, then restart your httpd service.
 
