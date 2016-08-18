@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<title>red alert configure center</title>
+<link href="bootstrap.min.css" rel="stylesheet">
+<link href="jstree/themes/default/style.min.css" rel="stylesheet">
+<link href="bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<style>
+div.extra_param, #effective_time_group_tpl {
+    display:none;
+}
+div.extra_param, #filter_pattern_group_tpl {
+    display:none;
+}
+
+</style>
+</head>
+<body>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header"><span class="navbar-brand">RedAlert配置中心</span></div>
+    <div>
+    <ul class="nav navbar-nav">
+    <li class="active ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看/修改告警策略"><a href="index.html">策略配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="暂时屏蔽一些告警"><a href="shield.html">屏蔽配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="新增Amonitor,RedAlert"><a href="misc.html">杂项配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看配置diff"><a href="deploy.html">配置DIFF</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="发布/回滚配置"><a href="admin.html">控制台</a></li>
+    </ul>
+    <div id="user_container">
+    <!-- <form class="navbar-form navbar-right"> -->
+    <!-- <div id="sign_in_form_group" class="form-group toggle_display"> -->
+    <!-- <input id="user_name" type="text" class="form-control" placeholder="请输入域账号名"> -->
+    <!-- </div> -->
+    <!-- <button id="sign_in" class="btn btn-primary toggle_display">登入</button> -->
+    <!-- <\!--<button id="acquire_lock" class="btn btn-warning">开始修改</button>-\-> -->
+    <!-- <button id="sign_out" class="btn btn-default toggle_display">登出</button> -->
+    <!-- </form> -->
+    <p id="user_display" class="navbar-text navbar-right toggle_display">当前用户：<span id="user_name_display"><span></p>
+    </div>
+    </div>
+</nav>
+<div class="container">
+    <div id="policy_editor">
+        <form id="policy_form" class="form-horizontal" role="form">
+            <div class="form-group">
+            <label for="policy_group" class="col-md-2 control-label">策略组</label>
+            <div class="col-md-3">
+                <div class="input-group">
+                <select id="policy_group" class="form-control ra_tooltip" data-toggle="tooltip" data-placement="left" title="<p>可以将同一个业务或集群下的告警归为一个策略组，方便管理。</p><p>选择已有的策略组，或者新增一个</p>">
+                </select>
+                <span class="input-group-btn">
+                <button id="add_policy_group" class="btn btn-default">
+                    <span class="glyphicon glyphicon-plus"></span>新增
+                </button>
+                </div>
+                </span>
+            </div>
+            </div>
+
+            <input id="pageno" type="hidden" name="pageno" placeholder="">
+            <input id="group" type="hidden" name="group" placeholder="">
+            <div class="form-group">
+            <label for="trigger_type" class="col-md-2 control-label">触发类型</label>
+            <div class="col-md-2">
+                <select id="trigger_type" class="form-control">
+                <option value="threshold">阈值</option>
+                <option value="trend">趋势</option>
+                <option value="singularity">奇异点</option>
+                <option value="availability">可用性</option>
+                <option value="cycle">周期</option>
+                </select>
+            </div>
+            </div>
+
+            <div class="form-group">
+            <label for="fetch_interval" class="col-md-2 control-label">采样间隔（秒）</label>
+            <div class="col-md-2">
+                <select id="fetch_interval" class="form-control ra_tooltip" data-toggle="tooltip" data-placement="left" title="间隔越小报警越及时，但是对RA压力越大，也越容易因偶发波动告警">
+                <option value="15">15秒</option>
+                <option value="60">1分钟</option>
+                <option value="300">5分钟</option>
+                <option value="900">15分钟</option>
+                <option value="3600">1小时</option>
+                </select>
+            </div>
+            </div>
+            
+            <div class="form-group">
+            <label for="metric_path" class="col-md-2 control-label">指标全名</label>
+            <div class="col-md-4">
+                <div class="input-group">
+                <input type="text" class="form-control ra_tooltip" id="metric_path" placeholder="格式为：service.nodepath.metric" data-toggle="tooltip" data-placement="left" title="支持*?通配符">
+                <span class="input-group-btn">
+                <button id="select_metrics" type="button" class="btn btn-primary" data-toggle="modal" data-target="#metric_tree">选择指标</button>
+                </span>
+                </div>
+            </div>
+            </div>
+            
+            <div class="form-group">
+            <label for="check_type" class="col-md-2 control-label">检查类型</label>
+            <div class="col-md-2">
+                <select id="check_type" class="form-control ra_tooltip" data-toggle="tooltip" data-placement="left" title="<p><b>单个</b>: 对单个指标每台机器分别检查，<br/><b>组合</b>: 对一组指标的总和进行检查,<br/><b>机器组合</b>: 对一个指标的所有机器的总和进行检查</p>">
+                <option value="single">单个</option>
+                <option value="total">组合</option>
+                <option value="host_total">机器组合</option>
+                </select>
+            </div>
+            </div>
+            
+            <div class="form-group">
+            <label for="alarm_level" class="col-md-2 control-label">告警方式</label>
+            <div class="col-md-2">
+                <select id="alarm_level" class="form-control">
+                <option value="alimonitor">阿里告警(alimonitor)</option>
+                <option value="ucmt">UC告警(ucmt)</option>
+                <option value="curlmail">邮件(curlmail)</option>
+                </select>
+            </div>
+            </div>
+
+            <div class="form-group">
+            <label for="alarm_group" class="col-md-2 control-label">告警接收组</label>
+            <div class="col-md-4">
+            <input type="text" class="form-control ra_tooltip" id="alarm_group" data-toggle="tooltip" data-placement="left" title="<p>如果告警方式是alimonitor，此项必须与Alimonitor中配置的告警项一致</p><p>如果告警方式是curlmail，请填写收件人邮箱地址</p><p>多个告警接受组之间以半角逗号(,)分割</p>">
+            </div>
+            </div>
+
+            <div class="form-group">
+            <label for="valid_time" class="col-md-2 control-label">生效时间</label>
+            <div class="col-md-2">
+	      <input type="text" id="valid_time" class="form-control" placeholder="YYYY-mm-dd HH:MM:SS">
+            </div>
+            </div>
+            
+            <div class="form-group">
+            <label for="min_alarm_interval" class="col-md-2 control-label">最短告警间隔（秒）</label>
+            <div class="col-md-2">
+            <input type="text" class="form-control ra_tooltip" id="min_alarm_interval" data-toggle="tooltip" data-placement="left" title="必须大于等于采样间隔<br>最小间隔内的多条报警将被合并成一条">
+            </div>
+            </div>
+            
+            <div id="effective_time_group" class="form-group">
+            <label for="add_effective_time" class="col-md-2 control-label">有效时间段</label>
+            <div class="col-md-2">
+            <button id="add_effective_time" type="button" class="btn btn-default btn-sm ra_tooltip" data-toggle="tooltip" data-placement="top" title="在有效时间之外将不产生告警，不配置表示有效期为全天。<br>配置方式为开始-结束时间段，比如13:16 15:16表示该配置从13:16到15:16生效">
+                <span class="glyphicon glyphicon-plus"></span>新增
+            </button>
+            </div>
+            </div>
+
+            <div id="effective_time_group_tpl" class="form-group effective_time">
+            <div class="col-md-1 col-md-offset-2">
+            <input type="datetime" class="form-control effective_time_begin" placeholder="HH:MM">
+            </div>
+            <div class="col-md-1">
+            <input type="text" class="form-control effective_time_end" placeholder="HH:MM">
+            </div>
+            <button type="button" class="btn btn-danger btn-sm del_effective_time">
+                <span class="glyphicon glyphicon-minus"></span>删除
+            </button>
+            </div>
+
+            <div id="filter_pattern_group" class="form-group">
+            <label for="add_filter_pattern" class="col-md-2 control-label">过滤项</label>
+            <div class="col-md-2">
+            <button id="add_filter_pattern" type="button" class="btn btn-default btn-sm ra_tooltip" data-toggle="tooltip" data-placement="top" title="一个过滤项由metric pattern和机器列表组成，第一列为metric pattern, 第二列为对应的机器，机器之间用逗号分割，支持通配符*，<br/>满足过滤项的机器上的指标将不参与告警">
+                <span class="glyphicon glyphicon-plus"></span>新增
+            </button>
+            </div>
+            </div>
+
+            <div id="filter_pattern_group_tpl" class="form-group filter_pattern">
+            <div class="col-md-3 col-md-offset-2">
+            <input type="text" class="form-control filter_metric" placeholder="">
+            </div>
+            <div class="col-md-3">
+            <input type="text" class="form-control filter_host" placeholder="">
+            </div>
+            <button type="button" class="btn btn-danger btn-sm del_filter_pattern">
+                <span class="glyphicon glyphicon-minus"></span>删除
+            </button>
+            </div>
+            
+            <div id="threshold_part" class="extra_param">
+                <div class="form-group">
+                <label class="col-md-2 control-label">一些提示</label>
+                <div class="col-md-4">
+                <ul>
+                    <li>仅当当前值大于等于阈值上限，或者当前值小于等于阈值下限时告警</li>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="threshold_upbound" class="col-md-2 control-label">阈值上限</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="threshold_upbound" placeholder="">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="threshold_lowerbound" class="col-md-2 control-label">阈值下限</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="threshold_lowerbound" placeholder="">
+                </div>
+                </div>
+            </div>
+            
+            <div id="trend_part" class="extra_param">
+                <div class="form-group">
+                <label class="col-md-2 control-label">一些提示</label>
+                <div class="col-md-4">
+                <ul>
+                    <li>仅当预测值和实际值差异大于等于D，且<b>差异值除以预测值</b>大于等于R时告警</li>
+                    <li>当D填0或者留空时，仅当<b>差异值除以预测值</b>大于等于R时告警</li>
+                    <li>当R填0或者留空时，仅当预测值和实际值差异大于等于D时告警</li>
+                    <li>如果D和R都填0或者留空，表示任何突增或突降都<b>不会</b>导致告警</li>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="trend_asc_val" class="col-md-2 control-label">突增差异值(D)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="trend_asc_val" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="trend_asc_ratio" class="col-md-2 control-label">突增比例(R)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="trend_asc_ratio" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="trend_desc_val" class="col-md-2 control-label">突降差异值(D)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="trend_desc_val" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="trend_desc_ratio" class="col-md-2 control-label">突降比例(R)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="trend_desc_ratio" placeholder="" value="0.0">
+                </div>
+                </div>
+            </div>
+            
+            <div id="singularity_part" class="extra_param">
+                <div class="form-group">
+                <label class="col-md-2 control-label">一些提示</label>
+                <div class="col-md-4">
+                <ul>
+                    <li>仅当单点值和平均值差异大于等于D，且<b>差异值除以平均值</b>大于等于R时告警</li>
+                    <li>当D填0或者留空时，仅当<b>差异值除以平均值</b>大于等于R时告警</li>
+                    <li>当R填0或者留空时，仅当预测值和实际值差异大于等于D时告警</li>
+                    <li>如果D和R都填0或者留空，表示任何突增或突降都<b>不会</b>导致告警</li>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="singularity_asc_val" class="col-md-2 control-label">突增差异值(D)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="singularity_asc_val" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="singularity_asc_ratio" class="col-md-2 control-label">突增比例(R)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="singularity_asc_ratio" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="singularity_desc_val" class="col-md-2 control-label">突降差异值(D)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="singularity_desc_val" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="singularity_desc_ratio" class="col-md-2 control-label">突降比例(R)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="singularity_desc_ratio" placeholder="" value="0.0">
+                </div>
+                </div>
+            </div>
+            
+            <div id="availability_part" class="extra_param">
+                <div class="form-group">
+                <label class="col-md-2 control-label">一些提示</label>
+                <div class="col-md-4">
+                <ul>
+                    <li>当本指标上报的机器数小于最少可用机器数时告警</li>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="min_host_num" class="col-md-2 control-label">最少可用机器数</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="min_host_num" placeholder="">
+                </div>
+                </div>
+            </div>
+            
+            <div id="cycle_part" class="extra_param">
+                <div class="form-group">
+                <label class="col-md-2 control-label">一些提示</label>
+                <div class="col-md-4">
+                <ul>
+                    <li>投票策略:从当前时间往前n个周期，每个周期为一个投票人。
+                        当历史周期值和当前值差异大于等于D，
+                        且<b>历史周期值除以当前值</b>大于等于R时投一票。投票过半数则报警</li>
+                    <li>当D填0或者留空时，仅当<b>上周期值除以当前值</b>大于等于R时告警</li>
+                    <li>当R填0或者留空时，仅当上周期值和当前值差异大于等于D时告警</li>
+                    <li>如果D和R都填0或者留空，表示任何突增或突降都<b>不会</b>导致告警</li>
+                    <li>如果D和R都填0或者留空，表示任何突增或突降都<b>不会</b>导致告警</li>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="cycle_asc_val" class="col-md-2 control-label">突增差异值(D)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="cycle_asc_val" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="cycle_asc_ratio" class="col-md-2 control-label">突增比例(R)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="cycle_asc_ratio" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="cycle_desc_val" class="col-md-2 control-label">突降差异值(D)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="cycle_desc_val" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="cycle_desc_ratio" class="col-md-2 control-label">突降比例(R)</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="cycle_desc_ratio" placeholder="" value="0.0">
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="cycle_time" class="col-md-2 control-label">对比周期长度</label>
+                <div class="col-md-2">
+                <select class="form-control" id="cycle_time">
+                    <option value="86400">一天</option>
+                    <option value="604800">一周</option>
+                    <option value="2592000">一月(30天)</option>
+                </select>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="cycle_count" class="col-md-2 control-label">对比周期的个数</label>
+                <div class="col-md-2">
+                <input type="text" class="form-control" id="cycle_count" placeholder="" value="3">
+                </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+            <button id="save_policy" class="btn btn-default">保存</button>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="metric_tree" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">请选择一个指标</h4>
+        <small>
+        如果下面不显示任何指标
+        <ul>
+            <li>请确认已发布的配置里包含有效的Amonitor</li>
+        </ul>
+        </small>
+        </div>
+        <div id="metric_tree_body" class="modal-body"></div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button id="confirm_metric" type="button" class="btn btn-primary">选择</button>
+        </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="jstree/jstree.js"></script>
+<script src="ra_api.js"></script>
+<!--script src="ra_conf.js"--><!--/script-->
+<script src="ra_dom.js"></script>
+<script>
+// jquery parse querystring plugin
+(function($) {
+    var re = /([^&=]+)=?([^&]*)/g;
+    var decode = function(str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+    };
+    $.parseParams = function(query) {
+        var params = {}, e;
+        if (query) {
+            if (query.substr(0, 1) == '?') {
+                query = query.substr(1);
+            }
+
+            while (e = re.exec(query)) {
+                var k = decode(e[1]);
+                var v = decode(e[2]);
+                if (params[k] !== undefined) {
+                    if (!$.isArray(params[k])) {
+                        params[k] = [params[k]];
+                    }
+                    params[k].push(v);
+                } else {
+                    params[k] = v;
+                }
+            }
+        }
+        return params;
+    };
+})(jQuery);
+
+function validate_timehm(t)
+{
+    if (/^([0-1]\d|2[0-3]):([0-5]\d)$/.test(t)) {
+        return t;
+    }
+    
+    return null;
+}
+
+function simple_validate()
+{
+    var validate = true;
+    var select_str = "#policy_group, #trigger_type, #fetch_interval, "
+        +"#metric_path, #alarm_level, #alarm_group";
+    // non empty fields
+    $(select_str).each(function() {
+        if (!validate) {
+            return;
+        }
+        
+        var self = $(this);
+        if (0 == $.trim(self.val()).length) {
+            alert("参数不能为空值");
+            self.parents('div.form-group').addClass('has-error');
+            validate = false;
+        }
+    });
+    
+    // digital
+    select_str = '#threshold_part input:visible,'
+        +'#trend_part input:visible,'
+        +'#singularity_part input:visible,'
+        +'#availability_part input:visible,'
+        +'#cycle_part input:visible';
+    $(select_str).each(function() {
+        if (!validate) {
+            return;
+        }
+        
+        var self = $(this);
+        if (!$.isNumeric(self.val())) {
+            alert("告警参数必须为数字");
+            self.parents('div.form-group').addClass('has-error');
+            validate = false;
+        }
+    });
+
+    if (!validate) {
+        return;
+    }
+     
+    // cmp threshold up/lowerbound
+    if ( $('#threshold_part:visible').length > 0 ) {
+        var upbound = parseFloat($('#threshold_upbound').val());
+        var lowerbound = parseFloat($('#threshold_lowerbound').val());
+        if (upbound < lowerbound) {
+            alert("阈值上限必须大于等于下限");
+            $('#threshold_part div.form-group').addClass('has-error');
+            return;
+        }
+    }
+    
+    // min alarm interval
+    var min_alarm_interval = $('#min_alarm_interval').val();
+    if (!$.isNumeric(min_alarm_interval)) {
+        alert("最短告警间隔必须是数字");
+        $('#min_alarm_interval').parents('div.form-group').addClass('has-error');
+        return false;
+    }
+    
+    min_alarm_interval = parseInt(min_alarm_interval);
+    var fetch_interval = parseInt($('#fetch_interval').val());
+    if (min_alarm_interval < fetch_interval) {
+        $('#min_alarm_interval').parents('div.form-group').addClass('has-error');
+        alert("最短告警间隔必须大于等于采样间隔");
+        return false;
+    }
+    
+    // effective time
+    var each_effective_time = function()
+    {
+        if (!validate) {
+            return;
+        }
+        var self = $(this);
+        var beg = validate_timehm(self.find('.effective_time_begin').val());
+        var end = validate_timehm(self.find('.effective_time_end').val());
+        validate = (beg != null && end != null && end > beg);
+        if (!validate) {
+            self.addClass('has-error');
+            alert("生效时间格式错误，必须是HH:MM");
+        }
+    };
+    
+    $('#policy_editor div.effective_time:visible').each(each_effective_time);
+
+    // filter pattern
+    var each_filter_pattern = function()
+    {
+        if (!validate) {
+            return;
+        }
+        var self = $(this);
+        var metric = self.find('.filter_metric').val();
+        var host = self.find('.filter_host').val();
+
+        if(metric.length == 0 || host.length == 0) {
+            validate = false;
+            self.addClass('has-error');
+            alert("metric 和 host不能为空");
+        }
+    };
+
+    return validate;
+}
+
+function trigger_type_onchange()
+{
+    var select_ctrl = $('#trigger_type');
+    var extra_param_ctrl = $('#'+select_ctrl.val()+'_part');
+    var allowed_entry = ["threshold", 
+        "trend", "availability", 
+        "singularity", "cycle"];
+    
+    var index = allowed_entry.indexOf(select_ctrl.val());
+    if (index < 0) {
+        console.log("invalid trigger type: " + select_ctrl.val());
+        return false;
+    }
+
+    var checkType = document.getElementById('check_type')
+    if (index == 2 || index == 3) {
+        checkType.value = 'total';
+        checkType.disabled = true;
+    }
+    else {
+        checkType.disabled = false;
+    }
+    
+    for (var i in allowed_entry) {
+        $('#'+allowed_entry[i]+'_part').hide();
+    }
+    
+    extra_param_ctrl.show();
+    return true;
+}
+
+function update_policy_extra_param(p)
+{
+    var t = p['type'];
+    if ("threshold" == t) {
+        p['upBound'] = $('#threshold_upbound').val();
+        p['downBound'] = $('#threshold_lowerbound').val();
+    }
+    else if ("trend" == t) {
+        p['ascDiffRatio'] = $('#trend_asc_ratio').val();
+        p['ascDiffValue'] = $('#trend_asc_val').val();
+        p['descDiffRatio'] = $('#trend_desc_ratio').val();
+        p['descDiffValue'] = $('#trend_desc_val').val();
+    }
+    else if ("singularity" == t) {
+        p['ascDiffRatio'] = $('#singularity_asc_ratio').val();
+        p['ascDiffValue'] = $('#singularity_asc_val').val();
+        p['descDiffRatio'] = $('#singularity_desc_ratio').val();
+        p['descDiffValue'] = $('#singularity_desc_val').val();
+    }
+    else if ("availability" == t) {
+        p['minHostNum'] = $('#min_host_num').val();
+    }
+    else if ("cycle" == t) {
+        p['ascDiffRatio'] = $('#cycle_asc_ratio').val();
+        p['ascDiffValue'] = $('#cycle_asc_val').val();
+        p['descDiffRatio'] = $('#cycle_desc_ratio').val();
+        p['descDiffValue'] = $('#cycle_desc_val').val();
+        p['cycleTime_s'] = $('#cycle_time').val();
+        p['cycleCount'] = $('#cycle_count').val();
+    }
+    else {
+        console.log("unknown policy type " + t);
+    }
+    
+    return p;
+}
+
+function save_policy_onclick(evt)
+{
+    evt.preventDefault();
+    if (!simple_validate()) {
+        return;
+    }
+    
+    var policy_id = $('#policy_editor').data("policy_id");
+    
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (ra_api.alert_on_errno(data, "保存策略出错")) {
+            return;
+        }
+        
+        alert("保存策略成功，请进入控制台页面发布！");
+        var pageno = $('#pageno').val();
+        var group = $('#group').val();
+        location.href="index.html?group=" + group + "&pageno=" + pageno;
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("保存策略异常: " + textStatus);
+    };
+
+    var p = {
+        "group": $.trim($('#policy_group').val()),
+        "metric": $.trim($('#metric_path').val()),
+        "checkType": $('#check_type').val(),
+        "validTime": $('#valid_time').val(),
+        "type": $('#trigger_type').val(),
+        "alarmLevel": $('#alarm_level').val(),
+        "alarmGroup": $.trim($('#alarm_group').val()),
+        "fetchInterval_s": $('#fetch_interval').val(),
+        "minAlarmInterval_s": $('#min_alarm_interval').val(),
+        "effectiveTime": get_effective_time_string(),
+        "policyFilter": get_filter_pattern_string(),
+    };
+    
+    p = update_policy_extra_param(p);
+    ra_api.set_callbacks(succ_cb, fail_cb);
+    if (undefined == policy_id) {
+        ra_api.add_policy(p);
+    }
+    else {
+        ra_api.update_policy(policy_id, p);
+    }
+}
+
+function add_effective_time_onclick()
+{
+    var grp_tpl = $('#effective_time_group_tpl').clone();
+    grp_tpl.removeAttr("id");
+    $('#effective_time_group').after(grp_tpl);
+}
+
+function add_filter_pattern_onclick()
+{
+    var grp_tpl = $('#filter_pattern_group_tpl').clone();
+    grp_tpl.removeAttr("id");
+    $('#filter_pattern_group').after(grp_tpl);
+}
+
+function del_effective_time_onclick()
+{
+    var btn = $(this);
+    // remove parent .form-group
+    btn.parent().remove();
+}
+
+function del_filter_pattern_onclick()
+{
+    var btn = $(this);
+    // remove parent .form-group
+    btn.parent().remove();
+}
+
+function get_effective_time_string()
+{
+    var t = [];
+    $('#policy_form div.effective_time:visible').each(function()
+    {
+        var self = $(this);
+        var beg = self.find('.effective_time_begin').val();
+        var end = self.find('.effective_time_end').val();
+        t.push(beg+"_"+end);
+    });
+    
+    return t.join("|");
+}
+
+function get_filter_pattern_string()
+{
+    var t = [];
+    $('#policy_form div.filter_pattern:visible').each(function()
+    {
+        var self = $(this);
+        var metric = self.find('.filter_metric').val();
+        var host = self.find('.filter_host').val();
+        t.push(metric+"@"+host);
+    });
+    
+    return t.join("|");
+}
+
+function load_groups(cb)
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            alert("载入告警组错误("+data['ret']+":"+data['msg']+")");
+            return;
+        }
+        
+        var pg = $('#policy_group');
+        for (var i in data['groups']) {
+            var g = data['groups'][i];
+            pg.append("<option>"+g+"</option>");
+        }
+        
+        cb && cb();
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("载入告警组异常: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .get_groups();
+}
+
+function add_policy_group_onclick(evt)
+{
+    evt.preventDefault();
+    group = prompt("输入新的策略组名");
+    if (null != group) {
+        var pg = $('#policy_group');
+        pg.append("<option>"+group+"</option>");
+        pg.prop('selectedIndex', pg.children().length-1);
+    }
+}
+
+function policy_input_onfocus()
+{
+    var self = $(this);
+    self.parents('div.form-group').removeClass('has-error');
+}
+
+function set_selected_option(select_ctrl, val)
+{
+    var children = select_ctrl.children('option');
+    var idx = 0;
+    var found = false;
+    children.each(function() {
+        if (found) {
+            return;
+        }
+        var self = $(this);
+        if (val == self.val()) {
+            select_ctrl.prop('selectedIndex', idx);
+            found = true;
+        }
+        
+        ++idx;
+    });
+    
+    if (!found) {
+        select_ctrl.append('<option value="'+val+'">'+val+'</option>');
+        select_ctrl.prop('selectedIndex', children.length);
+    }
+}
+
+function fill_compatible_deviation_fields(p, id_prefix)
+{
+    if (p.hasOwnProperty("maxDiffRatio")) {
+        $('#'+id_prefix+'_asc_ratio').val(p['maxDiffRatio']);
+        $('#'+id_prefix+'_asc_val').val(p['minDiffValue']);
+        $('#'+id_prefix+'_desc_ratio').val(p['maxDiffRatio']);
+        $('#'+id_prefix+'_desc_val').val(p['minDiffValue']);
+    }
+    else {
+        $('#'+id_prefix+'_asc_ratio').val(p['ascDiffRatio']);
+        $('#'+id_prefix+'_asc_val').val(p['ascDiffValue']);
+        $('#'+id_prefix+'_desc_ratio').val(p['descDiffRatio']);
+        $('#'+id_prefix+'_desc_val').val(p['descDiffValue']);
+    }
+}
+
+function inDict(dict, item)
+{
+    for(var i in dict)
+    {
+        if(i == item)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function render_policy(p)
+{
+    set_selected_option($('#policy_group'), p['group']);
+    set_selected_option($('#trigger_type'), p['type']);
+    set_selected_option($('#fetch_interval'), p['fetchInterval_s']);
+    $('#metric_path').val(p['metric']);
+    $('#valid_time').val(p['validTime']);
+    if (inDict(p, 'checkType'))
+    {
+        $('#check_type').val(p['checkType']);
+    }
+    set_selected_option($('#alarm_level'), p['alarmLevel']);
+    $('#alarm_group').val(p['alarmGroup']);
+    $('#min_alarm_interval').val(p['minAlarmInterval_s']);
+    
+    for (var i in p['effectiveTime']) {
+        var t = p['effectiveTime'][i];
+        var grp_tpl = $('#effective_time_group_tpl').clone();
+        grp_tpl.removeAttr("id");
+        grp_tpl.find('input.effective_time_begin').val(t['begin']);
+        grp_tpl.find('input.effective_time_end').val(t['end']);
+        $('#effective_time_group').after(grp_tpl);
+    }
+
+    for (var i in p['policyFilter']) {
+        var t = p['policyFilter'][i];
+        var grp_tpl = $('#filter_pattern_group_tpl').clone();
+        grp_tpl.removeAttr("id");
+        grp_tpl.find('input.filter_metric').val(t['metric']);
+        grp_tpl.find('input.filter_host').val(t['host']);
+        $('#filter_pattern_group').after(grp_tpl);
+    }
+    
+    $('#trigger_type').change();
+    
+    var t = p['type'];
+    if ("threshold" == t) {
+        $('#threshold_upbound').val(p['upBound']);
+        $('#threshold_lowerbound').val(p['downBound']);
+    }
+    else if ("trend" == t) {
+        fill_compatible_deviation_fields(p, t);
+    }
+    else if ("singularity" == t) {
+        fill_compatible_deviation_fields(p, t);
+    }
+    else if ("availability" == t) {
+        $('#min_host_num').val(p['minHostNum']);
+    }
+    else if ("cycle" == t) {
+        fill_compatible_deviation_fields(p, t);
+        set_selected_option($('#cycle_time'), p['cycleTime_s']);
+        if (inDict(p, 'cycleCount'))
+        {
+            $('#cycle_count').val(p['cycleCount']);
+        }
+    }
+    else {
+        console.log("unknown policy type " + t);
+    }
+}
+
+function load_policy(id)
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (0 != data['ret']) {
+            alert("load policy "+id+" ret "+data['ret']+" msg "+data['msg']);
+            return;
+        }
+
+        render_policy(data['policy']);
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("load policy "+id+" fail: "+textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .get_policy(id);
+}
+
+function is_nodepath_segment(node)
+{
+    return node.hasOwnProperty('a_attr') && node.a_attr['data-nodepath'];
+}
+
+function get_full_metric_path(node_id)
+{
+    var inst = $.jstree.reference('#metric_tree_body');
+    if (undefined == inst) {
+        return [];
+    }
+    
+    var node = inst.get_node(node_id);
+    var has_child = node.children.length > 0;
+    var metric_path = [];
+    var path_segments = [];
+    while (node !== false && null != node.parent) {
+        var parent_node = inst.get_node(node.parent);
+        if (is_nodepath_segment(node)) {
+            path_segments.push(node.text);
+            if (!is_nodepath_segment(parent_node)) {
+                metric_path.push(path_segments.reverse().join('/'));
+                path_segments = [];
+            }
+        }
+        else {
+            metric_path.push(node.text);
+        }
+        
+        node = parent_node;
+    };
+    
+    metric_path.reverse();
+    return metric_path;
+}
+
+function get_spec_from_node(node_id)
+{
+    var inst = $.jstree.reference('#metric_tree_body');
+    if (undefined == inst) {
+        return "";
+    }
+    var node = inst.get_node(node_id);
+    var spec = "";
+    while (node !== false && null != node.parent) {
+        if (node.hasOwnProperty('a_attr') && node.a_attr['data-spec']) {
+            spec = node.a_attr['data-spec'];
+        }
+        
+        node = inst.get_node(node.parent);
+    }
+    
+    return spec;
+}
+
+function confirm_metric_onclick(evt)
+{
+    evt.preventDefault();
+    var inst = $.jstree.reference('#metric_tree_body');
+    var selected = inst.get_selected();
+    if (0 == selected.length) {
+        alert("尚未选择指标");
+        return;
+    }
+    
+    var node_id = selected[0];
+    var metric_path = get_full_metric_path(node_id);
+    var path_str = metric_path.join('.');
+    if (metric_path.length < 3) {
+        path_str += "*";
+    }
+    $('#metric_path').val(path_str);
+    $('#metric_tree').modal('hide');
+}
+
+function metric_tree_opened(e, data)
+{
+    var inst = $.jstree.reference('#metric_tree_body');
+    var node = data.node;
+    var my_id = node.id;
+    while (node !== false && null != node.parent) {
+        node = inst.get_node(node.parent);
+        // close siblings
+        for (i in node.children) {
+            if (node.children[i] == my_id) {
+                continue;
+            }
+            
+            inst.close_all(node.children[i], 100);
+        }
+        
+        my_id = node.id;
+    };
+}
+
+function jstree_node_ondblclick(evt)
+{
+    $('#confirm_metric').click();
+}
+
+function fetch_interval_onchange(evt)
+{
+    $('#min_alarm_interval').val($(this).val());
+}
+
+function bind_events_handler()
+{
+    $('#trigger_type').change(trigger_type_onchange).change();
+    $('#save_policy').click(save_policy_onclick);
+    $('#add_effective_time').click(add_effective_time_onclick);
+    $('#add_filter_pattern').click(add_filter_pattern_onclick);
+    $('#policy_editor').delegate('button.del_effective_time', 'click', del_effective_time_onclick);
+    $('#policy_editor').delegate('button.del_filter_pattern', 'click', del_filter_pattern_onclick);
+    $('#add_policy_group').click(add_policy_group_onclick);
+    $('#policy_form').delegate(':input', 'focus', policy_input_onfocus);
+    $('#select_metrics').click(load_amon_data_onclick);
+    $('#confirm_metric').click(confirm_metric_onclick);
+    $('#metric_tree_body').on('open_node.jstree', metric_tree_opened);
+    $('#metric_tree_body').delegate("a.jstree-anchor", "dblclick", jstree_node_ondblclick);
+    $('#fetch_interval').change(fetch_interval_onchange).change();
+    $('#valid_time').datetimepicker({
+        'format': 'yyyy-mm-dd hh:ii:ss',
+        'autoclose': true,
+    });
+}
+
+function path_to_object(path)
+{
+    var delim_pos = path.indexOf('/');
+    var ret = {};
+    if (delim_pos < 0) {
+        ret[path] = {};
+        return ret;
+    }
+    
+    ret[path.substr(0, delim_pos)] = path_to_object(path.substr(delim_pos+1));
+    return ret;
+}
+
+function merge_object(l, r)
+{
+    for (var k in l) {
+        if (r.hasOwnProperty(k)) {
+            r[k] = merge_object(l[k], r[k]);
+        }
+        else {
+            r[k] = l[k];
+        }
+    }
+    
+    return r;
+}
+
+function object_to_jstree_data(obj, is_nodepath, has_children)
+{
+    var data = [];
+    for (var k in obj) {
+        data.push({
+            "text":k, 
+            "children": object_to_jstree_data(obj[k], is_nodepath, has_children), 
+            "a_attr": {"data-nodepath":is_nodepath}
+            });
+    }
+    
+    return 0 == data.length? has_children: data;
+}
+
+function jstree_data_onload(node, cb)
+{
+    var spec = get_spec_from_node(node.id);
+    console.log("amonitor spec=" + spec);
+    var metric_path = get_full_metric_path(node.id);
+    
+    var succ_cb = function(data, status, xhr)
+    {
+        if (data['ret']) {
+            cb.call(this, ["节点加载失败，请刷新重试"]);
+            return;
+        }
+        
+        var result = data["result"];
+        var format_data = [];
+        var path_tree_obj = {};
+        var is_nodepath = (data['data_type'] == "nodepath");
+        for (var i in result) {
+            if (typeof(result[i]) == "object") {
+                format_data.push({
+                    "text":result[i]["name"], 
+                    "children":data["children"], 
+                    "a_attr":{"data-spec":"0.0.0.0:5000"}
+                });
+            }
+            else {
+                if (is_nodepath) {
+                    merge_object(path_to_object(result[i]), path_tree_obj);
+                }
+                else {
+                    path_tree_obj[result[i]] = {};
+                }
+            }
+        }
+        
+        // convert path_tree_obj to jstree data
+        $.merge(format_data, object_to_jstree_data(path_tree_obj, is_nodepath, data["children"]));
+        cb.call(this, format_data);
+    };
+    
+    var fail_cb = function(data, status, xhr)
+    {
+        cb.call(this, ["节点加载失败，请刷新重试"]);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb).get_amonitor_info(spec, metric_path);
+}
+
+function load_amon_data_onclick() {
+    $.jstree.defaults.core.themes.icons = false;
+    $.jstree.defaults.core.multiple = false;
+    $('#metric_tree_body').jstree({'core':{'data': jstree_data_onload }});
+}
+
+function dom_ready()
+{
+    ra_api.setup("http://100.81.164.125:5000", 10000);
+    var params = $.parseParams(location.search);
+    if (params['pageno'] != undefined) {
+        $('#pageno').val(params['pageno']);
+    }else {
+        $('#pageno').val(1);
+    }
+
+    if (params['group'] != undefined) {
+        $('#group').val(params['group']);
+    }
+
+
+    bind_events_handler();
+    load_groups(function()
+    {
+        var action = params['a'];
+        var policy_id = params['p'];
+        if ("modify" == action) {
+            if (policy_id == undefined) {
+                alert("缺少策略id");
+                return;
+            }
+            
+            $('#policy_editor').data("policy_id", policy_id);
+            load_policy(policy_id);
+        }
+        else if ("clone" == action) {
+            if (policy_id == undefined) {
+                alert("缺少策略id");
+                return;
+            }
+            
+            load_policy(policy_id);
+        }
+    });
+
+    $('#valid_time').val(new Date().format("yyyy-MM-dd hh:mm:ss"));
+}
+
+$(dom_ready);
+</script>
+</body>
+</html>

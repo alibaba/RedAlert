@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<title>red alert configure center</title>
+<link href="bootstrap.min.css" rel="stylesheet">
+<link href="jquery-ui.min.css" rel="stylesheet">
+<style>
+.toggle_display {
+    display:none;
+}
+
+.main {
+    top: 80px;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header"><span class="navbar-brand">RedAlert配置中心</span></div>
+    <div>
+    <ul class="nav navbar-nav">
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看/修改告警策略"><a href="index.html">策略配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="暂时屏蔽一些告警"><a href="shield.html">屏蔽配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="新增DataSource,RedAlert"><a href="misc.html">杂项配置</a></li>
+    <li class="active ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看配置diff"><a href="deploy.html">配置DIFF</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="发布/回滚配置"><a href="admin.html">控制台</a></li>
+    </ul>
+    <div id="user_container">
+
+    <p id="user_display" class="navbar-text navbar-right toggle_display">当前用户：<span id="user_name_display"><span></p>
+    </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+      <div class="col-md-offset-10 col-md-2">
+      <button id="deploy_config" class="btn btn-primary btn-lg">发布配置</button>
+      </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+          <h1>Diff Policies</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="diff_policy_tbl" class="table table-striped">
+              <thead>
+                <tr>
+                  <!-- <th><a id="select_all" href="javascript:void(0);">全选</a>/<a id="unselect_all" href="javascript:void(0);">取消</a></th> -->
+                  <th>#</th>
+                  <th>指标全名</th>
+                  <th>触发类型</th>
+                  <th>发布状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+          <h1>Diff Shield</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="diff_shield_tbl" class="table table-striped">
+              <thead>
+                <tr>
+                  <!-- <th><a id="select_all" href="javascript:void(0);">全选</a>/<a id="unselect_all" href="javascript:void(0);">取消</a></th> -->
+                  <th>#</th>
+                  <th>屏蔽告警组</th>
+                  <th>屏蔽指标</th>
+                  <th>屏蔽机器</th>
+                  <th>截至时间</th>
+                  <th>发布状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+          <h1>Diff DataSource</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="diff_amonitor_tbl" class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>DataSource地址</th>
+                  <th>别名</th>
+		  <th>FetcherType</th>
+		  <th>Option</th>
+                  <th>发布状态</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+              <tfoot>
+              </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Diff RedAlert</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+              <table id="diff_ra_tbl" class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>服务ID</th>
+                    <th>ra地址</th>
+                    <th>别名</th>
+                    <th>权重</th>
+                    <th>发布状态</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                <tfoot>
+                </tfoot>
+              </table>
+        </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Diff 趋势参数</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <table id="diff_trend_tbl" class="table table-striped">
+          <thead>
+            <tr>
+              <th>参数名</th>
+              <th>参数值</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+
+</div>
+
+<!-- view Modal -->
+<div class="modal fade" id="policy_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div id="policy_content"></div>
+        <div class="modal-footer"></div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /view modal -->
+
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="ra_api.js"></script>
+<script src="ra_conf.js"></script>
+<script src="ra_dom.js"></script>
+<script>
+var g_current_policies = [];
+
+///////////////////////////////////
+function get_type_name(t)
+{
+    type_dict = {
+        "threshold": "阈值",
+        "trend": "趋势",
+        "availability": "可用性",
+        "singularity": "奇异点",
+        "cycle": "周期",
+    };
+    
+    if (type_dict.hasOwnProperty(t)) {
+        return type_dict[t];
+    }
+    else {
+        return "未知";
+    }
+}
+
+function create_trend_html(p)
+{
+    return '<tr>'
+        + '<td>'+p['key']+'</td>'
+        + '<td>'+p['value']+'</td>'
+        // + '<td><div class="btn-group">'
+        // + '<button class="btn btn-danger btn-xs" onclick="cancel_item('+p['id']+', \'pair\')">撤销</button>'
+        // + '</div>'
+        // + '</td>'
+        + '</tr>';
+}
+
+function create_ra_html(ra)
+{
+    if(ra['opType'] == undefined) {
+        ra['opType'] = '已发布';
+    }
+
+    return '<tr>'
+        + '<td><span class="ra_id">'+ra['id']+'</span><input type="hidden" class="id" value="'+ra['id']+'"></td>'
+        + '<td>'+ra['address']+'</td>'
+        + '<td>'+ra['service']+'</td>'
+        + '<td>'+ra['weight']+'</td>'
+        + '<td>'+ra['opType']+'</td>'
+        + '<td>'
+        + '<div class="btn-group">'
+        + '<button class="btn btn-danger btn-xs remove_ra" onclick="cancel_item('+ra['id']+', \'redAlert\')">撤销</button>'
+        + '</div>'
+        + '</td>'
+        + '</tr>';
+}
+
+function create_policy_html(p)
+{
+    var resetHtml = '<button disabled="disabled" class="btn btn-danger btn-xs" type="button">撤销</button>';
+    var group = p['group'];
+
+    if(p['opType'] == undefined) {
+        p['opType'] = "已发布";
+    }else {
+        resetHtml = '<button class="btn btn-danger btn-xs" onclick="cancel_policy('+p['id']+')">撤销</button>';
+    }
+
+    var record = '<tr>'
+        + '<td>'+p['id'] 
+        + '</td><td>'+p['metric']+'</td><td>' + get_type_name(p['type']) + '</td><td>'+ p['opType'] +'</td>'
+        + '<td>'
+        + '<div class="btn-group">'
+        + '<button class="btn btn-primary btn-xs view_policy" data-policyid="'+p['id']+'">查看</button>'
+        + resetHtml
+        + '</div>'
+        + '</td>'
+        + '</tr>';
+
+    return record;
+}
+
+function create_shield_html(p)
+{
+    if(p['opType'] == undefined) {
+        p['opType'] = '已发布';
+    }
+
+    return '<tr>'
+            // + '<td><input class="shield_checkbox" type="checkbox" value="'+p['id']+'"></td>'
+            + '<td>'+p['id']+'</td><td>'+p['group']+'</td><td>'
+            + p['metric']+'</td><td>'+p['host']+'</td><td>'+p['endTime']+'</td><td>' + p['opType'] + '</td>'
+            + '<td>'
+            + '<div class="btn-group">'
+            + '<button class="btn btn-danger btn-xs" onclick="cancel_item('+p['id']+', \'shield\')">撤销</button>'
+            + '</div>'
+            + '</td>'
+            + '</tr>';
+}
+
+function create_amonitor_html(amonitor)
+{
+    if(amonitor['opType'] == undefined) {
+        amonitor['opType'] = '已发布';
+    }
+
+    return '<tr>'
+        + '<td>'+amonitor['id']+'<input type="hidden" class="id" value="'+amonitor['id']+'"></td>'
+        + '<td>'+amonitor['address']+'</td>'
+        + '<td>'+amonitor['service']+'</td>'
+        + '<td>'+amonitor['fetcherType']+'</td>'
+        + '<td>'+amonitor['optionString']+'</td>'
+        + '<td>'+amonitor['opType']+'</td>'
+        + '<td>'
+        + '<div class="btn-group">'
+        + '<button class="btn btn-danger btn-xs" onclick="cancel_item('+amonitor['id']+', \'dataSource\')">撤销</button>'
+        + '</div>'
+        + '</td>'
+        + '</tr>';
+}
+
+function render_diff_policies(p)
+{
+    var tbody = $('#diff_policy_tbl tbody');
+    var html = '';
+
+    for (var k in p) {
+        var policy = p[k];
+        html += create_policy_html(policy);
+    }
+    
+    tbody.html(html);
+}
+
+function render_diff_shields(s)
+{
+    var tbody = $('#diff_shield_tbl tbody');
+    var html = '';
+
+    for (var k in s) {
+        var shield = s[k];
+        html += create_shield_html(shield);
+    }
+    
+    tbody.html(html);
+}
+
+function render_diff_amonitors(amonitors)
+{
+    var tbody = $('#diff_amonitor_tbl tbody');
+    var html = '';
+
+    for (var k in amonitors) {
+        var amonitor = amonitors[k];
+        html += create_amonitor_html(amonitor);
+    }
+
+    tbody.html(html);
+}
+
+function render_diff_ras(ras)
+{
+    var tbody = $('#diff_ra_tbl tbody');
+    var html = '';
+
+    for (var k in ras) {
+        html += create_ra_html(ras[k]);
+    }
+    
+    tbody.html(html);
+}
+
+function render_diff_trends(p)
+{
+    var tbody = $('#diff_trend_tbl tbody');
+    var html = '';
+
+    for (var k in p) {
+        html += create_trend_html(p[k]);
+    }
+    
+    tbody.html(html);
+}
+
+
+function load_diff()
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("load diff error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+
+        g_current_policies = data['items']['Policy'];
+
+        render_diff_policies(data['items']['Policy']);
+        render_diff_shields(data['items']['Shield']);
+        render_diff_amonitors(data['items']['DataSource']);
+        render_diff_ras(data['items']['RedAlert']);
+        render_diff_trends(data['items']['Pair']);
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("error: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .get_diff();
+}
+
+
+function cancel_policy(id)
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("cancel modify policy error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+
+        alert('撤销策略修改成功');
+        load_diff();
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        alert("撤销修改失败，error: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .cancel_policy(id);
+
+}
+
+function cancel_item(id, type)
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("cancel modify error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+
+        alert('撤销修改成功');
+        load_diff();
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        alert("撤销修改失败，error: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .cancel_item(id, type);
+}
+
+function format_deploy_info(data)
+{
+    var info = '';
+
+    var policies = []
+    for(var k in data['Policy'])
+    {
+        policies.push(data['Policy'][k]['id']);
+    }
+
+    var shields = []
+    for(var k in data['Shield'])
+    {
+        shields.push(data['Shield'][k]['id']);
+    }
+
+    var amonitors = []
+    for(var k in data['Amonitor'])
+    {
+        amonitors.push(data['Amonitor'][k]['id']);
+    }
+
+    var ras = []
+    for(var k in data['RedAlert'])
+    {
+        ras.push(data['RedAlert'][k]['id']);
+    }
+
+    var pairs = []
+    for(var k in data['Pair'])
+    {
+        pairs.push(data['Pair'][k]['key']);
+    }
+
+    if (policies.length > 0) {
+        info += "policy[" + policies.join(',') + "], ";
+    }
+
+    if (shields.length > 0) {
+        info += "shield[" + shields.join(',') + "], ";
+    }
+
+    if (amonitors.length > 0) {
+        info += "amonitor[" + amonitors.join(',') + "], ";
+    }
+
+    if (ras.length > 0) {
+        info += "redAlert[" + ras.join(',') + "], ";
+    }
+
+    if (pairs.length > 0) {
+        info += "趋势参数[" + pairs.join(',') + "]";
+    }
+
+    if (info.length > 0) {
+        return "以下修改因为冲突被撤销：" + info;
+    }else {
+        return '';
+    }
+    
+}
+
+function deploy_config_onclick(evt)
+{
+    evt.preventDefault();
+    var succ_cb = function(data, status, xhr)
+    {
+        if (ra_api.alert_on_errno(data, "发布RedAlert配置失败")) 
+        {
+            return;
+        }
+        
+        deployInfo = format_deploy_info(data['items']);
+        alert("发布配置成功!" + deployInfo);
+        location.href = "admin.html";
+    };
+    
+    var fail_cb = function(data, status, xhr)
+    {
+        alert("发布RedAlert配置失败, status:" + status);
+    }
+
+    var selfbtn = $(this);
+    var complete_cb = function(status, xhr)
+    {
+        selfbtn.button('reset');
+    };
+
+    selfbtn.button('loading');
+
+    if (confirm("确认要发布配置到线上环境？")) {
+        ra_api.set_callbacks(succ_cb, fail_cb, complete_cb).deploy_config();
+    }
+    else {
+        selfbtn.button('reset');
+    }
+}
+
+function create_policy_view(p)
+{
+    var key_dict = {
+        "type": "告警类型",
+        "group": "所属策略组",
+        "metric": "指标名",
+        "checkType": "检查类型",
+        "alarmGroup": "告警接收组",
+        "alarmLevel": "告警方式",
+        "fetchInterval_s": "拉取间隔(秒)",
+        "minAlarmInterval_s": "最短告警间隔(秒)",
+        "upBound": "阈值上限", 
+        "downBound": "阈值下限",
+        "ascDiffRatio": "突增比例阈值",
+        "ascDiffValue": "突增差异阈值",
+        "descDiffRatio": "突降比例阈值",
+        "descDiffValue": "突降差异阈值",
+        "maxDiffRatio": "变化比例阈值",
+        "minDiffValue": "变化差异阈值",
+        "minHostNum": "最少可用机器数",
+        "cycleTime_s": "对比周期时长(秒)",
+        "cycleCount": "对比周期的个数",
+        "validTime": "生效时间"
+    };
+    
+    var html = '';
+    for (var k in key_dict) {
+        if (p.hasOwnProperty(k)) {
+            html += "<dl class='dl-horizontal'><dt>" + key_dict[k] + "</dt><dd>" + p[k] + "</dd></dl>";
+        }
+    }
+
+    if (p.hasOwnProperty('policyFilter')) {
+        var count = 0;
+        for (var i in p['policyFilter']) {
+            var t = p['policyFilter'][i];
+            if (count==0) {
+                html += "<dl class='dl-horizontal'><dt>过滤项</dt><dd>" + t['metric'] + '@' + t['host'] + "</dd></dl>";
+                count = 1;
+            }else {
+                html += "<dl class='dl-horizontal'><dt></dt><dd>" + t['metric'] + '@' + t['host'] + "</dd></dl>";
+            }
+        }
+    }
+    
+    return html;
+}
+
+function get_current_policy(id)
+{
+    for (var i in g_current_policies) {
+        var p = g_current_policies[i];
+        if (id == p['id']) {
+            return p;
+        }
+    }
+    
+    return null;
+}
+
+function view_policy_onclick()
+{
+    var policy = get_current_policy($(this).data('policyid'));
+
+    if (null == policy) {
+        alert("获取策略数据异常，请刷新再试");
+        return;
+    }
+    $('#policy_content').html(create_policy_view(policy));
+    $('#policy_modal').modal('show');
+}
+
+function bind_events_handler()
+{
+    $('#deploy_config').click(deploy_config_onclick);
+    $('#diff_policy_tbl').delegate('button.view_policy', 'click', view_policy_onclick);
+}
+
+function dom_ready()
+{
+    bind_events_handler();
+    ra_api.setup(ra_conf['api_url'], ra_conf['admin_timeout']);
+    //ra_api.setup("http://100.81.164.125:5000", 10000);
+    load_diff();
+}
+
+$(dom_ready());
+
+</script>
+
+</body>
+</html>

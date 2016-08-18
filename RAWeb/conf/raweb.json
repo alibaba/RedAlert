@@ -1,0 +1,391 @@
+{
+    "redAlert": {
+        "address": {
+            "type": "regex",
+            "val": "^.*\\:\\d{1,5}$"
+        },
+        "weight": {
+            "type": "regex",
+            "val": "^\\d{4}\\d*$"
+        },
+        "service": {
+            "type": "string"
+        }
+    },
+    "shield": {
+        "metric": {
+            "type": "string"
+        },
+        "endTime": {
+            "type": "datetime",
+            "val": "%Y-%m-%d %H:%M:%S"
+        },
+        "group": {
+            "type": "string"
+        },
+        "host": {
+            "type": "string"
+        }
+    },
+    "trend": {
+        "group": {
+            "type": "string"
+        },
+        "validTime": {
+            "type": "string"
+        },
+        "alarmGroup": {
+            "type": "string"
+        },
+        "fetchInterval_s": {
+            "type": "enum",
+            "valuelist": [
+                15,
+                60,
+		120,
+		180,
+                300,
+		600,
+                900,
+                3600
+            ]
+        },
+        "effectiveTime": {
+            "noNeed": "",
+            "type": "func",
+            "funcname": "validate_effectiveTime"
+        },
+        "policyFilter": {
+	    "noNeed": "",
+            "type" : "func",
+            "funcname": "validate_policyFilter"
+	},	
+        "metric": {
+            "type": "string"
+        },
+        "checkType": {
+            "type": "string"
+        },
+        "alarmLevel": {
+            "type": "string"
+        },
+        "maxDiffRatio": {
+            "type": "Decimal",
+            "compatibleKeys": ["ascDiffRatio", "descDiffRatio"],
+            "noNeed":""
+        },
+        "minDiffValue": {
+            "type": "Decimal",
+            "compatibleKeys": ["ascDiffValue", "descDiffValue"],
+            "noNeed":""
+        },
+        "ascDiffRatio": {
+            "type": "Decimal"
+        },
+        "ascDiffValue": {
+            "type": "Decimal"
+        }, 
+        "descDiffRatio": {
+            "type": "Decimal"
+        }, 
+        "descDiffValue": {
+            "type": "Decimal"
+        },
+        "minAlarmInterval_s": {
+            "type": "func",
+            "kvmap": {
+                "fetchInterval_s": "@fetchInterval_s"
+            },
+            "funcname": "validate_minAlarmInterval_s"
+        },
+        "id": {
+            "type": "int"
+        }
+    },
+    "threshold": {
+        "upBound": {
+            "type": "Decimal"
+        },
+        "validTime": {
+            "type": "string"
+        },
+        "group": {
+            "type": "string"
+        },
+        "alarmGroup": {
+            "type": "string"
+        },
+        "fetchInterval_s": {
+            "type": "enum",
+            "valuelist": [
+                15,
+                60,
+		120,
+		180,
+		300,
+		600,
+                900,
+                3600
+            ]
+        },
+        "effectiveTime": {
+            "noNeed": "",
+            "type": "func",
+            "funcname": "validate_effectiveTime"
+        },
+        "policyFilter": {
+	    "noNeed": "",
+            "type" : "func",
+            "funcname": "validate_policyFilter"
+	},	
+        "metric": {
+            "type": "string"
+        },
+        "checkType": {
+            "type": "string"
+        },
+        "alarmLevel": {
+            "type": "string"
+        },
+        "minAlarmInterval_s": {
+            "type": "func",
+            "kvmap": {
+                "fetchInterval_s": "@fetchInterval_s"
+            },
+            "funcname": "validate_minAlarmInterval_s"
+        },
+        "downBound": {
+            "type": "Decimal"
+        },
+        "id": {
+            "type": "int"
+        }
+    },
+    "dataSource": {
+        "address": {
+            "type": "regex",
+            "val": "^.*\\:\\d{1,5}$"
+        },
+        "service": {
+            "type": "string"
+        },
+	"fetcherType":{
+	    "type": "string"
+	},
+	"optionString":{
+	    "type": "string"
+	}
+    },
+    "singularity": {
+        "group": {
+            "type": "string"
+        },
+        "alarmGroup": {
+            "type": "string"
+        },
+        "validTime": {
+            "type": "string"
+        },
+        "fetchInterval_s": {
+            "type": "enum",
+            "valuelist": [
+                15,
+                60,
+		120,
+		180,
+		300,
+		600,
+                900,
+                3600
+            ]
+        },
+        "effectiveTime": {
+            "noNeed": "",
+            "type": "func",
+            "funcname": "validate_effectiveTime"
+        },
+        "policyFilter": {
+	    "noNeed": "",
+            "type" : "func",
+            "funcname": "validate_policyFilter"
+	},	
+        "metric": {
+            "type": "string"
+        },
+        "checkType": {
+            "type": "string"
+        },
+        "alarmLevel": {
+            "type": "string"
+        },
+        "maxDiffRatio": {
+            "type": "Decimal",
+            "compatibleKeys": ["ascDiffRatio", "descDiffRatio"],
+            "noNeed":""
+        },
+        "minDiffValue": {
+            "type": "Decimal",
+            "compatibleKeys": ["ascDiffValue", "descDiffValue"],
+            "noNeed":""
+        },
+        "ascDiffRatio": {
+            "type": "Decimal"
+        },
+        "ascDiffValue": {
+            "type": "Decimal"
+        }, 
+        "descDiffRatio": {
+            "type": "Decimal"
+        }, 
+        "descDiffValue": {
+            "type": "Decimal"
+        },
+        "minAlarmInterval_s": {
+            "type": "func",
+            "kvmap": {
+                "fetchInterval_s": "@fetchInterval_s"
+            },
+            "funcname": "validate_minAlarmInterval_s"
+        },
+        "id": {
+            "type": "int"
+        }
+    },
+    "availability": {
+        "group": {
+            "type": "string"
+        },
+        "validTime": {
+            "type": "string"
+        },
+        "alarmGroup": {
+            "type": "string"
+        },
+        "fetchInterval_s": {
+            "type": "enum",
+            "valuelist": [
+                15,
+                60,
+		120,
+		180,
+		300,
+		600,
+                900,
+                3600
+            ]
+        },
+        "effectiveTime": {
+            "noNeed": "",
+            "type": "func",
+            "funcname": "validate_effectiveTime"
+        },
+        "policyFilter": {
+	    "noNeed": "",
+            "type" : "func",
+            "funcname": "validate_policyFilter"
+	},	
+        "metric": {
+            "type": "string"
+        },
+        "checkType": {
+            "type": "string"
+        },
+        "alarmLevel": {
+            "type": "string"
+        },
+        "minHostNum": {
+            "type": "int"
+        },
+        "minAlarmInterval_s": {
+            "type": "func",
+            "kvmap": {
+                "fetchInterval_s": "@fetchInterval_s"
+            },
+            "funcname": "validate_minAlarmInterval_s"
+        },
+        "id": {
+            "type": "int"
+        }
+    },
+    "cycle": {
+        "group": {
+            "type": "string"
+        },
+        "validTime": {
+            "type": "string"
+        },
+        "alarmGroup": {
+            "type": "string"
+        },
+        "fetchInterval_s": {
+            "type": "enum",
+            "valuelist": [
+                15,
+                60,
+		120,
+		180,
+		300,
+		600,
+                900,
+                3600
+            ]
+        },
+        "effectiveTime": {
+            "noNeed": "",
+            "type": "func",
+            "funcname": "validate_effectiveTime"
+        },
+        "policyFilter": {
+	    "noNeed": "",
+	    "type" : "func",
+	    "funcname": "validate_policyFilter"
+	},
+        "metric": {
+            "type": "string"
+        },
+        "checkType": {
+            "type": "string"
+        },
+        "alarmLevel": {
+            "type": "string"
+        },
+        "maxDiffRatio": {
+            "type": "Decimal",
+            "compatibleKeys": ["ascDiffRatio", "descDiffRatio"],
+            "noNeed":""
+        },
+        "minDiffValue": {
+            "type": "Decimal",
+            "compatibleKeys": ["ascDiffValue", "descDiffValue"],
+            "noNeed":""
+        },
+        "ascDiffRatio": {
+            "type": "Decimal"
+        },
+        "ascDiffValue": {
+            "type": "Decimal"
+        }, 
+        "descDiffRatio": {
+            "type": "Decimal"
+        }, 
+        "descDiffValue": {
+            "type": "Decimal"
+        },
+        "minAlarmInterval_s": {
+            "type": "func",
+            "kvmap": {
+                "fetchInterval_s": "@fetchInterval_s"
+            },
+            "funcname": "validate_minAlarmInterval_s"
+        },
+        "id": {
+            "type": "int"
+        }, 
+        "cycleTime_s": {
+            "type": "int"
+        },
+        "cycleCount": {
+            "type": "int"
+        }
+    }
+}

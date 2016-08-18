@@ -1,0 +1,14 @@
+Listen 100.82.23.31:5011
+<VirtualHost 100.82.23.31:5011>
+	     ServerName www.raweb.com
+	     DocumentRoot /var/www/html/red_alert_web
+	     WSGIDaemonProcess red_alert_web python-path=/usr/ali/lib/python2.5/site-packages/:/var/www/html/red_alert_web
+	     WSGIScriptAlias / /var/www/html/red_alert_web/raweb/raweb.wsgi process-group=red_alert_web application-group=%{GLOBAL}
+	     #WSGISocketPrefix /var/run/wsgi_red_alert_web
+	     CustomLog /var/log/httpd/raweb_access.log common
+	     ErrorLog /var/log/httpd/raweb_error.log
+	     <Directory /var/www/html/red_alert_web>
+   	      		Order allow,deny
+    	      		Allow from all
+    	     </Directory>
+</VirtualHost>

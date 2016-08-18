@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<title>屏蔽项设置</title>
+<link href="bootstrap.min.css" rel="stylesheet">
+<link href="bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<style>
+.toggle_display {
+    display:none;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header"><span class="navbar-brand">RedAlert配置中心</span></div>
+    <div>
+    <ul class="nav navbar-nav">
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看/修改告警策略"><a href="index.html">策略配置</a></li>
+    <li class="active ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="暂时屏蔽一些告警"><a href="shield.html">屏蔽配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="新增DataSource,RedAlert"><a href="misc.html">杂项配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看配置diff"><a href="deploy.html">配置DIFF</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="发布/回滚配置"><a href="admin.html">控制台</a></li>
+    </ul>
+    <div id="user_container">
+    <!-- <form class="navbar-form navbar-right"> -->
+    <!-- <div id="sign_in_form_group" class="form-group toggle_display"> -->
+    <!-- <input id="user_name" type="text" class="form-control" placeholder="请输入域账号名"> -->
+    <!-- </div> -->
+    <!-- <button id="sign_in" class="btn btn-primary toggle_display">登入</button> -->
+    <!-- <\!--<button id="acquire_lock" class="btn btn-warning">开始修改</button>-\-> -->
+    <!-- <button id="sign_out" class="btn btn-default toggle_display">登出</button> -->
+    <!-- </form> -->
+    <p id="user_display" class="navbar-text navbar-right toggle_display">当前用户：<span id="user_name_display"><span></p>
+    </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+            <table id="shield_tbl" class="table table-striped">
+            <thead>
+                <tr>
+                    <th><a id="select_all" href="javascript:void(0);">全选</a>/<a id="unselect_all" href="javascript:void(0);">取消</a></th>
+                    <th>#</th>
+                    <th>屏蔽策略组</th>
+                    <th>屏蔽指标</th>
+                    <th>屏蔽机器</th>
+                    <th>截至时间</th>
+                    <th class="col-md-1">发布状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><input type="text" id="add_group_name" class="form-control"></td>
+                    <td><input type="text" id="add_metric_name" class="form-control"></td>
+                    <td><input type="text" id="add_host_list" class="form-control" placeholder="*"></td>
+                    <td><input type="text" id="add_end_time" class="form-control" placeholder="YYYY-mm-dd HH:MM:SS"></td>
+                    <td></td>
+                    <td><button class="btn btn-xs btn-primary" id="add_shield">新增</button></td>
+                </tr>
+            </tfoot>
+            </table>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                <button id="delete_selected" class="btn btn-danger">删除屏蔽</button>
+                </div>
+                <div class="col-md-9">
+                <ul id="shield_pagination" class="pagination pagination-sm pull-right">
+                    <li id="pagination_prev"><a href="javascript:void(0);">&laquo;</a></li>
+                    <li id="pagination_next"><a href="javascript:void(0);">&raquo;</a></li>
+                </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script src="ra_api.js"></script>
+<script src="ra_conf.js"></script>
+<script src="ra_dom.js"></script>
+<script>
+//////////////////////////////////////////
+// const
+var PAGE_SIZE = 20;
+// var
+var g_page_no = 1;
+var g_max_page = 1;
+var g_shield_num = 0;
+//////////////////////////////////////////
+function _ajax_fail_callback(msg_prefix)
+{
+    return function(data, status, xhr)
+    {
+        alert(msg_prefix+". ajax_status:"+status);
+    };
+}
+
+function get_max_page(num, page_size)
+{
+    var m = Math.ceil(num / page_size);
+    return m<1? 1: m;
+}
+
+function pagination_prev_onclick()
+{
+    if (g_page_no <= 1) {
+        g_page_no = 1;
+        return false;
+    }
+    
+    --g_page_no;
+    load_shields(g_page_no, PAGE_SIZE);
+    return true;
+}
+
+function pagination_next_onclick()
+{
+    if (g_page_no >= g_max_page) {
+        g_page_no = g_max_page;
+        return false;
+    }
+    
+    ++g_page_no;
+    load_shields(g_page_no, PAGE_SIZE);
+    return true;
+}
+
+function page_no_onclick()
+{
+    var pno = parseInt($(this).text());
+    load_shields(pno, PAGE_SIZE);
+}
+
+function create_shield_html(p)
+{
+    if(p['opType'] == undefined) {
+        p['opType'] = '已发布';
+    }
+
+    return '<tr>'
+            + '<td><input class="shield_checkbox" type="checkbox" value="'+p['id']+'"></td>'
+            + '<td>'+p['id']+'</td><td>'+p['group']+'</td><td>'
+            + p['metric']+'</td><td>'+p['host']+'</td><td>'+p['endTime']+'</td><td>' + p['opType'] + '</td>'
+            + '<td>'
+            + '<div class="btn-group">'
+            //+ '<button class="btn btn-default btn-xs edit_shield">修改</button>'
+            + '<button class="btn btn-danger btn-xs remove_shield">删除</button>'
+            + '</div>'
+            + '</td>'
+            + '</tr>';
+}
+
+function replace_editable(ctrl, cls)
+{
+    var t = ctrl.text();
+    ctrl.data('original', t);
+    ctrl.html("<input type='text' value='"+t+"' class='"+cls+"'>");
+}
+
+function replace_uneditable(ctrl)
+{
+    var t = ctrl.data('original');
+    ctrl.text(t);
+}
+
+function render_pagination(page_no, total_page_num)
+{
+    var pp = $('#shield_pagination');
+    pp.find('li.page_no').remove();
+    
+    var p = $('#pagination_next');
+    html = '';
+    
+    var half_show_page_num = 5;
+    var start_page_no = 1;
+    if (page_no > half_show_page_num) {
+        start_page_no = page_no - half_show_page_num;
+    }
+    for (var i = 0; i < half_show_page_num * 2 && i < total_page_num; ++i) {
+        var pn = i + start_page_no;
+        if (pn == page_no) {
+            cls = "page_no active";
+        }
+        else {
+            cls = "page_no";
+        }
+        
+        html += "<li class='"+cls+"'><a href='javascript:void(0);'>"+pn+"</a></li>";
+    }
+    
+    p.before(html);
+}
+
+function render_shields(s)
+{
+    var tbody = $('#shield_tbl tbody');
+    var html = '';
+
+    for (var k in s) {
+        html += create_shield_html(s[k]);
+    }
+    
+    tbody.html(html);
+}
+
+function load_shields(page_no, page_size)
+{
+    var succ_cb = function(data, status, xhr)
+    {
+        if (ra_api.alert_on_errno(data, "加载屏蔽配置失败")) {
+            return;
+        }
+        
+        g_shield_num = data['total_num'];
+        g_page_no = data['page_no'];
+        g_max_page = get_max_page(g_shield_num, PAGE_SIZE);
+        
+        render_pagination(g_page_no, g_max_page);
+        render_shields(data['items']);
+    };
+    
+    var fail_cb = _ajax_fail_callback("加载屏蔽配置失败");
+    ra_api.set_callbacks(succ_cb, fail_cb).get_shield(page_no, page_size);
+}
+
+function select_all_shield_onclick(evt)
+{
+    $('#shield_tbl .shield_checkbox').prop('checked', true);
+    evt.preventDefault();
+}
+
+function unselect_all_shield_onclick(evt)
+{
+    $('#shield_tbl .shield_checkbox').prop('checked', false);
+    evt.preventDefault();
+}
+
+function delete_shield_succ_callback(data, status, xhr)
+{
+    if (ra_api.alert_on_errno(data, "删除屏蔽失败")) {
+        return;
+    }
+    
+    g_shield_num = data['total_num'];
+    g_max_page = get_max_page(g_shield_num, PAGE_SIZE);
+    if (g_page_no > g_max_page) {
+        g_page_no = g_max_page;
+    }
+    
+    load_shields(g_page_no, PAGE_SIZE);
+};
+
+function delete_selected_shields_onclick(evt)
+{
+    var ids = [];
+    $('#shield_tbl .shield_checkbox:checked').each(function() {
+        ids.push($(this).val());
+    });
+    
+    if (ids.length == 0) {
+        alert("尚未选择任何屏蔽配置");
+        return;
+    }
+    
+    if (confirm("确定删除所选的屏蔽配置？")) {
+        var fail_cb = _ajax_fail_callback("删除屏蔽失败");
+        ra_api.set_callbacks(delete_shield_succ_callback, fail_cb)
+            .remove_shield(ids);
+    }
+}
+
+function add_shield_onclick(evt)
+{
+    evt.preventDefault();
+    var succ_cb = function(data, status, xhr)
+    {
+        if (ra_api.alert_on_errno(data, "增加屏蔽配置失败")) {
+            return;
+        }
+        
+        alert("增加屏蔽配置成功");
+        load_shields(g_page_no, PAGE_SIZE);
+        $('#add_group_name').val("");
+        $('#add_metric_name').val("");
+        $('#add_host_list').val("*");
+        $('#add_end_time').val("");
+    };
+    
+    var fail_cb = _ajax_fail_callback("增加屏蔽配置失败");
+    
+    var group_name = $('#add_group_name').val();
+    var metric_name = $('#add_metric_name').val();
+    var host_list = $('#add_host_list').val();
+    if(host_list.length == 0){
+        host_list = '*';
+    }
+    var end_time = $('#add_end_time').val();
+    ra_api.set_callbacks(succ_cb, fail_cb).add_shield(group_name, metric_name, host_list, end_time);
+}
+
+function remove_shield_onclick(evt)
+{
+    if (confirm("确定删除该屏蔽项？")) {
+        var fail_cb = _ajax_fail_callback("删除屏蔽失败");
+        var self = $(this);
+        var tr = self.parents('tr');
+        var id = tr.find('input.shield_checkbox').val();
+        ra_api.set_callbacks(delete_shield_succ_callback, fail_cb).remove_shield([id]);
+    }
+}
+
+function bind_events_handler()
+{
+    $('#add_shield').click(add_shield_onclick);
+    $('#pagination_prev').click(pagination_prev_onclick);
+    $('#pagination_next').click(pagination_next_onclick);
+    $('#shield_tbl').delegate('button.remove_shield', 'click', remove_shield_onclick);
+    $('#shield_pagination').delegate('li.page_no a', 'click', page_no_onclick);
+    $('#select_all').click(select_all_shield_onclick);
+    $('#unselect_all').click(unselect_all_shield_onclick);
+    $('#delete_selected').click(delete_selected_shields_onclick);
+    $('#add_end_time').datetimepicker({
+        'format': 'yyyy-mm-dd hh:ii:ss',
+        'autoclose': true,
+    });
+}
+
+function dom_ready()
+{
+    bind_events_handler();
+    ra_api.setup(ra_conf['api_url'], ra_conf['timeout']);
+    load_shields(1, PAGE_SIZE);
+}
+
+$(dom_ready);
+</script>
+</body>
+</html>

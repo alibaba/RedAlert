@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<title>控制台</title>
+<link href="bootstrap.min.css" rel="stylesheet">
+<style>
+#no_conf_msg {
+    display:none;
+}
+.toggle_display {
+    display:none;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header"><span class="navbar-brand">RedAlert配置中心</span></div>
+    <div>
+    <ul class="nav navbar-nav">
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看/修改告警策略"><a href="index.html">策略配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="暂时屏蔽一些告警"><a href="shield.html">屏蔽配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="新增DataSource,RedAlert"><a href="misc.html">杂项配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看配置diff"><a href="deploy.html">配置DIFF</a></li>
+    <li class="active ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="发布/回滚配置"><a href="admin.html">控制台</a></li>
+    </ul>
+    <div id="user_container">
+    <!-- <form class="navbar-form navbar-right"> -->
+    <!-- <div id="sign_in_form_group" class="form-group toggle_display"> -->
+    <!-- <input id="user_name" type="text" class="form-control" placeholder="请输入域账号名"> -->
+    <!-- </div> -->
+    <!-- <button id="sign_in" class="btn btn-primary toggle_display">登入</button> -->
+    <!-- <\!--<button id="acquire_lock" class="btn btn-warning">开始修改</button>-\-> -->
+    <!-- <button id="sign_out" class="btn btn-default toggle_display">登出</button> -->
+    <!-- </form> -->
+    <p id="user_display" class="navbar-text navbar-right toggle_display">当前用户：<span id="user_name_display"><span></p>
+    </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <h2>说明</h2>
+        <ul>
+            <li>RA服务启动后并不能立即服务，必须先<b>重读当前配置</b>，如果尚未部署任何配置，必须先<i>发布配置</i></li>
+            <li>本系统只会用最大版本号的配置服务，在右侧的<i>选择版本</i>下拉列表可以看到历史版本</li>
+            <li>发布配置后当前版本会加一，在右侧的<i>选择版本</i>可以观察到变化</li>
+            <li>如果发布配置后，右侧的<i>选择版本</i>中没有变化，请点击刷新状态</li>
+            <li>回滚配置实际是把指定版本配置重新发布一次，所以回滚后最大版本号会加一</li>
+            <li>重读当前配置即让全部RA载入最大版本号的配置</li>
+            <li>撤销修改即在配置发布之前撤销修改</li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="btn-group">
+        <button id="get_ra_status" data-loading-text="刷新中" class="btn btn-primary">刷新状态</button>
+        <button id="deploy_config" class="btn btn-warning">发布配置</button>
+        <button id="reload_config" data-loading-text="重读中" class="btn btn-default">重读当前配置</button>
+        <button id="recover_config" data-loading-text="撤销中" class="btn btn-primary">撤销修改</button>
+        </div>
+        
+        <div class="input-group col-md-3 pull-right">
+        <span class="input-group-addon">
+        选择版本<select id="versions_select"></select>
+        </span>
+        <span class="input-group-btn">
+        <button id="reload_ra" class="btn btn-danger">回滚配置</button>
+        </span>
+        </div>
+    </div>
+    <div class="row"><h2>RA服务状态</h2></div>
+    <div id="ra_status" class="row">
+    </div>
+    <div id="no_conf_msg" class="row">
+        <div class="col-md-6 alert alert-warning">配置仓库中没有任何配置，无法获取RA信息。请先发布配置再查询RA状态</div>
+    </div>
+    <div class="row">
+        <pre id="admin_log" class="col-md-6 alert alert-warning"></pre>
+    </div>
+</div>
+
+
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="ra_api.js"></script>
+<script src="ra_conf.js"></script>
+<script src="ra_dom.js"></script>
+<script>
+function _ajax_fail_callback(msg_prefix)
+{
+    return function(data, status, xhr)
+    {
+        $('#admin_log').text("通信异常："+status);
+        alert(msg_prefix+". ajax_status:"+status);
+    };
+}
+
+function before_rsp_arrival()
+{
+    $('#no_conf_msg').hide();
+    $('#admin_log').text("操作执行中，请稍后...");
+}
+
+function get_service_description(serv)
+{
+    if (serv['ErrorMessage'].length > 0) {
+        return '<div class="col-md-2 alert alert-danger"><p>'+serv['Machine']+'</p><p>'+serv['ErrorMessage']+'</p></div>'
+    }
+    else {
+        return '<div class="col-md-2 alert alert-success">'
+            +'<p>'+serv['Machine']+'</p>'
+            +'<p>Pid='+serv['Pid']+'</p></div>';
+    }
+}
+
+function render_services(servs)
+{
+    var html = '';
+    for (var i in servs) {
+        var s = servs[i];
+        html += get_service_description(s);
+    }
+    
+    $('#ra_status').html(html);
+}
+
+function render_versions(versions)
+{
+    var html = '';
+    for (var i in versions) {
+        var v = versions[i];
+        html += '<option value="'+v+'">'+v+'</option>';
+    }
+    
+    $('#versions_select').html(html);
+}
+
+function check_ra_status()
+{
+    var succ_cb = function(data, status, xhr)
+    {
+        if (0 == data['ret']) {
+            render_services(data['machines']);
+            render_versions(data['versions']);
+        }
+    };
+    
+    ra_api.set_callbacks(succ_cb).get_service_status();
+}
+
+function get_ra_status_onclick(evt)
+{
+    evt.preventDefault();
+    before_rsp_arrival();
+    var succ_cb = function(data, status, xhr)
+    {
+        $('#admin_log').text(data['msg']);
+        if (ra_api.alert_on_errno(data, "查询RedAlert服务状态失败")) {
+            if (ra_api.NO_CONFIG == data['ret']) {
+                $('#no_conf_msg').show();
+            }
+            
+            return;
+        }
+        
+        render_services(data['machines']);
+        render_versions(data['versions']);
+    };
+    
+    var fail_cb = _ajax_fail_callback("查询RedAlert服务状态失败");
+    var selfbtn = $(this);
+    var complete_cb = function(status, xhr)
+    {
+        selfbtn.button('reset');
+    };
+    selfbtn.button('loading');
+    ra_api.set_callbacks(succ_cb, fail_cb, complete_cb).get_service_status();
+}
+
+function reload_ra_onclick(evt)
+{
+    evt.preventDefault();
+    before_rsp_arrival();
+    var succ_cb = function(data, status, xhr)
+    {
+        $('#admin_log').text(data['msg']);
+        if (ra_api.alert_on_errno(data, "回滚RedAlert配置失败")) {
+            return;
+        }
+        
+        alert("回滚RedAlert配置成功");
+    };
+    
+    var fail_cb = _ajax_fail_callback("回滚RedAlert配置失败");
+    var ver = $('#versions_select').val();
+    if (null == ver) {
+        alert("尚未选择版本！");
+        return;
+    }
+    
+    if (!$.isNumeric(ver)) {
+        alert("非法的版本号："+ver+"。无法回滚！");
+        return;
+    }
+    
+    var selfbtn = $(this);
+    var complete_cb = function(status, xhr)
+    {
+        selfbtn.button('reset');
+    };
+    selfbtn.button('loading');
+    if (confirm("确认要回滚到版本"+ver+"？")) {
+        ra_api.set_callbacks(succ_cb, fail_cb, complete_cb).revert_service(ver);
+    }
+    else {
+        selfbtn.button('reset');
+    }
+}
+
+function deploy_config_onclick(evt)
+{
+    location.href = "deploy.html";
+}
+
+function reload_config_onclick(evt)
+{
+    evt.preventDefault();
+    before_rsp_arrival();
+    var succ_cb = function(data, status, xhr)
+    {
+        $('#admin_log').text(data['msg']);
+        if (ra_api.alert_on_errno(data, "重读RedAlert配置失败")) {
+            return;
+        }
+        
+        alert("重读配置成功!");
+    };
+    
+    var fail_cb = _ajax_fail_callback("重读RedAlert配置失败");
+    var selfbtn = $(this);
+    var complete_cb = function(status, xhr)
+    {
+        selfbtn.button('reset');
+    };
+    selfbtn.button('loading');
+    
+    if (confirm("确认要重读配置？")) {
+        ra_api.set_callbacks(succ_cb, fail_cb, complete_cb).reload_config();
+    }
+    else {
+        selfbtn.button('reset');
+    }
+}
+
+function recover_config_onclick(evt)
+{
+    evt.preventDefault();
+    before_rsp_arrival();
+    var succ_cb = function(data, status, xhr)
+    {
+        $('#admin_log').text(data['msg']);
+        if (ra_api.alert_on_errno(data, "撤销修改失败")) {
+            return;
+        }
+        
+        alert("撤销修改成功!");
+    };
+    
+    var fail_cb = _ajax_fail_callback("撤销修改失败");
+    var selfbtn = $(this);
+    var complete_cb = function(status, xhr)
+    {
+        selfbtn.button('reset');
+    };
+    selfbtn.button('loading');
+    
+    if (confirm("确认要撤销修改？")) {
+        ra_api.set_callbacks(succ_cb, fail_cb, complete_cb).recover_config();
+    }
+    else {
+        selfbtn.button('reset');
+    }  
+}
+
+function bind_events_handler()
+{
+    $('#get_ra_status').click(get_ra_status_onclick);
+    $('#reload_ra').click(reload_ra_onclick);
+    $('#deploy_config').click(deploy_config_onclick);
+    $('#reload_config').click(reload_config_onclick);
+    $('#recover_config').click(recover_config_onclick);
+}
+
+function dom_ready()
+{
+    bind_events_handler();
+    ra_api.setup(ra_conf['api_url'], ra_conf['admin_timeout']);
+    //ra_api.setup("http://100.81.164.125:5000", 10000)
+    $('#get_ra_status').click();
+    setInterval(check_ra_status, 30000);
+}
+
+$(dom_ready);
+</script>
+</body>
+</html>

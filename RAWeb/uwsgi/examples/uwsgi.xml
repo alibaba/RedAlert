@@ -1,0 +1,16 @@
+<uwsgi>
+	<module>rtmpt</module>
+	<socket mode="dev">:3031</socket>
+	<socket mode="pippo">:3031</socket>
+
+
+	<routing base="rtmpt" modifier1="0" modifier2="0">
+		<route method="GET" pattern="^/pippo/(\d+)$" requires="REMOTE_USER">homepage</route>
+		<route method="GET|POST" pattern="^/ciccia/(\d+)/(\w+)$">view1</route>
+		<route action="wsgi" pattern="^/amf">amfapp</route>
+		<route pattern="^/open/">rtmpt_open</route>
+		<route pattern="^/idle/(\d+)/(\d+)$">rtmpt_idle</route>
+		<route pattern="^/send/(\d+)/(\d+)$">rtmpt_send</route>
+		<route pattern="^/$">index</route>
+	</routing>
+</uwsgi>

@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<title>red alert configure center</title>
+<link href="bootstrap.min.css" rel="stylesheet">
+<link href="jquery-ui.min.css" rel="stylesheet">
+<link href="button-min.css" rel="stylesheet">
+
+<style>
+.toggle_display {
+    display:none;
+}
+.sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+}
+.main {
+    top: 80px;
+    padding-right: 40px;
+    padding-left: 40px;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="navbar-header"><span class="navbar-brand">RedAlert配置中心</span></div>
+    <div>
+    <ul class="nav navbar-nav">
+    <li class="active ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看/修改告警策略"><a href="index.html">策略配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="暂时屏蔽一些告警"><a href="shield.html">屏蔽配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="新增DataSource,RedAlert"><a href="misc.html">杂项配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看配置diff"><a href="deploy.html">配置DIFF</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="发布/回滚配置"><a href="admin.html">控制台</a></li>
+    </ul>
+    <div id="user_container">
+    <!-- <form class="navbar-form navbar-right"> -->
+    <!-- <div id="sign_in_form_group" class="form-group toggle_display"> -->
+    <!-- <input id="user_name" type="text" class="form-control" placeholder="请输入域账号名"> -->
+    <!-- </div> -->
+    <!-- <button id="sign_in" class="btn btn-primary toggle_display">登入</button> -->
+    <!-- <\!--<button id="acquire_lock" class="btn btn-warning">开始修改</button>-\-> -->
+    <!-- <button id="sign_out" class="btn btn-default toggle_display">登出</button> -->
+    <!-- </form> -->
+    <p id="user_display" class="navbar-text navbar-right toggle_display">当前用户：<span id="user_name_display"><span></p>
+    </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar" >
+            <input type="hidden" id="active_group" value="">
+            <ul id="select_all_groups"class="nav nav-pills nav-stacked">
+                <li id="all_groups" class="active"><a href="javascript:void(0);">全部策略组</a><input type="hidden" value=""></li>
+            </ul>
+            <small>点击策略组名可以快速过滤</small>
+            <input id="search_group" class="form-control" placeholder="搜索策略组">
+            <ul id="policy_groups" class="nav nav-pills nav-stacked">
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="row">
+                <div class="col-md-2">
+                <a class="btn btn-primary" id="update_group">编辑组名</a>
+                </div>
+                <div class="col-md-2">
+                <a class="btn btn-primary" href="edit_policy.html?a=add">新增策略</a>
+                </div>
+
+                <div class="col-md-3 col-md-offset-5">
+                <div class="input-group">
+                <input id="search_policy_txt" type="text" class="form-control" placeholder="指标全名">
+                <span class="input-group-btn"><button id="search_policy" class="btn btn-default" type="button">查询</button></span>
+                </div>
+                </div>
+            </div>
+            <div class="row">
+            <table id="policy_tbl" class="table table-striped">
+            <thead>
+                <tr>
+                    <th><a id="select_all_policy" href="javascript:void(0);">全选</a>/<a id="unselect_all_policy" href="javascript:void(0);">取消</a></th>
+                    <th>#</th>
+                    <th>指标全名</th>
+                    <th>触发类型</th>
+                    <th>发布状态</th>
+                    <th>操作</th>
+                    <th>开关</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            </table>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                <button id="delete_selected_policies" class="btn btn-danger">删除策略</button>
+                </div>
+                <div class="col-md-2">
+                <button id="update_selected_policies" class="btn btn-info" onclick="toggle_policy_move_modal()">移动到策略组</button>
+                </div>
+                <div class="col-md-6 col-md-offset-6">
+                <ul id="policy_pagination" class="pagination pagination-sm pull-right">
+                    <li id="pagination_prev"><a href="javascript:void(0);">&laquo;</a></li>
+                    <li id="pagination_next"><a href="javascript:void(0);">&raquo;</a></li>
+                </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- view Modal -->
+<div class="modal fade" id="policy_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        </div>
+        <div id="policy_content"></div>
+        <div class="modal-footer"></div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /view modal -->
+
+<div class="modal fade" id="policy_move_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">批量移动到目标策略组</h4>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="form-horizontal">
+                <div class="col-md-5"> 
+                  <select id="target_group" class="form-control">
+                    <!-- <option value="threshold">阈值</option> -->
+                  </select>
+                </div>
+            </div>
+          </div>
+        </div><!-- end of modal body-->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="move_selected_policies()">确定</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /move modal -->
+
+<script src="jquery.js"></script>
+<script src="jquery-ui.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="ra_api.js"></script>
+<script src="ra_conf.js"></script>
+<script src="base64.js"></script>
+<script src="ra_dom.js"></script>
+<script src="moment.js"></script>
+<script>
+//////////////////////////////////////////
+// const
+var PAGE_SIZE = 15;
+// var
+var g_page_no = 1;
+var g_max_page = 1;
+var g_policy_num = 0;
+var g_current_policies = [];
+var g_current_groups = [];
+//////////////////////////////////////////
+function get_max_page(num, page_size)
+{
+    var m = Math.ceil(num / page_size);
+    return m<1? 1: m;
+}
+
+function get_type_name(t)
+{
+    type_dict = {
+        "threshold": "阈值",
+        "trend": "趋势",
+        "availability": "可用性",
+        "singularity": "奇异点",
+        "cycle": "周期",
+    };
+    
+    if (type_dict.hasOwnProperty(t)) {
+        return type_dict[t];
+    }
+    else {
+        return "未知";
+    }
+}
+
+function pagination_prev_onclick()
+{
+    if (g_page_no <= 1) {
+        g_page_no = 1;
+        return false;
+    }
+    
+    --g_page_no;
+    load_policies(g_page_no, PAGE_SIZE);
+    return true;
+}
+
+function pagination_next_onclick()
+{
+    if (g_page_no >= g_max_page) {
+        g_page_no = g_max_page;
+        return false;
+    }
+    
+    ++g_page_no;
+    load_policies(g_page_no, PAGE_SIZE);
+    return true;
+}
+
+function page_no_onclick()
+{
+    var pno = parseInt($(this).text());
+    load_policies(pno, PAGE_SIZE);
+}
+
+function get_current_policy(id)
+{
+    for (var i in g_current_policies) {
+        var p = g_current_policies[i];
+        if (id == p['id']) {
+            return p;
+        }
+    }
+    return null;
+}
+
+function create_policy_html(p)
+{
+    var resetHtml = '<button disabled="disabled" class="btn btn-xs reset_policy" type="button">撤销</button>';
+    var group = p['group'];
+    var modifyHtml = '<button class="btn btn-default btn-xs edit_policy" onclick="edit_policy('+p['id']+')">修改</button>';
+
+    if(p['opType'] == undefined) {
+        p['opType'] = "已发布";
+    }else {
+        resetHtml = '<button class="btn btn-success btn-xs reset_policy" onclick="cancel_policy('+p['id']+')">撤销</button>';
+        if(p['opType'] == 'Delete') {
+            modifyHtml = '<button disabled="disabled" class="btn btn-default btn-xs edit_policy" onclick="edit_policy('+p['id']+')">修改</a>';
+        }
+    }
+    var checked = compareValidTime(p['validTime']) ? 'checked="chedked">' : '>';
+
+    var switchHtml = '<div  class="onoffswitch">'
+                + '<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="policy-onoffswitch-'+p['id']+'" onchange="switch_onchange(this,'+p['id'] +')"'+checked
+                + '<label class="onoffswitch-label" for="policy-onoffswitch-'+p['id']+'">'
+                + '<span class="onoffswitch-inner"></span>'
+                + '<span class="onoffswitch-switch"></span>'
+                + '</label>'
+                + '</div>';
+
+    var record = '<tr>'
+        + '<td><input class="policy_checkbox" type="checkbox" value="'+p['id']+'"></td><td>'+p['id'] 
+        + '</td><td>'+p['metric']+'</td><td>' +get_type_name(p['type']) + '</td><td>'+ p['opType']+'</td>'
+        + '<td>'
+        + '<div class="btn-group">'
+        + '<button class="btn btn-primary btn-xs view_policy" data-policyid="'+p['id']+'">查看</button>'
+        + modifyHtml
+        + '<a class="btn btn-info btn-xs" href="edit_policy.html?a=clone&p='+p['id']+'">克隆</a>'
+        + '<button class="btn btn-danger btn-xs remove_policy">删除</button>'
+        + resetHtml
+        + '</div>'
+        + '</td>'
+        + '<td>'
+        + switchHtml
+        + '</td>'
+        + '</tr>';
+    return record;
+}
+
+function create_policy_view(p)
+{
+    var key_dict = {
+        "type": "告警类型",
+        "group": "所属策略组",
+        "metric": "指标名",
+        "checkType": "检查类型",
+        "alarmGroup": "告警接收组",
+        "alarmLevel": "告警方式",
+        "fetchInterval_s": "拉取间隔(秒)",
+        "minAlarmInterval_s": "最短告警间隔(秒)",
+        "upBound": "阈值上限", 
+        "downBound": "阈值下限",
+        "ascDiffRatio": "突增比例阈值",
+        "ascDiffValue": "突增差异阈值",
+        "descDiffRatio": "突降比例阈值",
+        "descDiffValue": "突降差异阈值",
+        "maxDiffRatio": "变化比例阈值",
+        "minDiffValue": "变化差异阈值",
+        "minHostNum": "最少可用机器数",
+        "cycleTime_s": "对比周期时长(秒)",
+        "cycleCount": "对比周期的个数",
+        "validTime": "生效时间",
+        "author": "责任人"
+    };
+    
+    var html = '';
+    for (var k in key_dict) {
+        if (p.hasOwnProperty(k)) {
+            html += "<dl class='dl-horizontal'><dt>" + key_dict[k] + "</dt><dd>" + p[k] + "</dd></dl>";
+        }
+    }
+    
+    if (p.hasOwnProperty('policyFilter')) {
+        var count = 0;
+        for (var i in p['policyFilter']) {
+            var t = p['policyFilter'][i];
+            if (count==0) {
+                html += "<dl class='dl-horizontal'><dt>过滤项</dt><dd>" + t['metric'] + '@' + t['host'] + "</dd></dl>";
+                count = 1;
+            }else {
+                html += "<dl class='dl-horizontal'><dt></dt><dd>" + t['metric'] + '@' + t['host'] + "</dd></dl>";
+            }
+        }
+    }
+
+    return html;
+}
+
+function delete_policy_succ(data, textStatus, jqXHR)
+{
+    if (ra_api.alert_on_errno(data, "删除策略错误")) {
+        return;
+    }
+    
+    alert("删除策略成功");
+    g_policy_num = data['total_num'];
+    g_max_page = get_max_page(g_policy_num, PAGE_SIZE);
+
+    if (g_max_page < g_page_no) {
+        g_page_no = g_max_page;
+    }
+    
+    load_policies(g_page_no, PAGE_SIZE);
+};
+
+function delete_policy_fail(data, textStatus, jqXHR)
+{
+    alert("删除策略异常: " + textStatus);
+};
+function render_pagination(page_no, total_page_num)
+{
+    var pp = $('#policy_pagination');
+    pp.find('li.page_no').remove();
+    
+    var p = $('#pagination_next');
+    html = '';
+    
+    var half_show_page_num = 5;
+    var start_page_no = 1;
+    if (page_no > half_show_page_num) {
+	start_page_no = page_no - half_show_page_num;
+    }
+
+    for (var i = 0; i < half_show_page_num * 2 && i + start_page_no <= total_page_num; ++i) {
+        var pn = i + start_page_no;
+        if (pn == page_no) {
+            cls = "page_no active";
+        }
+        else {
+            cls = "page_no";
+        }
+        
+        html += "<li class='"+cls+"'><a href='javascript:void(0);'>"+pn+"</a></li>";
+    }
+    
+    p.before(html);
+    pp.show();
+}
+
+function render_policies(p)
+{
+    var tbody = $('#policy_tbl tbody');
+    var html = '';
+
+    for (var k in p) {
+        var policy = p[k];
+        html += create_policy_html(policy);
+    }
+
+    tbody.html(html);    
+
+}
+
+function switch_onchange(obj, pid)
+{
+    var active_succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (0 != data['ret']) {
+            alert("启用策略失败("+data['ret']+":"+data['msg']+")");
+            load_policies(g_page_no, PAGE_SIZE);
+            return;
+        }
+
+        alert("启用策略成功");
+        load_policies(g_page_no, PAGE_SIZE);
+    };
+    
+    var active_fail_cb = function(data, textStatus, jqXHR)
+    {
+        alert("启用策略异常："+textStatus);
+        load_policies(g_page_no, PAGE_SIZE);
+    };
+
+    var shield_succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (0 != data['ret']) {
+            alert("屏蔽策略失败("+data['ret']+":"+data['msg']+")");
+            load_policies(g_page_no, PAGE_SIZE);
+            return;
+        }
+        alert("屏蔽策略成功");
+        load_policies(g_page_no, PAGE_SIZE);
+    };
+    
+    var shield_fail_cb = function(data, textStatus, jqXHR)
+    {
+        alert("屏蔽策略异常："+textStatus);
+        load_policies(g_page_no, PAGE_SIZE);
+    };
+
+    var checkStatus = $(obj).attr('checked');
+
+    if(checkStatus != undefined) {// checked
+        ra_api.set_callbacks(shield_succ_cb, shield_fail_cb)
+            .invalid_policy(pid);        
+    }else {
+        ra_api.set_callbacks(active_succ_cb, active_fail_cb)
+            .valid_policy(pid);
+    }
+
+
+}
+
+function render_groups(grps, renderOption)
+{
+    console.log("render groups");
+    var group_name = $('#active_group').val();
+    if (group_name != "") {
+        $('#all_groups').removeClass('active');
+    }
+    
+    var renderOption = arguments[1] != undefined ? arguments[1]:true;
+    var group_list = $('#policy_groups').html('');
+    for (var i in grps) {
+        var g = grps[i];
+        if (g != group_name){
+            group_list.append('<li><a href="javascript:void(0);">'+g+'</a><input type="hidden" value="'+g+'"></li>');
+        }else {
+            group_list.append('<li class="active"><a href="javascript:void(0);">'+g+'</a><input type="hidden" value="'+g+'"></li>');
+        }
+        
+        if(renderOption) {
+            $("#target_group").append("<option>"+g+"</option>");  
+        }
+    }
+
+}
+
+function compareValidTime(validTime)
+{
+    oldTime = moment(validTime, "YYYY-MM-DD h:mm:ss")
+    if (parseInt(moment().format("X")) + 10 > parseInt(oldTime.format("X"))) {
+        return true;
+    }
+    return false;
+}
+
+function remove_policy_onclick()
+{
+    if (confirm("确认删除这条策略吗？")) {
+        var self = $(this);
+        var policy_id = self.parents('tr').find('.policy_checkbox').val();
+        
+        var ids = [policy_id];
+        ra_api.set_callbacks(delete_policy_succ, delete_policy_fail)
+            .delete_policy(ids);
+    }
+}
+
+function select_all_policy_onclick(evt)
+{
+    $('#policy_tbl .policy_checkbox').prop('checked', true);
+    evt.preventDefault();
+}
+
+function unselect_all_policy_onclick(evt)
+{
+    $('#policy_tbl .policy_checkbox').prop('checked', false);
+    evt.preventDefault();
+}
+
+function delete_selected_policies_onclick(evt)
+{    
+    if (confirm("确定删除所选的策略？")) {
+        var ids = [];
+        $('#policy_tbl .policy_checkbox:checked').each(function() {
+            ids.push($(this).val());
+        });
+        
+        ra_api.set_callbacks(delete_policy_succ, delete_policy_fail)
+            .delete_policy(ids);
+    }
+}
+
+function search_policy_onclick(evt)
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (0 != data['ret']) {
+            alert("查询策略错误("+data['ret']+":"+data['msg']+")");
+            return;
+        }
+        
+        $('#policy_pagination').hide();
+        g_current_policies = data['policies'];
+        render_policies(data['policies']);
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        alert("查询策略异常："+textStatus);
+    };
+    var group_name = $.trim($('#active_group').val());
+    var q = $.trim($('#search_policy_txt').val());
+    if (0 == q.length) {
+        load_policies(1, PAGE_SIZE);
+    }
+    else {
+        ra_api.set_callbacks(succ_cb, fail_cb)
+            .search_policy(group_name, q);
+    }
+}
+
+function load_groups()
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            alert("载入告警组失败("+data['ret']+":"+data['msg']+")");
+            return;
+        }
+        
+        g_current_groups = data['groups'];
+        render_groups(data['groups']);
+
+        $( "#search_group" ).groupcomplete({
+            minLength: 0,
+            delay: 0,
+            source: g_current_groups
+        });
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("载入告警组异常: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .get_groups();
+}
+
+function load_policies(page_no, page_size)
+{
+    var group_name = $('#active_group').val();
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("load policy error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+        
+        g_page_no = data['page_no'];
+        g_policy_num = data['total_num'];
+        g_max_page = get_max_page(g_policy_num, PAGE_SIZE);
+        g_current_policies = data['policies'];
+        render_pagination(g_page_no, g_max_page);
+        render_policies(data['policies']);
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("error: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .get_policies(group_name, page_no, PAGE_SIZE);
+}
+
+function filter_by_group(evt)
+{
+    var self = $(this);
+    var group_name = self.parent('li').find('input').val();
+    $('#policy_groups').find('li.active').removeClass('active');
+    $('#select_all_groups').find('li.active').removeClass('active');
+
+    self.parents('li').addClass('active');
+    $('#active_group').val(group_name);
+    load_policies(1, PAGE_SIZE);
+    evt.preventDefault();
+}
+
+function view_policy_onclick(evt)
+{
+    var policy = get_current_policy($(this).data('policyid'));
+    if (null == policy) {
+        alert("获取策略数据异常，请刷新再试");
+        return;
+    }
+    $('#policy_content').html(create_policy_view(policy));
+    $('#policy_modal').modal('show');
+}
+
+function toggle_policy_move_modal()
+{
+    $('#policy_move_modal').modal('show');
+}
+
+function update_group_onclick(evt)
+{
+    evt.preventDefault();
+    var oldGroup = $('#active_group').val();
+    if(oldGroup.length == 0) {
+        alert("请选择你要编辑的策略组!");
+        return;
+    }
+
+    var newGroup = prompt("输入新的策略组名");
+
+    if (null == newGroup) {
+        return;
+    }
+
+    for (var i in g_current_groups) {
+        var g = g_current_groups[i];
+        if (g == newGroup){
+            alert("策略组: " + newGroup + "已经存在!");
+            return;
+        }
+    }
+
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("update group error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+
+        alert('更新策略组名成功');
+        location.href = 'index.html?group=' + newGroup + '&pageno=' + g_page_no;
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("error: " + textStatus);
+    };
+
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .update_group(oldGroup, newGroup, "");
+
+}
+
+
+function move_selected_policies()
+{
+
+    var oldGroup = $('#active_group').val();
+    var newGroup = $('#target_group').val();
+
+    if (null == newGroup) {
+        return;
+    }
+
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("move policies error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+
+        alert('移动策略成功');
+        location.href = 'index.html?group=' + oldGroup + '&pageno=' + g_page_no;
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("error: " + textStatus);
+    };
+
+
+    var ids = [];
+    $('#policy_tbl .policy_checkbox:checked').each(function() {
+        ids.push($(this).val());
+    });
+    if (ids.length == 0) {
+        return ;
+    }
+
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .update_group("", newGroup, ids.join('_'));
+}
+
+function edit_policy(id)
+{
+    var group = $('#active_group').val();
+    var editPage = 'edit_policy.html?a=modify&p='+id+'&group='+group+'&pageno='+g_page_no;
+    location.href = editPage;
+}
+
+function cancel_policy(id)
+{
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (data['ret'] != 0) {
+            console.log("cancel modify policy error("+data['ret']+") msg("+data['msg']+")");
+            return;
+        }
+
+        alert('撤销策略修改成功');
+        load_policies(g_page_no, PAGE_SIZE);
+    };
+    
+    var fail_cb = function(data, textStatus, jqXHR)
+    {
+        console.log("error: " + textStatus);
+    };
+    
+    ra_api.set_callbacks(succ_cb, fail_cb)
+        .cancel_policy(id);
+
+}
+
+function bind_events_handler()
+{
+    $('#pagination_prev').click(pagination_prev_onclick);
+    $('#pagination_next').click(pagination_next_onclick);
+    $('#update_group').click(update_group_onclick);
+    
+    $('#policy_tbl').delegate('button.view_policy', 'click', view_policy_onclick);
+    $('#policy_tbl').delegate('button.remove_policy', 'click', remove_policy_onclick);
+    $('#policy_pagination').delegate('li.page_no a', 'click', page_no_onclick);
+    $('#select_all_policy').click(select_all_policy_onclick);
+    $('#unselect_all_policy').click(unselect_all_policy_onclick);
+    $('#delete_selected_policies').click(delete_selected_policies_onclick);
+    $('#policy_groups').delegate('a', 'click', filter_by_group);
+    $('#select_all_groups').delegate('a', 'click', filter_by_group);
+    $('#search_policy').click(search_policy_onclick);
+}
+
+// jquery parse querystring plugin
+(function($) {
+    var re = /([^&=]+)=?([^&]*)/g;
+    var decode = function(str) {
+        return decodeURIComponent(str.replace(/\+/g, ' '));
+    };
+    $.parseParams = function(query) {
+        var params = {}, e;
+        if (query) {
+            if (query.substr(0, 1) == '?') {
+                query = query.substr(1);
+            }
+
+            while (e = re.exec(query)) {
+                var k = decode(e[1]);
+                var v = decode(e[2]);
+                if (params[k] !== undefined) {
+                    if (!$.isArray(params[k])) {
+                        params[k] = [params[k]];
+                    }
+                    params[k].push(v);
+                } else {
+                    params[k] = v;
+                }
+            }
+        }
+        return params;
+    };
+})(jQuery);
+
+$.widget( "ra.groupcomplete", $.ui.autocomplete, {
+    _renderMenu: function( ul, items ) {
+        var groups = [];
+        $.each( items, function( index, item ) {
+            groups.push(item.value);
+        });
+
+        render_groups(groups, false);
+    },
+    __response: function( content ) {
+        if ( content ) {
+            content = this._normalize( content );
+        }
+        this._trigger( "response", null, { content: content } );
+        if ( !this.options.disabled && content && content.length && !this.cancelSearch ) {
+            this._suggest( content );
+            this._trigger( "open" );
+        } else if(content && content.length == 0) {
+            $('#policy_groups').html('');
+            this._close();
+        } else {
+            this._close();
+        }
+    }
+});
+
+function dom_ready()
+{
+    bind_events_handler();
+    ra_api.setup(ra_conf['api_url'], ra_conf['admin_timeout']);
+    //ra_api.setup("http://100.81.164.125:5000", 10000);
+    var params = $.parseParams(location.search);
+        
+    load_groups();
+    if (params['group'] !== undefined) {
+        $('#active_group').val(params['group']);
+    }
+    if (params['pageno'] !== undefined) {
+        g_page_no = params['pageno']
+    }
+
+    load_policies(g_page_no, PAGE_SIZE);
+}
+
+function authentication()
+{
+    var account = get_cookie('username');
+    var isauth  = get_cookie('isauth');
+    if (account != undefined || isauth != undefined) {
+        var params = $.parseParams(location.search);
+        if (params['user_info'] != undefined) {
+            location.href = "/index.html"
+        }
+        $(dom_ready);
+    } else {
+        var params = $.parseParams(location.search);
+        var base64 = new Base64();
+
+        if (params['user_info'] != undefined) {
+            var js = JSON.parse(base64.decode(params['user_info']));
+            set_cookie('username', js.account, 864000);
+            set_cookie('isauth', "true", 864000);
+            // $(dom_ready);
+            //location.href = "index.html"
+            location.reload(true);
+        }
+        else if(ra_conf['disable_account']) {
+            set_cookie('username', "admin", 864000);
+            set_cookie('isauth', "true", 864000);
+            // $(dom_ready);
+            //location.href = "index.html"
+            location.reload(true);
+        }
+        else {
+            auUrl = ra_conf['buc_sso_url'] + '?referer=' + base64.encode(ra_conf['current_url']);
+            location.href = auUrl;
+        }
+    }
+}
+
+$(authentication);
+
+</script>
+
+</body>
+</html>

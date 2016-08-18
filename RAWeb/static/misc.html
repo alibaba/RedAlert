@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<title>杂项设置</title>
+<link href="bootstrap.min.css" rel="stylesheet">
+<style>
+.toggle_display {
+    display:none;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-inverse" role="navigation">
+    <div class="navbar-header"><span class="navbar-brand">RedAlert配置中心</span></div>
+    <div>
+    <ul class="nav navbar-nav">
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看/修改告警策略"><a href="index.html">策略配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="暂时屏蔽一些告警"><a href="shield.html">屏蔽配置</a></li>
+    <li class="active ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="新增DataSource,RedAlert"><a href="misc.html">杂项配置</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="查看配置diff"><a href="deploy.html">配置DIFF</a></li>
+    <li class="ra_tooltip" data-toggle="tooltip" data-placement="bottom" title="发布/回滚配置"><a href="admin.html">控制台</a></li>
+    </ul>
+    <div id="user_container">
+    <!-- <form class="navbar-form navbar-right"> -->
+    <!-- <div id="sign_in_form_group" class="form-group toggle_display"> -->
+    <!-- <input id="user_name" type="text" class="form-control" placeholder="请输入域账号名"> -->
+    <!-- </div> -->
+    <!-- <button id="sign_in" class="btn btn-primary toggle_display">登入</button> -->
+    <!-- <\!--<button id="acquire_lock" class="btn btn-warning">开始修改</button>-\-> -->
+    <!-- <button id="sign_out" class="btn btn-default toggle_display">登出</button> -->
+    <!-- </form> -->
+    <p id="user_display" class="navbar-text navbar-right toggle_display">当前用户：<span id="user_name_display"><span></p>
+    </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row"><div class="col-md-12"><h1>DataSource</h1></div></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+            <table id="amonitor_tbl" class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="col-md-1">#</th>
+                    <th class="col-md-2">DataSource地址(ip:port)</th>
+                    <th class="col-md-2">别名</th>
+		    <th class="col-md-2">类别</th>
+		    <th class="col-md-2">Option</th>
+                    <th class="col-md-2">发布状态</th>
+                    <th class="col-md-1">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                <td></td>
+                <td><input type="text" id="add_amonitor_addr" placeholder="ip:port" class="form-control"></td>
+                <td><input type="text" id="add_amonitor_name" class="form-control" placeholder="取个大家都懂的名字即可，不含中文"></td>
+		<td><input type="text" id="add_datasource_fetchtype" placeholder="fetcher type" class="form-control"></td>
+		<td><input type="text" id="add_datasource_option" placeholder="null" class="form-control"></td>
+                <td></td>
+                <td>
+                    <div class="btn-group">
+                    <button class="btn btn-primary btn-xs" id="add_amonitor">保存</button>
+                    </div>
+                </td>
+                </tr>
+            </tfoot>
+            </table>
+            </div>
+        </div>
+    </div>
+    <div class="row"><div class="col-md-12"><h1>RedAlert</h1></div></div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+            <table id="ra_tbl" class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="col-md-2">服务ID</th>
+                    <th class="col-md-3">ra地址(ip:port)</th>
+                    <th class="col-md-3">别名</th>
+                    <th class="col-md-1">权重</th>
+                    <th class="col-md-2">发布状态</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                </td>
+            </tr>
+            </tfoot>
+            </table>
+            </div>
+        </div>
+    </div>
+    <div class="row"><div class="col-md-12"><h1>趋势参数</h1></div></div>
+    <div class="row">
+    <div class="col-md-12 form-horizontal">
+        <div class="form-group">
+        <label for="smoothing_factor" class="col-md-1 control-label">平滑参数</label>
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="smoothing_factor" placeholder="[0.0,1.0]">
+        </div>
+        </div>
+        
+        <div class="form-group">
+        <label for="trend_factor" class="col-md-1 control-label">趋势参数</label>
+        <div class="col-md-4">
+            <input type="text" class="form-control" id="trend_factor" placeholder="[0.0,1.0]">
+        </div>
+        </div>
+        
+        <div class="form-group">
+        <div class="col-md-offset-1 col-md-4">
+        <button id="save_factors" class="btn btn-default">保存</button>
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
+<script src="jquery.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="ra_api.js"></script>
+<script src="ra_conf.js"></script>
+<script src="ra_dom.js"></script>
+<script>
+function _ajax_fail_callback(msg_prefix)
+{
+    return function(data, status, xhr)
+    {
+        alert(msg_prefix+". ajax_status:"+status);
+    };
+}
+
+function create_amonitor_html(amonitor)
+{
+    if(amonitor['opType'] == undefined) {
+        amonitor['opType'] = '已发布';
+    }
+
+    return '<tr>'
+        + '<td>'+amonitor['id']+'<input type="hidden" class="id" value="'+amonitor['id']+'"></td>'
+        + '<td>'+amonitor['address']+'</td>'
+        + '<td>'+amonitor['service']+'</td>'
+        + '<td>'+amonitor['fetcherType']+'</td>'
+        + '<td>'+amonitor['optionString']+'</td>'
+        + '<td>'+amonitor['opType']+'</td>'
+        + '<td>'
+        + '<div class="btn-group">'
+        + '<button class="btn btn-danger btn-xs remove_amonitor">删除</button>'
+        + '</div>'
+        + '</td>'
+        + '</tr>';
+}
+
+function create_ra_html(ra)
+{
+    if(ra['opType'] == undefined) {
+        ra['opType'] = '已发布';
+    }
+
+    return '<tr>'
+        + '<td><span class="ra_id">'+ra['id']+'</span><input type="hidden" class="id" value="'+ra['id']+'"></td>'
+        + '<td>'+ra['address']+'</td>'
+        + '<td>'+ra['service']+'</td>'
+        + '<td>'+ra['weight']+'</td>'
+        + '<td>'+ra['opType']+'</td>'
+        + '<td>'
+        + '<div class="btn-group">'
+        + '</div>'
+        + '</td>'
+        + '</tr>';
+}
+
+function replace_editable(ctrl, cls)
+{
+    var t = ctrl.text();
+    ctrl.data('original', t);
+    ctrl.html("<input type='text' value='"+t+"' class='"+cls+"'>");
+}
+
+function replace_uneditable(ctrl)
+{
+    var t = ctrl.data('original');
+    ctrl.text(t);
+}
+
+function render_ras(ras)
+{
+    var tbody = $('#ra_tbl tbody');
+    var html = '';
+
+    for (var k in ras) {
+        html += create_ra_html(ras[k]);
+    }
+    
+    tbody.html(html);
+}
+
+function render_amonitors(amonitors)
+{
+    var tbody = $('#amonitor_tbl tbody');
+    var html = '';
+
+    for (var k in amonitors) {
+        var amonitor = amonitors[k];
+        html += create_amonitor_html(amonitor);
+    }
+    
+    tbody.html(html);
+}
+
+function load_ra()
+{
+    var succ_cb = function(data, status, xhr)
+    {
+        if (0 != data['ret']) {
+            alert("获取RedAlert错误("+data['ret']+":"+data['msg']+")");
+            return;
+        }
+        
+        render_ras(data['items']);
+    };
+    
+    var fail_cb = _ajax_fail_callback("获取RedAlert错误");
+    ra_api.set_callbacks(succ_cb, fail_cb).get_red_alerts();
+}
+
+function load_amonitor()
+{
+    var succ_cb = function(data, status, xhr)
+    {
+        if (0 != data['ret']) {
+            alert("获取Amonitor错误("+data['ret']+":"+data['msg']+")");
+            return;
+        }
+        
+        render_amonitors(data['items']);
+    };
+    
+    var fail_cb = _ajax_fail_callback("获取Amonitor错误");
+    ra_api.set_callbacks(succ_cb, fail_cb).get_amonitors();
+}
+
+function load_trend_params()
+{
+    var succ_cb = function(data, status, xhr)
+    {
+        if (0 != data['ret']) {
+            alert("获取趋势参数错误("+data['ret']+":"+data['msg']+")");
+            return;
+        }
+        
+        $('#smoothing_factor').val(data['smoothingFactor']);
+        $('#trend_factor').val(data['trendFactor']);
+    };
+    
+    var fail_cb = _ajax_fail_callback("获取趋势参数错误");
+    ra_api.set_callbacks(succ_cb, fail_cb).get_trend_param();
+}
+
+function add_ra_onclick(evt)
+{
+    evt.preventDefault();
+    
+    var addr = $('#add_ra_addr').val();
+    var name = $('#add_ra_name').val();
+    var id = parseInt($('#add_ra_id').val());
+    var weight = $('#add_ra_weight').val();
+    
+    var id_list = [];
+    var find_dup_id = false;
+    $('#ra_tbl span.ra_id').each(function()
+    {
+        if (find_dup_id) {
+            return;
+        }
+        var ra_id = parseInt($(this).text());
+        console.log("ra_id="+ra_id);
+        if (id_list.indexOf(ra_id) >= 0) {
+            find_dup_id = true;
+            return;
+        }
+        id_list.push(ra_id);
+    });
+    
+    if (find_dup_id || id_list.indexOf(id) >= 0) {
+        alert("发现重复的RedAlert服务ID，请修改！");
+        return;
+    }
+    
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (ra_api.alert_on_errno(data, "保存RedAlert错误")) {
+            return;
+        }
+        
+        load_ra();
+        
+        // clear
+        $('#add_ra_addr').val("");
+        $('#add_ra_name').val("");
+        $('#add_ra_id').val("");
+        $('#add_ra_weight').val("");
+    };
+    
+    var fail_cb = _ajax_fail_callback("保存RedAlert错误");
+    ra_api.set_callbacks(succ_cb, fail_cb).add_red_alert(id, addr, name, weight);
+}
+
+function add_amonitor_onclick(evt)
+{
+    var amonitor_addr = $('#add_amonitor_addr').val();
+    var amonitor_name = $('#add_amonitor_name').val();
+    var dataSource_type = $('#add_datasource_fetchtype').val();
+    var dataSource_option = $('#add_datasource_option').val();
+    
+    var succ_cb = function(data, textStatus, jqXHR)
+    {
+        if (ra_api.alert_on_errno(data, "保存amonitor错误")) {
+            return;
+        }
+        
+        load_amonitor();
+        
+        $('#add_amonitor_addr').val("");
+    };  $('#add_amonitor_name').val("");
+        $('#add_datasource_option').val("");
+        $('#add_datasource_fetchtype').val("");
+    
+    var fail_cb = _ajax_fail_callback("保存amonitor错误");
+    ra_api.set_callbacks(succ_cb, fail_cb).add_amonitor(amonitor_addr, amonitor_name, dataSource_type, dataSource_option);
+}
+
+function remove_ra_onclick()
+{
+    var id = $(this).parents('tr').find('input.id').val();
+    if (confirm("确定删除该RedAlert？")) {
+        var succ_cb = function(data, status, xhr)
+        {
+            if (ra_api.alert_on_errno(data, "删除RedAlert错误")) {
+                return;
+            }
+            
+            alert("删除RedAlert成功");
+            load_ra();
+        };
+        
+        var fail_cb = _ajax_fail_callback("删除RedAlert错误");
+        console.log("remove red alert:" + id);
+        ra_api.set_callbacks(succ_cb, fail_cb).remove_red_alert([id]);
+    }
+}
+
+function remove_amonitor_onclick()
+{
+    var id = $(this).parents('tr').find('input.id').val();
+    if (confirm("确定删除该数据源？")) {
+        var succ_cb = function(data, status, xhr)
+        {
+            if (ra_api.alert_on_errno(data, "删除数据源错误")) {
+                return;
+            }
+            
+            alert("删除数据源成功");
+            load_amonitor();
+        };
+        
+        var fail_cb = _ajax_fail_callback("删除数据源错误");
+        console.log("remove red alert:" + id);
+        ra_api.set_callbacks(succ_cb, fail_cb).remove_amonitor([id]);
+    }
+}
+
+function save_factors_onclick(evt)
+{
+    evt.preventDefault();
+    var smoothing_factor = $('#smoothing_factor').val();
+    var trend_factor = $('#trend_factor').val();
+    var succ_cb = function(data, status, xhr)
+    {
+        if (ra_api.alert_on_errno(data, "保存趋势参数失败")) {
+            return;
+        }
+        
+        alert("保存趋势参数成功");
+        load_amonitor();
+    };
+        
+    var fail_cb = _ajax_fail_callback("保存趋势参数失败");
+    ra_api.set_callbacks(succ_cb, fail_cb).update_trend_param(smoothing_factor, trend_factor);
+}
+
+function bind_events_handler()
+{
+    $('#add_ra').click(add_ra_onclick);
+    $('#add_amonitor').click(add_amonitor_onclick);
+    $('#ra_tbl').delegate('.remove_ra', 'click', remove_ra_onclick);
+    $('#amonitor_tbl').delegate('.remove_amonitor', 'click', remove_amonitor_onclick);
+    $('#save_factors').click(save_factors_onclick);
+}
+
+function dom_ready()
+{
+    bind_events_handler();
+    ra_api.setup(ra_conf['api_url'], ra_conf['admin_timeout']);
+    //ra_api.setup("http://100.81.164.125:5000", 10000);
+    load_ra();
+    load_amonitor();
+    load_trend_params();
+}
+
+$(dom_ready);
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+var ra_conf = {
+    "api_url": "http://100.81.164.125:5000",
+    "current_url": "http://0.0.0.0:5000/index.html",
+    "buc_sso_url": "http://search-tools.yisou.com/buc_sso/index.php",
+    "api_timeout": 3000,
+    "admin_timeout": 10000,
+    "disable_account": false
+};

@@ -1,0 +1,5 @@
+*.pyc
+*.LOG
+raweb/log.txt
+work
+foo
