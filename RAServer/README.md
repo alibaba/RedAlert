@@ -1,25 +1,16 @@
 
 Red alert(RA) is a service monitor.  It grabs metric data from dataSource such as graphite or ganglia, to check whether current metric values are normal by some configurable rules. Alarm messages are reported by smtp or curl.
 
-# Introduction
-RA is composed of two parts, RA web and server. RA web is used to CRUD the alarms rules, for example, to adjust the alarm threshold. 
-RA server is used to connect to datasource and send alarm messages if neccessary.
-Heartbeats from RA server to RA web are used to tell the current server state
-RA web and server must be disposed at the same machine/filesystem(In fact, currently RA only supports local filesystem, but you can implement your filesystem interface under the "contrib" directory).
-The configuration files use sqlite files to prevent concurrent modifition problems. 
-If some one changes or adds alarm rules, RA web will tell RA server to reload the full copy of the configuration from a specified directory.
-The communication protocol between RA web and RA server is HTTP.
-
 ## How to build Red Alert Server ##
 # Installation
-RA server is based on linux(64bit), which is centos on our production environment. But it also can runs on ubuntu.
+RA server is based on linux(64bit), which is CENTOS on our production environment. But it also can runs on UBUNTU.
 Because RA is built by scons, so you must install scons before compilation. On ubuntu, install scons by apt-get install.
 
 ```bash
 sudo apt-get install scons
 ```
 
-RA depends on rrd, sqlite3, etc. So the depends should be installed before compiling RA server
+RA depends on rrd, sqlite3, etc. So the dependence should be installed before compiling RA server
 ```bash
 sudo apt-get install librrd-dev crypto libssl-dev libldap-dev libidn11-dev libglib2.0-dev libsqlite3-dev
 ```
