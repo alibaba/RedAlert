@@ -29,21 +29,21 @@ fi
 
 echo -e "\n\n\n"
 echo "=========================================================================="
-echo "compiling log4cxx"
-cd "${curDir}/deps/log4cplus" &&  ./configure --enable-static --enable-shared --prefix="$installroot" CFLAGS='-g -fPIC' && make install
-if [ $? != 0 ] 
-then
-    echo "Fail to compile log4cxx"
-    exit 1
-fi
-
-echo -e "\n\n\n"
-echo "=========================================================================="
 echo "compiling jansson"
 cd "${curDir}/deps/jansson" && autoreconf -fi && aclocal && ./configure  --prefix="$installroot" CFLAGS='-g -fPIC' && make install
 if [ $? != 0 ] 
 then
     echo "Fail to compile jansson"
+    exit 1
+fi
+
+echo -e "\n\n\n"
+echo "=========================================================================="
+echo "compiling glog"
+cd "${curDir}/deps/glog" && autoreconf -fi && aclocal && ./configure  --prefix="$installroot" CFLAGS='-g -fPIC' && make install
+if [ $? != 0 ] 
+then
+    echo "Fail to compile glog"
     exit 1
 fi
 
