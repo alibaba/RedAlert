@@ -10,7 +10,6 @@
 RA_BEGIN_NAMESPACE(fetcher);
 RA_USE_NAMESPACE(common);
 using namespace std;
-RA_LOG_SETUP(fetcher, GraphiteMetricFetcherTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(GraphiteMetricFetcherTest);
 class FakeHandler : public HttpRequestHandler 
@@ -86,11 +85,9 @@ GraphiteMetricFetcherTest::~GraphiteMetricFetcherTest() {
 }
 
 void GraphiteMetricFetcherTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void GraphiteMetricFetcherTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void GraphiteMetricFetcherTest::testSimpleProcess() {
@@ -156,7 +153,6 @@ void GraphiteMetricFetcherTest::testSimpleProcess() {
 }
 
 void GraphiteMetricFetcherTest::testParseSubMetrics() { 
-    RA_LOG(DEBUG, "Begin Test!");
     const string content = "[{\"text\": \"cao\", \"expandable\": 1, \"leaf\": 0, \"id\": \"test.random.diceroll.metric.cao\", \"allowChildren\": 1}, {\"text\": \"xxx\", \"expandable\": 1, \"leaf\": 0, \"id\": \"test.random.diceroll.metric.xxx\", \"allowChildren\": 1}]";
     map<string, int> subMetrics;
     
@@ -324,7 +320,6 @@ void GraphiteMetricFetcherTest::testTraverse() {
     option[ACCESS_HOST] = "http://127.0.0.1:58020/";
     CPPUNIT_ASSERT(fetcher.init(option));
     CPPUNIT_ASSERT(fetcher.traverse(xpath, root));
-    RA_LOG(ERROR, "guocanwen-test. roottree=%s", root->toDebugString().c_str());
     const vector<MetricNodePtr> rootNodes = root->getChildren();
     CPPUNIT_ASSERT_EQUAL(size_t(2), rootNodes.size());
     for(size_t i = 0; i < rootNodes.size(); i++) { 
@@ -526,7 +521,5 @@ void GraphiteMetricFetcherTest::testMain() {
     MetricNodePtr root = fetcher.retrieve(rootNode, 1000000*(now - 600), 1000000*now, 1);
     //MetricNodePtr root = fetcher.retrieve(rootNode, 0, 0, 1);
     CPPUNIT_ASSERT(root != NULL);
-    RA_LOG(ERROR, "guocanwen-test #######rootNode=%s", rootNode->toDebugString().c_str());
-    RA_LOG(ERROR, "guocanwen-test #######root=%s", root->toDebugString().c_str());
 }
 RA_END_NAMESPACE(fetcher);

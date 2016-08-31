@@ -12,7 +12,6 @@ using namespace std;
 RA_BEGIN_NAMESPACE(fetcher);
 RA_USE_NAMESPACE(fs);
 RA_USE_NAMESPACE(util);
-RA_LOG_SETUP(fetcher, RRDMetricFetcherTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(RRDMetricFetcherTest);
 
@@ -23,13 +22,11 @@ RRDMetricFetcherTest::~RRDMetricFetcherTest() {
 }
 
 void RRDMetricFetcherTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
     FileSystemPtr fs = FileSystemFactory::create("LocalFileSystem");
     CPPUNIT_ASSERT(FileUtil::init(fs));
 }
 
 void RRDMetricFetcherTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void RRDMetricFetcherTest::testGetMetricName() {

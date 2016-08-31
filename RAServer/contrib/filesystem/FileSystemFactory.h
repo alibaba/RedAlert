@@ -15,9 +15,6 @@ public:
 private:
     FileSystemFactory(const FileSystemFactory &);
     FileSystemFactory& operator=(const FileSystemFactory &);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(fs);

@@ -14,9 +14,6 @@ public:
 private:
     MetricFetcherFactory(const MetricFetcherFactory &);
     MetricFetcherFactory& operator=(const MetricFetcherFactory &);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(fetcher);

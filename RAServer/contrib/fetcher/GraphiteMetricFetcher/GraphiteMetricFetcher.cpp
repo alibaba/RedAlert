@@ -10,8 +10,6 @@ RA_BEGIN_NAMESPACE(fetcher);
 RA_USE_NAMESPACE(common); 
 using namespace std;
 
-RA_LOG_SETUP(fetcher, GraphiteMetricFetcher);
-
 GraphiteMetricFetcher::GraphiteMetricFetcher(): _httpClient(true,3), _isBatchAllocTree(false) {
 }
 
@@ -60,17 +58,17 @@ bool GraphiteMetricFetcher::getSubMetrics(const std::string &parentMetricPath, m
     getMetricsURL(parentMetricPath, url);
     HttpResponse response;
     if (!_httpClient.get(url, &response)) {
-        RA_LOG(ERROR, "http client get [%s] fail", url.c_str());
+        LOG(ERROR) <<  "http client get [" << url << "] fail";
         return false;
     }
 
     if (response.status != HTTP_RESP_OK ) {
-        RA_LOG(ERROR, "response status[%d] is not ok. url=[%s]", response.status, url.c_str());
+        LOG(ERROR) << "response status[" << response.status << "] is not ok. url=[" << url << "]";
         return false;
     }
 
     if (!parseSubMetrics(response.body, subMetrics)) {
-        RA_LOG(ERROR, "parseSubMetrics [%s] fail, url=[%s]", response.body.c_str(),url.c_str());
+        LOG(ERROR) << "parseSubMetrics [" << response.body << "] fail, url=[" << url << "]";
         return false;
     }
     return true;
@@ -80,19 +78,19 @@ bool GraphiteMetricFetcher::getAllMetrics(set<string> &metrics) {
     string url;
     getAllMetricsURL(url);
     HttpResponse response;
-    RA_LOG(ERROR, "http client get [%s]", url.c_str());
+    LOG(ERROR) << "http client get [" << url <<"]";
     if (!_httpClient.get(url, &response)) {
-        RA_LOG(ERROR, "http client get [%s] fail", url.c_str());
+        LOG(ERROR) << "http client get [" << url <<"] fail";
         return false;
     }
 
     if (response.status != HTTP_RESP_OK ) {
-        RA_LOG(ERROR, "response status[%d] is not ok. url=[%s]", response.status, url.c_str());
+        LOG(ERROR) << "response status[" << response.status << "] is not ok. url=[" <<url <<"]";
         return false;
     }
     
     if (!parseAllMetrics(response.body, metrics)) {
-        RA_LOG(ERROR, "parseSubMetricData [%s] fail, url=[%s]", response.body.c_str(), url.c_str());
+        LOG(ERROR) << "parseSubMetricData [" << response.body <<"] fail, url=[" << url << "]";
         return false;
     }
     return true;
@@ -101,22 +99,23 @@ bool GraphiteMetricFetcher::getAllMetrics(set<string> &metrics) {
 bool GraphiteMetricFetcher::getData(const string &metricPath, int64_t start, int64_t end, map<uint64_t, double> &data) {
     string url;
     getDataURL(metricPath, start, end, url);
-    RA_LOG(DEBUG, "Http request url: %s", url.c_str());
+    VLOG(1) << "Http request url: " << url;
 
     HttpResponse response;
     if (!_httpClient.get(url, &response)) {
-        RA_LOG(ERROR, "http client get [%s] fail", url.c_str());
+        LOG(ERROR) << "http client get [" << url << "] fail";
         return false;
     }
-    RA_LOG(DEBUG, "Response status: %d, message: %s, body: %s", response.status, response.message.c_str(), response.body.c_str());
+    VLOG(1) << "Response status: " << response.status 
+	    <<", message: " << response.message <<", body: " << response.body;
 
     if (response.status != HTTP_RESP_OK ) {
-        RA_LOG(ERROR, "response status[%d] is not ok. url=[%s]", response.status, url.c_str());
+        LOG(ERROR) << "response status[" << response.status << "] is not ok. url=[" << url << "]";
         return false;
     }
     
     if (!parseSubMetricData(response.body, data, metricPath)) {
-        RA_LOG(ERROR, "parseSubMetricData [%s] fail, url=[%s]", response.body.c_str(), url.c_str());
+        LOG(ERROR) << "parseSubMetricData [" << response.body << "] fail, url=[" << url <<"]";
         return false;
     }
 
@@ -128,23 +127,23 @@ bool GraphiteMetricFetcher::parseAllMetrics(const string &content, set<string> &
     json_t *json = json_loads(content.c_str(), 0, &error);
     _wrap_json_memeory(json);
     if (!json) {
-        RA_LOG(ERROR, "Fail to parse %s", content.c_str());
+        LOG(ERROR) << "Fail to parse " << content;
         return false;
     }
 
     if (!json_is_array(json)) {
-        RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+        LOG(ERROR) << "Invalidate json content " << content;
         return false;
     }
 
     for (size_t i = 0; i < json_array_size(json); ++i) {
         json_t *item = json_array_get(json, i);
         if (!item) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         if (!json_is_string(item)) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         metrics.insert(json_string_value(item));
@@ -157,34 +156,34 @@ bool GraphiteMetricFetcher::parseSubMetrics(const string &content, map<string, i
     json_t *json = json_loads(content.c_str(), 0, &error);
     _wrap_json_memeory(json);
     if (!json) {
-        RA_LOG(ERROR, "Fail to parse %s", content.c_str());
+        LOG(ERROR) << "Fail to parse " << content;
         return false;
     }
 
     if (!json_is_array(json)) {
-        RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+        LOG(ERROR) << "Invalidate json content " << content;
         return false;
     }
 
     for (size_t i = 0; i < json_array_size(json); ++i) {
         json_t *item = json_array_get(json, i);
         if (!item) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         if (!json_is_object(item)) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         json_t *text = json_object_get(item, "text");
         if (!text || !json_is_string(text)) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         string mertricNode(json_string_value(text));
         json_t *leaf = json_object_get(item, "leaf");
         if (!leaf || !json_is_number(leaf)) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         subMetrics[mertricNode] = json_integer_value(leaf);
@@ -197,23 +196,23 @@ bool GraphiteMetricFetcher::parseSubMetricData(const string &content, map<uint64
     json_t *json = json_loads(content.c_str(), 0, &error);
     _wrap_json_memeory(json);
     if (!json) {
-        RA_LOG(ERROR, "Fail to parse %s", content.c_str());
+        LOG(ERROR) << "Fail to parse " << content;
         return false;
     }
 
     if (!json_is_array(json)) {
-        RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+        LOG(ERROR) << "Invalidate json content " << content;
         return false;
     }
 
     for (size_t i = 0; i < json_array_size(json); ++i) {
         json_t *item = json_array_get(json, i);
         if (!item) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         if (!json_is_object(item)) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         json_t *target = json_object_get(item, "target");
@@ -227,18 +226,18 @@ bool GraphiteMetricFetcher::parseSubMetricData(const string &content, map<uint64
         
         json_t *datapoints = json_object_get(item, "datapoints");
         if (!datapoints || !json_is_array(datapoints)) {
-            RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+            LOG(ERROR) << "Invalidate json content " << content;
             return false;
         }
         for (size_t j = 0; j < json_array_size(datapoints); ++j) {
             json_t *dataPointItem =  json_array_get(datapoints, j);
             if (!dataPointItem || !json_is_array(dataPointItem)) {
-                RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+                LOG(ERROR) << "Invalidate json content " << content;
                 return false;
             }
             
             if (json_array_size(dataPointItem) != 2) {
-                RA_LOG(ERROR, "Invalidate json content %s", content.c_str());
+                LOG(ERROR) << "Invalidate json content " << content;
                 return false;
             }
             json_t *value = json_array_get(dataPointItem, 0);
@@ -306,7 +305,7 @@ bool GraphiteMetricFetcher::makeTree(const set<string> &metrics, MetricNodePtr &
 bool GraphiteMetricFetcher::batchAllocTree(MetricNodePtr &metricNode) {
     set<string> metrics;
     if (!getAllMetrics(metrics)) {
-        RA_LOG(ERROR, "Fail to get all metrics");
+        LOG(ERROR) << "Fail to get all metrics";
         return false;
     }
     return makeTree(metrics, metricNode);
@@ -323,7 +322,7 @@ bool GraphiteMetricFetcher::traverse(const string &parent, MetricNodePtr &metric
     map<string, int> subMetrics;
     bool isSucc = getSubMetrics(metricPath, subMetrics);
     if (!isSucc) {
-        RA_LOG(ERROR, "Fail to get sub-metrics [%s]", metricPath.c_str());
+        LOG(ERROR) << "Fail to get sub-metrics " << metricPath;
         return false;
     }
     map<string, int>::const_iterator iter = subMetrics.begin();
@@ -339,7 +338,7 @@ bool GraphiteMetricFetcher::traverse(const string &parent, MetricNodePtr &metric
             }
 
             if (!traverse(sPath, newMetricNode)) {
-                RA_LOG(ERROR, "Traverse path[%s] failed", sPath.c_str());
+                LOG(ERROR) << "Traverse path[" << sPath << "] failed";
                 return false;
             }
         }
@@ -377,7 +376,7 @@ bool GraphiteMetricFetcher::readGraphiteData(
     map<uint64_t, double> oData;
     bool isSucc = getData(fullMetricPath, start, end, oData);
     if (!isSucc) {
-        RA_LOG(ERROR, "Fail to getData from [%s]", fullMetricPath.c_str());
+        LOG(ERROR) << "Fail to getData from [" << fullMetricPath << "]";
         return false;
     }
     
@@ -391,7 +390,8 @@ bool GraphiteMetricFetcher::readGraphiteData(
     }
     MetricNodePtr dataNode(new MetricDataNode(data));
     parent->addChild(dataNode); 
-    RA_LOG(DEBUG, "fullMetricPath=%s, start=%ld, end=%ld, dataCount=%zu", fullMetricPath.c_str(), start, end, data->times->size());
+    VLOG(1) << "fullMetricPath=" << fullMetricPath << ", start=" << start 
+	    << ", end=" << end << ", dataCount=" << data->times->size();
     return true;
 }
 

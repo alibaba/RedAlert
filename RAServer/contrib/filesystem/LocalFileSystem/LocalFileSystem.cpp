@@ -10,7 +10,6 @@
 using namespace std;
 RA_BEGIN_NAMESPACE(fs);
 RA_USE_NAMESPACE(util);
-RA_LOG_SETUP(fs, LocalFileSystem);
 
 LocalFileSystem::LocalFileSystem() {
 }
@@ -21,19 +20,19 @@ LocalFileSystem::~LocalFileSystem() {
 bool LocalFileSystem::readFileContent(const std::string& filePath, std::string& content) {
     FILE *pFile = fopen(filePath.c_str(), "r");
     if (!pFile) {
-        RA_LOG(ERROR, "Fail to open %s", filePath.c_str());
+        LOG(ERROR) << "Fail to open " << filePath;
         return false;
     }
-    char *pBuf;  
+    char *pBuf;
     int retCode = fseek(pFile, 0, SEEK_END); 
     if (retCode) {
-        RA_LOG(ERROR, "Fail to seek end %s", filePath.c_str());
+        LOG(ERROR) << "Fail to seek end " << filePath;
         return false;
     }
     int len = ftell(pFile); 
-    RA_LOG(ERROR, "Length = %d", len);
+    LOG(ERROR) << "Length = " << len;
     if (len > 1024 * 1024 * 10 || len < 0) {
-        RA_LOG(ERROR, "Too long[%d] to read.", len);
+        LOG(ERROR) << "Too long[" << len << "] to read.";
         return false;
     }
     pBuf = new char[len+1]; 
@@ -81,8 +80,7 @@ bool LocalFileSystem::mkDirInternal(const string& dirName) {
     if (pos == string::npos) {
         if (mkdir(dirName.c_str(), 0755) < 0) {
             if (errno != EEXIST) {
-                RA_LOG(ERROR, "create directory %s fail, %s", 
-                        dirName.c_str(), strerror(errno));
+                LOG(ERROR) << "create directory " << dirName <<" fail, " << strerror(errno);
                 return false;
             }
         }
@@ -98,8 +96,7 @@ bool LocalFileSystem::mkDirInternal(const string& dirName) {
     
     if (mkdir(dirName.c_str(), 0755) < 0) {
         if (errno != EEXIST) {
-            RA_LOG(ERROR, "create directory %s fail, %s", 
-                      dirName.c_str(), strerror(errno));
+            LOG(ERROR) << "create directory " << dirName << " fail, " << strerror(errno);
             return false;
         }
     }
@@ -112,7 +109,7 @@ bool LocalFileSystem::mkDir(const std::string& dirName, bool recursive) {
     size_t len = dir.size();
     if (dir[len - 1] == '/') {
         if (len == 1) {
-            RA_LOG(ERROR, "directory %s already exist", dir.c_str());
+            LOG(ERROR) << "directory " << dir << " already exist";
             return false;
         } else {
             dir.resize(len - 1);
@@ -120,15 +117,14 @@ bool LocalFileSystem::mkDir(const std::string& dirName, bool recursive) {
     }
 
     if (access(dir.c_str(), F_OK) == 0) {
-        RA_LOG(ERROR, "directory %s already exist", dirName.c_str());
+        LOG(ERROR) << "directory " << dirName <<" already exist";
         return false;
     }
 
     size_t pos = dir.rfind('/');
     if (pos == string::npos) {
         if (mkdir(dir.c_str(), 0755) < 0) {
-            RA_LOG(ERROR, "create directory %s fail, %s", dir.c_str(), 
-                      strerror(errno));
+            LOG(ERROR) << "create directory " <<dir <<" fail, " << strerror(errno);
             return false;
         }
         return true;
@@ -137,19 +133,17 @@ bool LocalFileSystem::mkDir(const std::string& dirName, bool recursive) {
     if (!parentDir.empty() && access(parentDir.c_str(), F_OK) != 0) {
         if (recursive) {
             if (!mkDirInternal(parentDir)) {
-                RA_LOG(ERROR, "create directory %s fail, fail to create "
-                        "parent dir", dir.c_str());
+                LOG(ERROR) << "create directory " << parentDir << " fail, fail to create " << dir;
                 return false;
             }
         } else {
-            RA_LOG(ERROR, "create directory %s fail, parameter -p is needed",                       dir.c_str());
+            LOG(ERROR) << "create directory " << dir <<" fail, parameter -p is needed";
             return false;
         }
     }
 
     if (mkdir(dir.c_str(), 0755) < 0) {
-        RA_LOG(ERROR, "create directory %s fail, %s", 
-               dir.c_str(), strerror(errno));
+        LOG(ERROR) << "create directory " << dir << " fail " << strerror(errno);
         return false;
     }
 
@@ -161,8 +155,7 @@ bool LocalFileSystem::listDir(const std::string& path, std::vector<Entry>& entri
     struct dirent* ep;
     dp = opendir(path.c_str()); 
     if (dp == NULL) {
-        RA_LOG(ERROR, "open dir %s fail, %s", 
-               path.c_str(), strerror(errno));
+        LOG(ERROR) << "open dir " << path << " fail, " << strerror(errno);
         return false;
     }
     
@@ -178,8 +171,7 @@ bool LocalFileSystem::listDir(const std::string& path, std::vector<Entry>& entri
         }
     } 
     if (closedir(dp) < 0) {
-        RA_LOG(ERROR, "close dir %s fail, %s", 
-               path.c_str(), strerror(errno));
+        LOG(ERROR) << "close dir " << path << " fail " << strerror(errno);
         return false;
     }
     

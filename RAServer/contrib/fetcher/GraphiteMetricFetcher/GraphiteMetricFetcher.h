@@ -46,8 +46,6 @@ private:
     bool _isBatchAllocTree;
 private:
     friend class GraphiteMetricFetcherTest;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(GraphiteMetricFetcher);

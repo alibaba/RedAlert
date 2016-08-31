@@ -30,8 +30,6 @@ public:
     void testGetMetricValue();
 private:
     void checkChildrenLabel(const MetricNodePtr &parent, const std::vector<std::string> & labels);
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(fetcher);

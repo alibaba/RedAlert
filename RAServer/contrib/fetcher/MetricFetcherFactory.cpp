@@ -4,7 +4,6 @@
 #include <contrib/fetcher/MetricFetcherFactory.h>
 
 RA_BEGIN_NAMESPACE(fetcher);
-RA_LOG_SETUP(fetcher, MetricFetcherFactory);
 
 MetricFetcherPtr MetricFetcherFactory::create(std::string type) {
     if (type == "RRDMetricFetcher") {
@@ -16,7 +15,7 @@ MetricFetcherPtr MetricFetcherFactory::create(std::string type) {
     if (type == "DummyMetricFetcher") {
         return MetricFetcherPtr(new DummyMetricFetcher());
     }
-    RA_LOG(WARN, "Unknown fetcher type: '%s'", type.c_str());
+    LOG(ERROR) << "Unknown fetcher type: " << type;
     return MetricFetcherPtr();
 }
 

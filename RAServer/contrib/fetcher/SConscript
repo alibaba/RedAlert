@@ -9,7 +9,7 @@ source = [
 
 libs = [
     'graphite_fetcher', 'rrd_fetcher',
-    'dummy_fetcher', 'ra_common', 'dl','log4cplus'
+    'dummy_fetcher', 'ra_common', 'dl','glog'
 ]
 
 

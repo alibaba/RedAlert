@@ -26,8 +26,6 @@ private:
     bool mkDirInternal(const std::string& dirName);
     bool _copyFile(const std::string &src, const std::string &dest);
     bool _copyDir(const std::string &src, const std::string &dest);
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(fs);

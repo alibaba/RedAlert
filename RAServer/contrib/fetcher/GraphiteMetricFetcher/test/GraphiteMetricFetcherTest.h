@@ -42,8 +42,6 @@ public:
     void testGetAllMetricsURL();
     void testParseAllMetrics();
     void testMakeTree();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(fetcher);

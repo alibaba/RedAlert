@@ -15,7 +15,6 @@
 using namespace std;
 RA_USE_NAMESPACE(util);
 RA_BEGIN_NAMESPACE(fetcher);
-RA_LOG_SETUP(fetcher, RRDMetricFetcher);
 
 RRDMetricFetcher::RRDMetricFetcher() {
     _triesNum = 3;
@@ -33,7 +32,7 @@ bool RRDMetricFetcher::init(const OptionMap &options) {
 
 
     if (_rrdRootDir == "") {
-        RA_LOG(ERROR, "Fail to init. Miss %s and %s", RRD_ROOT.c_str());
+        LOG(ERROR) << "Fail to init. Miss %s " << RRD_ROOT;
         return false;
     }
 
@@ -56,7 +55,7 @@ MetricNodePtr RRDMetricFetcher::allocTree(int64_t start, int64_t end) {
 bool RRDMetricFetcher::getMetricName(const string &metricFileName, string &metricName) {
     size_t suffixPos = metricFileName.rfind(RRD_FILE_SUFFIX);
     if (suffixPos == string::npos || suffixPos != (metricFileName.size() - RRD_FILE_SUFFIX.size())) {
-        RA_LOG(WARN, "Invalidate filename [%s]", metricFileName.c_str()); 
+        LOG(ERROR) << "Invalidate filename " << metricFileName;
         return false;
     }
     metricName = metricFileName.substr(0,suffixPos);    
@@ -84,7 +83,7 @@ bool RRDMetricFetcher::traverse(string &path, MetricNodePtr &root) const {
     if (ok) {
         vector<string> names;
         if (!FileUtil::listDir(absolutePath, names, false)) {  
-            RA_LOG(ERROR, "Fail to listDir [%s]", absolutePath.c_str()); 
+            LOG(ERROR) << "Fail to listDir " << absolutePath;
             return false;
         }
 
@@ -100,12 +99,12 @@ bool RRDMetricFetcher::traverse(string &path, MetricNodePtr &root) const {
     } else {
         vector<string> elems = util::Util::splitString(path, "/");
         if (elems.size() <= (size_t)2) {
-            RA_LOG(ERROR, "Invalidate Path=%s", path.c_str());
+            LOG(ERROR) << "Invalidate Path=" << path;
             return false;
         }
         string metricName;
         if (!getMetricName(elems[elems.size() - 1], metricName)) {
-            RA_LOG(ERROR, "Invalidate Path=%s", path.c_str());
+            LOG(ERROR) << "Invalidate Path=" << path;
             return false;
         }
 
@@ -117,7 +116,7 @@ bool RRDMetricFetcher::traverse(string &path, MetricNodePtr &root) const {
         compareAndAddChild(parent, metricName);
         return true;
     }
-    RA_LOG(ERROR, "It is impossible to come here");
+    LOG(ERROR) << "It is impossible to come here";
     return false;
 }
 
@@ -154,7 +153,7 @@ bool RRDMetricFetcher::readRRDData(
             if (ok) {
                 vector<string> names;
                 if (!FileUtil::listDir(absolutePath, names, false)) {
-                    RA_LOG(WARN, "List %s failed!", absolutePath.c_str());
+                    LOG(ERROR) << "List " << absolutePath <<" failed!";
                     return true;
                 }
                 for(size_t j = 0; j < names.size(); ++j) {
@@ -236,7 +235,7 @@ bool RRDMetricFetcher::getMetricValue(string& rrdPath,
     }
 
     if (ret != 0) {
-        RA_LOG(ERROR, "rrd_fetch failed. rrdPath=%s, errorString=%s", rrdPath.c_str(), rrd_get_error());
+        LOG(ERROR) << "rrd_fetch failed. rrdPath=" << rrdPath << ", errorString=" << rrd_get_error();
         return false;
     }
     return true;

@@ -41,8 +41,6 @@ private:
     char endBuf[10000];
 private:
     friend class RRDMetricFetcherTest;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(RRDMetricFetcher);

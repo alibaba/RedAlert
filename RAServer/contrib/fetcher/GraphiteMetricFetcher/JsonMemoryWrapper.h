@@ -25,8 +25,6 @@ private:
 
 private:
     json_t *_value;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(JsonMemoryWrapper);

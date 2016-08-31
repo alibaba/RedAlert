@@ -17,7 +17,7 @@ libs = [
     'graphite_fetcher',
     'ra_test_util',
     'cppunit',
-    'log4cplus',
+    'glog',
 ]
 
 env.UnitTest(target = 'graphite_fetcher_test',
