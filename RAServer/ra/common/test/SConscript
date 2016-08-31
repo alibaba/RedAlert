@@ -17,7 +17,7 @@ ra_common_test_sources=  [
 
 libsname = [
     'ra_common', 'ra_util',
-    'log4cplus', 'glog',
+    'glog',
     'event', 'jansson', 'curl', 'sqlite3', 'cppunit', 'dl'
 ]
 

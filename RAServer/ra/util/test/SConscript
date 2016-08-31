@@ -16,7 +16,7 @@ ra_util_test_sources=  [
     'SqlDataTest.cpp',
     ]
 
-libsname = ['contrib_filesystem', 'ra_common', 'ra_util', 'sqlite3', 'log4cplus', 'glog', 'cppunit']
+libsname = ['contrib_filesystem', 'ra_common', 'ra_util', 'sqlite3', 'glog', 'cppunit']
 
 ra_util_test = env.UnitTest(target = 'ra_util_test',
                             source = ra_util_test_sources,

@@ -23,7 +23,7 @@ ra_app_sources = [
 libsname = ['contrib_filesystem','contrib_fetcher','ra_app', 'ra_config', 'ra_service',
             'ra_common', 'ra_tree', 'ra_process', 'ra_alarm',
             'ra_fetcher', 'ra_util', 'glib-2.0','xml2',
-            'event', 'curl', 'jansson', 'rrd',  'log4cplus', 'glog']
+            'event', 'curl', 'jansson', 'rrd',  'glog']
 
 env.compileAndInstallBinary(target = "red_alert_app",
                            sources = ra_app_sources,

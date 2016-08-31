@@ -24,7 +24,7 @@ libconfig_sources = [
 
 config_libs = [
     'ra_fetcher', 'ra_util','contrib_fetcher',
-    'log4cplus', 'curl', 'sqlite3', 'cppunit', 'dl'
+    'curl', 'sqlite3', 'cppunit', 'dl'
 ]
 
 env.compileAndInstallLibrary(target = 'ra_config',

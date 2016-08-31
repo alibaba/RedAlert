@@ -18,7 +18,7 @@ ra_alarm_test_sources=  [
 
 libsname = [
     'ra_alarm', 'ra_fetcher', 'ra_tree', 'ra_config', 'ra_test_util', 'ra_util', 'ra_common',
-    'sqlite3', 'cppunit', 'dl', 'curl','log4cplus', 'glog'
+    'sqlite3', 'cppunit', 'dl', 'curl', 'glog'
 ]
 
 ra_alarm_test = env.UnitTest(target = 'ra_alarm_test',

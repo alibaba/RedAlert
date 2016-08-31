@@ -17,7 +17,6 @@ libs = [
     'ra_util',
     'ra_test_util',
     'cppunit',
-    'log4cplus',
     'glog',
 ]
 

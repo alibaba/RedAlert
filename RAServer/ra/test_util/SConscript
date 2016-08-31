@@ -13,7 +13,7 @@ libtest_util_sources = [
 test_util_libs = [
     'ra_process', 'ra_alarm', 'ra_fetcher', 'ra_tree',
     'ra_config', 'ra_util', 'ra_common',
-    'log4cplus',  'curl', 'sqlite3', 'cppunit', 'dl'
+    'curl', 'sqlite3', 'cppunit', 'dl'
 ]
 
 ra_test_util = env.SharedLibrary(target = 'ra_test_util',

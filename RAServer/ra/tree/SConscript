@@ -14,7 +14,6 @@ tree_libs = ['ra_util', 'ra_app', 'ra_service']
 libsname = [
     'ra_app', 'ra_service',
     'ra_config', 'ra_util', 'ra_common',
-    'log4cplus',
     'protobuf', 'curl', 'sqlite3', 'cppunit', 'dl'
 ]
 

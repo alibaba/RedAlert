@@ -17,7 +17,7 @@ ra_service_test_sources=  [
 ]
 
 libsname = ['contrib_filesystem', 'ra_app', 'ra_service', 'ra_config', 'ra_util','ra_common', 'ra_fetcher',
-            'ra_tree', 'ra_process', 'log4cplus', 'glog', 'cppunit']
+            'ra_tree', 'ra_process', 'glog', 'cppunit']
 
 ra_service_test = env.UnitTest(target = 'ra_service_test',
                                source = ra_service_test_sources,

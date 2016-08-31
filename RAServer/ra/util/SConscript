@@ -16,7 +16,7 @@ libconfig_sources = [
 ]
 
 util_libs = [
-    'log4cplus', 'curl', 'sqlite3', 'cppunit', 'dl',
+    'curl', 'sqlite3', 'cppunit', 'dl',
 ]
 
   

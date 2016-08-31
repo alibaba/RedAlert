@@ -25,7 +25,7 @@ ra_process_test_sources=  [
     'AvailabilityPolicyCheckerTest.cpp', 
     ]
 
-libsname = ['ra_process', 'ra_test_util', 'ra_alarm', 'ra_fetcher', 'ra_tree', 'ra_config', 'ra_util','log4cplus', 'glog', 'cppunit']
+libsname = ['ra_process', 'ra_test_util', 'ra_alarm', 'ra_fetcher', 'ra_tree', 'ra_config', 'ra_util', 'glog', 'cppunit']
 ra_process_test = env.UnitTest(target = 'ra_process_test',
                                source = ra_process_test_sources,
                                LIBS = libsname)

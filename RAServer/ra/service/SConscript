@@ -12,7 +12,7 @@ libservice_sources = [
 service_libs = [
     'ra_app',
     'ra_config', 'ra_util', 'ra_common',
-    'event',  'log4cplus', 'curl', 'sqlite3', 'cppunit', 'dl'
+    'event',  'curl', 'sqlite3', 'cppunit', 'dl'
 ]
 
                                                     

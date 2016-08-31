@@ -13,7 +13,6 @@ libcommon_sources = [
 ]
 
 libsname = [
-    'log4cplus', 
     'event', 'jansson',
     'curl', 'sqlite3', 'dl', 'rt'
 ]

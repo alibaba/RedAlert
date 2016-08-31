@@ -22,7 +22,7 @@ libprocess_sources = [
 process_libs = [
     'ra_alarm', 'ra_fetcher', 'ra_tree',
     'ra_config', 'ra_util', 
-    'log4cplus', 'curl', 'sqlite3', 'cppunit', 'dl'
+    'curl', 'sqlite3', 'cppunit', 'dl'
 ]
 
 env.compileAndInstallLibrary(target = 'ra_process',   
