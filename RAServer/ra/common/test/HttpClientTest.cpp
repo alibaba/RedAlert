@@ -18,7 +18,9 @@ public:
     FakeHandler() :status(0) { }
 
     virtual void process(const HttpRequest* request, HttpResponse* response) {
-        RA_LOG(INFO, "method %d, uri '%s', body '%s'", request->method, request->uri.serialize().c_str(), request->body.substr(0, 80).c_str());
+        LOG(INFO) << "method " << request->method 
+		  << ", uri '" << request->uri.serialize() <<"', body '" 
+		  << request->body.substr(0, 80) << "'";
         if (status > 0) {
             response->status = status;
             return;
@@ -44,11 +46,9 @@ HttpClientTest::~HttpClientTest() {
 }
 
 void HttpClientTest::setUp() { 
-    RA_LOG(INFO, "setUp!");
 }
 
 void HttpClientTest::tearDown() { 
-    RA_LOG(INFO, "tearDown!");
 }
 
 void HttpClientTest::testInit() { 

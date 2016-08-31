@@ -18,11 +18,9 @@ JsonTest::~JsonTest() {
 }
 
 void JsonTest::setUp() {
-    RA_LOG(INFO, "setUp!");
 }
 
 void JsonTest::tearDown() {
-    RA_LOG(INFO, "tearDown!");
 }
 
 void JsonTest::testLoad() {
@@ -39,11 +37,11 @@ void JsonTest::testLoad() {
     json = Json::load("[1,2,3]");
     CPPUNIT_ASSERT(json);
     CPPUNIT_ASSERT(json->isArray());
-    RA_LOG(INFO, "Array: %s", json->dump().c_str());
+    LOG(INFO) << "Array: " << json->dump();
     json = Json::load("{\"key\":\"value\"}");
     CPPUNIT_ASSERT(json);
     CPPUNIT_ASSERT(json->isObject());
-    RA_LOG(INFO, "Object: %s", json->dump().c_str());
+    LOG(INFO) << "Object: " << json->dump();
 }
 
 JsonPtr genNestedJson(size_t depth, size_t &count) {
@@ -82,7 +80,7 @@ void JsonTest::testDump() {
         size_t count = 0;
         JsonPtr root = genNestedJson(depth, count);
         string serialized = root->dump();
-        RA_LOG(INFO, "Json (depth %zu): %s", depth, serialized.c_str());
+        LOG(INFO) << "Json (depth " << depth << "): " << serialized;
         CPPUNIT_ASSERT(Json::load(serialized));
     }
 }

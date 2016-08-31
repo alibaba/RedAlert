@@ -13,8 +13,9 @@ AlarmLog::~AlarmLog() {
 
 void AlarmLog::writeLog()
 {
-    RA_LOG(INFO, "alarmLevel:[%s], alarmGroup:[%s], alarmMsg:[%s], description:[%s]",
-           _alarmLevel.c_str(), _alarmGroup.c_str(), _alarmMsg.c_str(), _description.c_str());
+    LOG(INFO) << "alarmLevel:[" << _alarmLevel << "], alarmGroup:["
+	      << _alarmGroup << "], alarmMsg:[" << _alarmMsg 
+	      <<"], description:[" << _description <<"]";
 }
 
 RA_END_NAMESPACE(common);

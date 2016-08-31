@@ -5,6 +5,7 @@
 #include <log4cplus/logger.h>
 #include <log4cplus/configurator.h>
 #include <log4cplus/loggingmacros.h>
+#include <glog/logging.h>
 
 #define RA_ROOT_LOG_SETLEVEL(level) log4cplus::Logger::getRoot().setLogLevel(level ## _LOG_LEVEL)
 #define RA_LOG_CONFIG(filename) log4cplus::PropertyConfigurator::doConfigure(filename)

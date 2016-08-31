@@ -143,7 +143,7 @@ void JsonObject::get(const std::string& key, T& value, const T& defaultValue) co
     if (iter != end() && fromJson(iter->second, value)) {
         return;
     }
-    RA_LOG(INFO, "Return default value for key '%s'", key.c_str());
+    LOG(INFO) << "Return default value for key " << key;
     value = defaultValue;
 }
 

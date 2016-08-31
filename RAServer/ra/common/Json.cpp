@@ -44,12 +44,12 @@ JsonPtr Json::load(const string& input) {
     json_error_t error;
     json_t *root = json_loads(input.c_str(), 0, &error);
     if (root == NULL) {
-        RA_LOG(WARN, "Json load error: on line %d: %s\n", error.line, error.text);
+        LOG(ERROR) << "Json load error: on line " << error.line << ": " << error.text;
         return JsonPtr();
     }
     JsonPtr json = toJson(root);
     if (json == NULL) {
-        RA_LOG(WARN, "Json load error: result is NULL");
+        LOG(ERROR) << "Json load error: result is NULL";
     }
     json_decref(root);
     return json;

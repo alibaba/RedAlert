@@ -63,7 +63,7 @@ HttpClient::~HttpClient() {
 bool HttpClient::init() {
     _eventBase = event_base_new();
     if (_eventBase == NULL) {
-        RA_LOG(ERROR, "Cannot create event base");
+        LOG(ERROR) << "Cannot create event base";
         return false;
     }
     return true;
@@ -71,7 +71,7 @@ bool HttpClient::init() {
 
 evhttp_connection* HttpClient::createConnection(string host, uint16_t port) {
     if (_eventBase == NULL) {
-        RA_LOG(ERROR, "Event base is NULL: client is not appropriately initialized");
+        LOG(ERROR) << "Event base is NULL: client is not appropriately initialized";
         return NULL;
     }
     struct evhttp_connection *conn = evhttp_connection_base_new(_eventBase, NULL, host.c_str(), port);
@@ -103,7 +103,7 @@ struct evhttp_connection *HttpClient::getConnection(string host, uint16_t port) 
 void HttpClient::httpRequestDone(struct evhttp_request *req, void *ctx) {
     HttpResponse* response = (HttpResponse *)ctx;
     if (req == NULL) {
-        RA_LOG(WARN, "Request is NULL in callback, no idea what happens");
+        LOG(WARNING) << "Request is NULL in callback, no idea what happens";
         response->status = HTTP_RESP_SERVUNAVAIL;
         return;
     }
@@ -114,7 +114,7 @@ void HttpClient::httpRequestDone(struct evhttp_request *req, void *ctx) {
         size_t bodyLen = evbuffer_get_length(body);
         char *buffer = (char *)malloc(bodyLen);
         if (buffer == NULL) {
-            RA_LOG(WARN, "Cannot allocate memory for body buffer");
+            LOG(WARNING) << "Cannot allocate memory for body buffer";
             response->status = HTTP_RESP_SERVUNAVAIL;
             return;
         }
@@ -154,30 +154,30 @@ bool HttpClient::request(enum HTTP_REQUEST_TYPE method, string url,
     map<string, string>::const_iterator iter;
 
     if (response == NULL) {
-        RA_LOG(WARN, "Invalid argument: http response is NULL");
+        LOG(WARNING) << "Invalid argument: http response is NULL";
         goto fail;
     }
     evhttpUri = evhttp_uri_parse(url.c_str());
     if (evhttpUri == NULL) {
-        RA_LOG(WARN, "Invalid argument: cannot parse url '%s'", url.c_str());
+        LOG(WARNING) << "Invalid argument: cannot parse url " << url;
         goto fail;
     }
     host = evhttp_uri_get_host(evhttpUri);
     if (host == NULL) {
-        RA_LOG(WARN, "Invalid argument: no host found in url '%s'", url.c_str());
+        LOG(ERROR) << "Invalid argument: no host found in url " << url;
         goto fail;
     }
     port = evhttp_uri_get_port(evhttpUri);
     if (port == -1) port = 80;
     conn = getConnection(host, port);
     if (conn == NULL) {
-        RA_LOG(WARN, "Cannot get connection to '%s:%d'", host, port);
+        LOG(ERROR) << "Cannot get connection to '" <<host <<":" <<port <<"'";
         goto fail;
     }
 
     evhttpRequest = evhttp_request_new(HttpClient::httpRequestDone, (void *)response);
     if (evhttpRequest == NULL) {
-        RA_LOG(WARN, "Cannot create http request");
+        LOG(ERROR) << "Cannot create http request";
         goto fail;
     }
     evHeaders = evhttp_request_get_output_headers(evhttpRequest);
@@ -204,7 +204,7 @@ bool HttpClient::request(enum HTTP_REQUEST_TYPE method, string url,
     if (path) scratch.append(path);
     if (query) scratch.append(string("?") + query);
     if (evhttp_make_request(conn, evhttpRequest, (enum evhttp_cmd_type)method, scratch.c_str()) != 0) {
-        RA_LOG(WARN, "Cannot send http request to '%s:%d'", host, port);
+        LOG(ERROR) << "Cannot send http request to '" << host << ":" <<port << "'";
         goto fail;
     }
     event_base_dispatch(_eventBase);

@@ -18,7 +18,9 @@ CPPUNIT_TEST_SUITE_REGISTRATION(HttpServerTest);
 class EchoHandler: public HttpRequestHandler {
 public:
     virtual void process(const HttpRequest* request, HttpResponse* response) {
-        RA_LOG(INFO, "method %d, uri '%s', body '%s'", request->method, request->uri.serialize().c_str(), request->body.substr(0, 80).c_str());
+        LOG(INFO) << "method " << request->method << ", uri '" 
+		  << request->uri.serialize() <<  "', body '"
+		  << request->body.substr(0, 80) << "'";
         response->status = HTTP_RESP_OK;
         response->message = "OK";
         response->body = request->body;
@@ -37,16 +39,14 @@ HttpServerTest::~HttpServerTest() {
 }
 
 void HttpServerTest::LibeventLogCallback(int severity, const char* msg) {
-    RA_LOG(INFO, "libevent: %s", msg);
+    LOG(INFO) << "libevent: " << msg;
 }
 
 void HttpServerTest::setUp() {
-    RA_LOG(INFO, "setUp!");
     event_set_log_callback(HttpServerTest::LibeventLogCallback);
 }
 
 void HttpServerTest::tearDown() {
-    RA_LOG(INFO, "tearDown!");
 }
 
 void HttpServerTest::testStartAndStop() {

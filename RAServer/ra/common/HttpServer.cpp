@@ -52,7 +52,7 @@ bool InternalRequestHandler::convertEvhttpRequest(struct evhttp_request* request
     httpRequest->method = (enum HTTP_REQUEST_TYPE)evhttp_request_get_command(request);
     const struct evhttp_uri *uri = evhttp_request_get_evhttp_uri(request);
     if (uri == NULL) {
-        RA_LOG(WARN, "Uri is NULL");
+        LOG(WARNING) << "Uri is NULL";
         return false;
     }
     const char *path = evhttp_uri_get_path(uri);
@@ -62,7 +62,7 @@ bool InternalRequestHandler::convertEvhttpRequest(struct evhttp_request* request
     const char *query = evhttp_uri_get_query(uri);
     if (query) {
         if (evhttp_parse_query_str(query, &arguments) != 0) {
-            RA_LOG(WARN, "Cannot parse query '%s'", query);
+            LOG(WARNING) << "Cannot parse query '" << query << "'";
         }
     }
     struct evkeyval *argument;
@@ -75,7 +75,7 @@ bool InternalRequestHandler::convertEvhttpRequest(struct evhttp_request* request
     size_t bodyLen = evbuffer_get_length(body);
     char *buffer = (char *)malloc(bodyLen);
     if (buffer == NULL) {
-        RA_LOG(WARN, "Cannot allocate memory of size '%zu'", bodyLen);
+        LOG(WARNING) << "Cannot allocate memory of size '" << bodyLen << "'";
         return false;
     }
     evbuffer_copyout(body, buffer, bodyLen);
@@ -92,7 +92,7 @@ void InternalRequestHandler::sendResponse(struct evhttp_request* request, HttpRe
     }
     struct evbuffer *responseBuffer = evbuffer_new();
     if (responseBuffer == NULL) {
-        RA_LOG(WARN, "Cannot create response buffer");
+        LOG(WARNING) << "Cannot create response buffer";
         sendResponse(request, HTTP_RESP_INTERNAL, "Internal Server Error");
         return;
     }
@@ -117,7 +117,7 @@ void InternalRequestHandler::handle(struct evhttp_request* request) {
         return;
     }
     if (_userHandler == NULL) {
-        RA_LOG(WARN, "User handler is NULL");
+        LOG(WARNING) << "User handler is NULL";
         sendResponse(request, HTTP_RESP_NOTFOUND, "User Handler is NULL");
         return;
     }
@@ -133,7 +133,7 @@ public:
             : InternalRequestHandler(server, NULL) { }
 
     virtual void handle(evhttp_request* request) {
-        RA_LOG(INFO, "Get request to stop server");
+        LOG(INFO) << "Get request to stop server";
         sendResponse(request, HTTP_RESP_OK, "OK Stop Server");
         exitLoop();
     }
@@ -147,7 +147,7 @@ public:
             : InternalRequestHandler(server, NULL) { }
 
     virtual void handle(evhttp_request* request) {
-        RA_LOG(INFO, "Cannot find handler for uri '%s'", evhttp_request_get_uri(request));
+        LOG(INFO) << "Cannot find handler for uri '" << evhttp_request_get_uri(request)  <<"'";
         sendResponse(request, HTTP_RESP_NOTFOUND, "Not Found");
     }
 };
@@ -181,16 +181,17 @@ bool HttpServer::init(string host, uint16_t port) {
     _port = port;
     _eventBase = event_base_new();
     if (_eventBase == NULL) {
-        RA_LOG(ERROR, "Cannot create an event base");
+        LOG(ERROR) << "Cannot create an event base";
         return false;
     }
     _httpServer = evhttp_new(_eventBase);
     if (_httpServer == NULL) {
-        RA_LOG(ERROR, "Cannot create a HTTP server");
+        LOG(ERROR) << "Cannot create a HTTP server";
         return false;
     }
     if (evhttp_bind_socket(_httpServer, host.c_str(), port) != 0) {
-        RA_LOG(ERROR, "Cannot bind address: %s:%d", host.c_str(), port);
+        LOG(ERROR) << "Cannot bind address: "
+		   << host <<":"<< port;
         return false;
     }
     InternalRequestHandler *stopServerHandler = new StopServerHandler(this);
@@ -199,21 +200,21 @@ bool HttpServer::init(string host, uint16_t port) {
     _internalHandlers.push_back(notFoundHandler);
     evhttp_set_gencb(_httpServer, HttpServer::handleRequest, notFoundHandler);
     if (evhttp_set_cb(_httpServer, _stopServerPath.c_str(), HttpServer::handleRequest, stopServerHandler) != 0) {
-        RA_LOG(ERROR, "Cannot set up stop handler for http server");
+        LOG(ERROR) << "Cannot set up stop handler for http server";
         return false;
     }
-    RA_LOG(INFO, "Successfully initialize http server '%s:%d'", host.c_str(), port);
+    LOG(INFO) << "Successfully initialize http server '" << host << ":" << port <<"'";
     return true;
 }
 
 bool HttpServer::start() {
     if (pthread_create(&_thread, NULL, &HttpServer::eventLoop, this) != 0) {
-        RA_LOG(ERROR, "Cannot start thread for http server");
+        LOG(ERROR) << "Cannot start thread for http server";
         return false;
     }
     _isRunning = true;
-    RA_LOG(INFO, "Successfully start http server '%s:%d'", _host.c_str(), _port);
-    RA_LOG(INFO, "Secret stop path is 'http://%s:%d%s'", _host.c_str(), _port, _stopServerPath.c_str());
+    LOG(INFO) << "Successfully start http server '" << _host << ":" << _port <<"'";
+    LOG(INFO) << "Secret stop path is 'http://"<< _host <<":" << _port <<  _stopServerPath;
     return true;
 }
 
@@ -225,25 +226,25 @@ void *HttpServer::eventLoop(void* arg) {
 
 bool HttpServer::stop() {
     if (!_isRunning) return true;
-    RA_LOG(INFO, "Try to stop http server '%s:%d'", _host.c_str(), _port);
+    LOG(INFO) << "Try to stop http server '" << _host << ":" << _port <<"'";
     HttpClient client;
     if (!client.init()) {
-        RA_LOG(WARN, "Cannot initialize client for sending stop request");
+        LOG(WARNING) << "Cannot initialize client for sending stop request";
         return false;
     }
     HttpRequest request(HTTP_REQ_GET, _host, _port, _stopServerPath);
     HttpResponse response;
     if (!client.request(&request, &response)) {
-        RA_LOG(WARN, "Cannot send stop request");
+        LOG(WARNING) << "Cannot send stop request";
         return false;
     }
     if (response.status != HTTP_RESP_OK) {
-        RA_LOG(WARN, "Cannot stop http server");
+        LOG(WARNING) << "Cannot stop http server";
         return false;
     }
     _isRunning = false;
     pthread_join(_thread, NULL);
-    RA_LOG(INFO, "Successfully stop http server '%s:%d'", _host.c_str(), _port);
+    LOG(INFO) << "Successfully stop http server '" << _host <<": " << _port << "'";
     return true;
 }
 
@@ -254,17 +255,17 @@ void HttpServer::handleRequest(struct evhttp_request* request, void* arg) {
 
 bool HttpServer::registerHandler(string path, HttpRequestHandler* handler) {
     if (handler == NULL) {
-        RA_LOG(WARN, "Handler for path '%s' is NULL", path.c_str());
+        LOG(WARNING) << "Handler for path '" << path << "' is NULL";
         return false;
     }
     InternalRequestHandler *internalHandler = new InternalRequestHandler(this, handler);
     if (evhttp_set_cb(_httpServer, path.c_str(), HttpServer::handleRequest, internalHandler) != 0) {
         delete internalHandler;
-        RA_LOG(WARN, "Cannot register handler for path '%s'", path.c_str());
+        LOG(WARNING) << "Cannot register handler for path '" << path << "'";
         return false;
     }
     _internalHandlers.push_back(internalHandler);
-    RA_LOG(INFO, "Successfully register handler for path '%s'", path.c_str());
+    LOG(INFO) << "Successfully register handler for path '" << path << "'";
     return true;
 }
 
