@@ -16,16 +16,12 @@ ConsistentHashTest::~ConsistentHashTest() {
 }
 
 void ConsistentHashTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void ConsistentHashTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void ConsistentHashTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     ConsistentHash hash;
 
     const string* name = hash.getService(1);

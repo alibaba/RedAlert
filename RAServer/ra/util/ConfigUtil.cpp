@@ -17,12 +17,12 @@ ConfigUtil::~ConfigUtil() {
 int32_t ConfigUtil::getMaxConfigVersion(const string& configRoot)
 {
     if(!FileUtil::isDir(configRoot)) {
-        RA_LOG(ERROR, "assert config dir[%s] is dir failed!", configRoot.c_str());
+        LOG(ERROR) << "assert config dir[" << configRoot << "] is dir failed!";
         return false;
     }
     vector<string> entryVec;
     if (!FileUtil::listDir(configRoot, entryVec, false)) {
-        RA_LOG(ERROR, "list config dir[%s] failed!", configRoot.c_str());
+        LOG(ERROR) << "list config dir[" << configRoot << "] failed!";
         return false;
     }
     int ret = INVALID_CONFIG_VERSION;
@@ -48,12 +48,12 @@ bool ConfigUtil::prepareConfigRoot(const string& configRoot)
 {
     if (!FileUtil::isExist(configRoot)) {
         if (!FileUtil::mkDir(configRoot, false)) {
-            RA_LOG(ERROR, "mkdir config root dir[%s] failed", configRoot.c_str());
+            LOG(ERROR) << "mkdir config root dir[" << configRoot << "] failed";
             return false;
         }
     }
     if (!FileUtil::isDir(configRoot)) {
-        RA_LOG(ERROR, "path [%s] exists but not a folder", configRoot.c_str());
+        LOG(ERROR) << "path [" << configRoot << "] exists but not a folder";
         return false;
     }
     return true;

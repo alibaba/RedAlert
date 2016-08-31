@@ -18,15 +18,12 @@ UtilTest::~UtilTest() {
 }
 
 void UtilTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void UtilTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void UtilTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void UtilTest::testPatternMatch()
@@ -140,7 +137,6 @@ void UtilTest::testSplitString() {
         CPPUNIT_ASSERT_EQUAL(string(), joined);
     }
     {
-        RA_LOG(DEBUG, "Begin Test!");
         string path = "/a/b/c/d";
         vector<string> elems = Util::splitString(path, "/");
         CPPUNIT_ASSERT_EQUAL((size_t)4, elems.size());
@@ -209,7 +205,7 @@ void UtilTest::testGetLocalAddress() {
     CPPUNIT_ASSERT(Util::getLocalAddress(remoteHost, remotePort, localAddr));
     CPPUNIT_ASSERT(Util::getLocalAddress(remoteHost, remotePort, localAddr));
     CPPUNIT_ASSERT(Util::getLocalAddress(remoteHost, remotePort, localAddr));
-    RA_LOG(INFO, "Local address: '%s'", localAddr.c_str());
+    LOG(INFO) << "Local address: " << localAddr;
     CPPUNIT_ASSERT_EQUAL(remoteHost, localAddr);
 }
 

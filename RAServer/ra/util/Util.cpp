@@ -156,7 +156,7 @@ std::string Util::urlEncode( const std::string &c )
 bool Util::getLocalAddress(const std::string& remoteHost, uint16_t remotePort, std::string& localHost) {
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     if (socket < 0) {
-        RA_LOG(WARN, "Cannot create socket, errno: %d", errno);
+        LOG(ERROR) << "Cannot create socket, errno: " << errno;
         close(sock);
         return false;
     }
@@ -166,13 +166,14 @@ bool Util::getLocalAddress(const std::string& remoteHost, uint16_t remotePort, s
     remoteAddr.sin_port = htons(remotePort);
     int err = inet_pton(AF_INET, remoteHost.c_str(), &remoteAddr.sin_addr);
     if (err <= 0) {
-        RA_LOG(WARN, "Cannot convert '%s' to network address, errno: %d", remoteHost.c_str(), errno);
+        LOG(ERROR) << "Cannot convert '" << remoteHost 
+		     << "' to network address, errno: " << errno;
         close(sock);
         return false;
     }
     err = connect(sock, (struct sockaddr *)&remoteAddr, sizeof(remoteAddr));
     if (err < 0) {
-        RA_LOG(WARN, "Cannot connect to '%s:%d', errno: %d", remoteHost.c_str(), remotePort, errno);
+        LOG(ERROR) << "Cannot connect to '" << remoteHost << ":" << remotePort <<"', errno: " << errno;
         close(sock);
         return false;
     }
@@ -182,15 +183,16 @@ bool Util::getLocalAddress(const std::string& remoteHost, uint16_t remotePort, s
     err = getsockname(sock, (struct sockaddr *)&localAddr, &addrLen);
     close(sock);
     if (err < 0) {
-        RA_LOG(WARN, "Error in calling getsockname, errno: %d", errno);
+        LOG(ERROR) << "Error in calling getsockname, errno: " << errno;
         return false;
     }
     if (((struct sockaddr *)&localAddr)->sa_family != AF_INET) {
-        RA_LOG(WARN, "Error: address type is not AF_INET, type: %d, len: %u", ((struct sockaddr *)&localAddr)->sa_family, addrLen);
+        LOG(WARNING) << "Error: address type is not AF_INET, type: "
+		     << ((struct sockaddr *)&localAddr)->sa_family << ", len: " << addrLen;
     }
     char addrBuffer[INET_ADDRSTRLEN];
     if (inet_ntop(AF_INET, &localAddr.sin_addr, addrBuffer, sizeof(addrBuffer)) == NULL) {
-        RA_LOG(WARN, "Cannot convert network address to dotted-decimal format, errno: %d", errno);
+        LOG(ERROR) << "Cannot convert network address to dotted-decimal format, errno: " << errno;
         return false;
     }
     localHost.assign(addrBuffer);

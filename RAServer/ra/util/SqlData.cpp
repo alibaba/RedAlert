@@ -29,35 +29,35 @@ bool SqlData::load(const std::string& tableName, const vector<string>& columns)
 {
     if (_isLoad)
     {
-        RA_LOG(ERROR, "you have already load data, please close first");
+        LOG(ERROR) << "you have already load data, please close first";
         return false;
     }
 
     if (!FileUtil::localFileExist(_filePath))
     {
-        RA_LOG(ERROR, "file [%s] does not exist", _filePath.c_str());
+        LOG(ERROR) << "file [" << _filePath << "] does not exist";
         return false;
     }
     int err = sqlite3_open(_filePath.c_str(), &_db);
     if (err != SQLITE_OK)
     {
-        RA_LOG(ERROR, "failed to open sqlite file [%s], err: %d", _filePath.c_str(), err);
+        LOG(ERROR) << "failed to open sqlite file [" << _filePath << "], err: " << err;
         close();
         return false;
     }
-    RA_LOG(INFO, "open sqlite file [%s] success", _filePath.c_str());
+    LOG(INFO) << "open sqlite file [" << _filePath << "] success";
 
     string columnExpr = "*";
     if (!columns.empty()) columnExpr = Util::joinString(columns, ",");
     string cmd = "SELECT " + columnExpr + " FROM " + tableName;
     err = sqlite3_get_table(_db, cmd.c_str(), &_sqlResult, &_row, &_col, NULL);
     if (err != SQLITE_OK) {
-        RA_LOG(INFO, "Error in query database, err: %d", err);
+        LOG(INFO) << "Error in query database, err: " << err;
         close();
         return false;
     }
-    RA_LOG(INFO, "read table [%s], row [%d], col [%d]: '%s'",
-           tableName.c_str(), _row, _col, columnExpr.c_str());
+    LOG(INFO) << "read table [" << tableName << "], row [" 
+	      << _row << "], col [" << _col << "]: " << columnExpr;
     _isLoad = true;
     return true;
 }
@@ -82,12 +82,12 @@ bool SqlData::getRow(int32_t row, vector<string>& out) const
     out.clear();
     if (!_isLoad)
     {
-        RA_LOG(ERROR, "sqlite has not loaded");
+        LOG(ERROR) << "sqlite has not loaded";
         return false;
     }
     if (row >= _row)
     {
-        RA_LOG(ERROR, "max row is [%d]", _row);
+        LOG(ERROR) << "max row is [" << _row <<"]";
         return false;
     }
     for (int32_t col = 0; col < _col; ++col)
@@ -102,12 +102,12 @@ bool SqlData::getValue(int32_t row, int32_t col, string& out) const
     out = string("");
     if (!_isLoad)
     {
-        RA_LOG(ERROR, "sqlite has not loaded");
+        LOG(ERROR) << "sqlite has not loaded";
         return false;
     }
     if (row >= _row || col >= _col)
     {
-        RA_LOG(ERROR, "max row is [%d], max col is [%d]", _row, _col);
+        LOG(ERROR) << "max row is [" << _row << "], max col is [" << _col << "]";
         return false;
     }
     out = string(_sqlResult[(row + 1) * _col + col]);

@@ -18,7 +18,7 @@ FileUtil::~FileUtil() {
 
 bool FileUtil::init(FileSystemPtr fs) {
     if (fs == NULL) {
-        RA_LOG(INFO, "File system is NULL");
+        LOG(INFO) << "File system is NULL";
         return false;
     }
     _fs = fs;
@@ -47,7 +47,7 @@ bool FileUtil::listDir(const std::string &path,
         vector<FileSystem::Entry> children;
         bool ok = _fs->listDir(absPath, children, false);
         if (!ok) {
-            RA_LOG(ERROR, "List dir recursive failed, path [%s]", absPath.c_str());
+            LOG(ERROR) << "List dir recursive failed, path [" << absPath <<"]";
             return false;
         }
         for (size_t i = 0; i < children.size(); i++) {
@@ -94,13 +94,13 @@ bool FileUtil::mkDir(const string &dirName,  bool recursive)
 {
     if (!_fs->isExist(dirName)) {
         if (!_fs->mkDir(dirName, recursive)) {
-            RA_LOG(ERROR, "create dir failed, dir:[%s]", dirName.c_str());
+            LOG(ERROR) << "create dir failed, dir:[" << dirName << "]";
             return false;
         }
         return true;
     }
     if (!_fs->isDirectory(dirName)) {
-        RA_LOG(ERROR, "create dir failed, [%s] exists but not a directory", dirName.c_str());
+        LOG(ERROR) << "create dir failed, [" << dirName <<"] exists but not a directory";
         return false;
     }
     return true;

@@ -19,7 +19,6 @@ SqlDataTest::~SqlDataTest() {
 }
 
 void SqlDataTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
     sqlite3 *db = NULL;
     int rc;
 
@@ -45,13 +44,10 @@ void SqlDataTest::setUp() {
 }
 
 void SqlDataTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
     FileUtil::removeLocalFile(_filePath);
 }
 
 void SqlDataTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     SqlData data(_filePath);
     CPPUNIT_ASSERT_EQUAL(_filePath, data.getFilePath());
     CPPUNIT_ASSERT(data.load("TestTable"));
@@ -89,8 +85,6 @@ void SqlDataTest::testSimpleProcess() {
 }
 
 void SqlDataTest::testLoadFailed() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     SqlData data("invalid.db");
     CPPUNIT_ASSERT(!data.load("TestTable"));
 
@@ -105,7 +99,6 @@ void SqlDataTest::testLoadFailed() {
 }
 
 void SqlDataTest::testGetRow() {
-    RA_LOG(DEBUG, "Begin Test!");
     SqlData data(_filePath);
     CPPUNIT_ASSERT(data.load("TestTable"));
     vector<string> row;
