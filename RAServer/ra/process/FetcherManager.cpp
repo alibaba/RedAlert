@@ -37,15 +37,15 @@ bool FetcherManager::init(AlarmManager* alarmManager, size_t threadNum,
                           CheckerManager* checkManager)
 {
     if (NULL == alarmManager) {
-        RA_LOG(ERROR, "alarmManager is NULL, init FetcherManager failed");
+        LOG(ERROR) << "alarmManager is NULL, init FetcherManager failed";
         return false;
     }
     if (NULL == checkManager) {
-        RA_LOG(ERROR, "checker pool is NULL, init FetcherManager failed");
+        LOG(ERROR) << "checker pool is NULL, init FetcherManager failed";
         return false;
     }
     if (0 == retrieveMetricsPointCount) {
-        RA_LOG(ERROR, "retrieveMetricsPointCount is 0, init FetcherManager failed");
+        LOG(ERROR) << "retrieveMetricsPointCount is 0, init FetcherManager failed";
         return false;
     }
     _alarmManager = alarmManager;
@@ -57,22 +57,22 @@ bool FetcherManager::init(AlarmManager* alarmManager, size_t threadNum,
     _retrieveMetricsPointCount = retrieveMetricsPointCount;
     _checkManager = checkManager;
 
-    RA_LOG(INFO, "Fetcher Manager inited success: threadNum:%zu, queueSize:%zu"
-           "internalAlarmGroup:%s, internalAlarmLevel:%s, retrieveMetricsPointCount:%u",
-           _threadNum, _queueSize, _internalAlarmGroup.c_str(), 
-           _internalAlarmLevel.c_str(), _retrieveMetricsPointCount);
-
+    LOG(INFO) << "Fetcher Manager inited success: threadNum:" 
+	      << _threadNum <<", queueSize:" << _queueSize
+	      << "internalAlarmGroup:" << _internalAlarmGroup 
+	      <<", internalAlarmLevel:" << _internalAlarmLevel 
+	      << ", retrieveMetricsPointCount:" << _retrieveMetricsPointCount;
     return true;
 }
 
 bool FetcherManager::start()
 {
     if (NULL == _alarmManager || NULL == _checkManager) {
-        RA_LOG(ERROR, "can not start FetcherManager thread pool whithout inited");
+        LOG(ERROR) << "can not start FetcherManager thread pool whithout inited";
         return false;
     }
     if (_started) {
-        RA_LOG(ERROR, "can not start FetcherManager thread twice");
+        LOG(ERROR) << "can not start FetcherManager thread twice";
         return false;
     }
     _fetcherPool = new util::ThreadPool(_threadNum, _queueSize);
@@ -80,11 +80,11 @@ bool FetcherManager::start()
     if (!_fetcherPool->start()) {
         delete _fetcherPool;
         _fetcherPool = NULL;
-        RA_LOG(ERROR, "fetcher thread start fail!");
+        LOG(ERROR) << "fetcher thread start fail!";
         return false;
     }
     _started = true;
-    RA_LOG(INFO, "Fetcher manager start success");
+    LOG(INFO) << "Fetcher manager start success";
     return true;
 }
 
@@ -109,7 +109,7 @@ size_t FetcherManager::getQueueItemCount() const
 bool FetcherManager::pushProcessPackage(ProcessPackagePtr& processPackage)
 {
     if (!_started || NULL == _fetcherPool) {
-        RA_LOG(ERROR, "can not push processPackage whithout started fetcher manager");
+        LOG(ERROR) << "can not push processPackage whithout started fetcher manager";
         return false;
     }
     if (isNeedSetAlarmCodeOk(processPackage)) {
@@ -119,12 +119,12 @@ bool FetcherManager::pushProcessPackage(ProcessPackagePtr& processPackage)
             _checkManager, _alarmManager);
     if (!_fetcherPool->push(workItem)) {
         delete workItem;
-        RA_LOG(ERROR, "push process package for fetch fail");
+        LOG(ERROR) << "push process package for fetch fail";
         return false;
     }
-    RA_LOG(DEBUG, "push process package to fetcher pool success, metric:%s, id:%u", 
-           processPackage->getRequestPackage()->getPolicyItem()->getMetric().c_str(),
-           processPackage->getRequestPackage()->getPolicyItem()->getId());
+    VLOG(1) << "push process package to fetcher pool success, metric:" 
+	    << processPackage->getRequestPackage()->getPolicyItem()->getMetric() <<", id:"
+	    << processPackage->getRequestPackage()->getPolicyItem()->getId();
     return true;
 }
 
@@ -159,7 +159,6 @@ bool FetcherManager::getMetricTree(
 bool FetcherManager::retrieveMetrics(
     ProcessPackagePtr& processPackage, int64_t curTimeUs)
 {
-    int64_t fetchPackageStartTimeUs = Util::currentTimeInMicroseconds();
     const RequestPackagePtr requestPackage = processPackage->getRequestPackage();
     assert(NULL != requestPackage);
     const ConfigWrapperPtr &configPtr = requestPackage->getConfig();
@@ -170,16 +169,16 @@ bool FetcherManager::retrieveMetrics(
     size_t timeRangeCount = retrieveTimeRangeVec.size();
     if (0 == timeRangeCount) {
         PolicyConfigItemBasePtr policyItem =  requestPackage->getPolicyItem();
-        RA_LOG(ERROR, "There is no retrieve timeRange of policy item, "
-               "maybe policy config is not correct, metric:%s, id:%u",
-               policyItem->getMetric().c_str(), policyItem->getId());
+        LOG(ERROR) << "There is no retrieve timeRange of policy item, "
+	    "maybe policy config is not correct, metric:" << policyItem->getMetric() 
+	    << ", id:" << policyItem->getId();
         return false;
     }
 
     StringSet specSet;
     requestPackage->getSpecs(specSet);
     if (specSet.empty()) {
-        RA_LOG(INFO, "Spec set is empty");
+        LOG(INFO) << "Spec set is empty";
         return true;
     }
 
@@ -194,7 +193,7 @@ bool FetcherManager::retrieveMetrics(
             MetricNodePtr metricRoot = requestPackage->getMetricRoot(spec);
             MetricFetcherPtr fetcher = getMetricFetcher(configPtr, spec);
             if (fetcher == NULL) {
-                RA_LOG(WARN, "Cannot find fetcher for '%s'", spec.c_str());
+                LOG(ERROR) << "Cannot find fetcher for " <<  spec;
                 return false;
             }
             MetricNodePtr dataRoot = fetcher->retrieve(metricRoot, startTime, endTime, timeStep);
@@ -206,8 +205,8 @@ bool FetcherManager::retrieveMetrics(
             metricDataRoots[i].swap(dataRoot);
         }
     }
-    int64_t fetchPackageEndTimeUs = Util::currentTimeInMicroseconds();
-    RA_LOG(DEBUG, "Retrieve %zu metric data roots", metricDataRoots.size());
+
+    VLOG(1) << "Retrieve " << metricDataRoots.size() << " metric data roots";
     processPackage->setMetricDataRoots(metricDataRoots);
     return true;
 }
@@ -230,13 +229,13 @@ bool FetcherManager::isNeedSetAlarmCodeOk(ProcessPackagePtr& processPackage)
 void FetcherManager::pushInternalAlarmMessage(const string& alarmMsgStr, 
         const ConfigWrapperPtr& configPtr, MsgCode code)
 {
-    RA_LOG(ERROR, "%s", alarmMsgStr.c_str());
+    LOG(ERROR) << alarmMsgStr;
     InternalAlarmMsgPtr internalAlarmMsgPtr(new InternalAlarmMsg(
                 _internalAlarmGroup, _internalAlarmLevel, 
                 _interalMinAlarmInterval, configPtr, code));
     internalAlarmMsgPtr->setAlarmMsgStr(alarmMsgStr);
     if (_alarmManager == NULL) {
-        RA_LOG(ERROR, "alarm manager is NULL");
+        LOG(ERROR) << "alarm manager is NULL";
         return;
     }
 
@@ -244,7 +243,7 @@ void FetcherManager::pushInternalAlarmMessage(const string& alarmMsgStr,
     _alarmManager->pushAlarmMessage(alarmMsgPtr);
 
     if (code == CODE_OK) {
-        RA_LOG(INFO, "set internal alarm code to OK");
+        LOG(INFO) << "set internal alarm code to OK";
         _lastNonOkAlarmTimeSec = INVALID_TIME;
     }
     else {

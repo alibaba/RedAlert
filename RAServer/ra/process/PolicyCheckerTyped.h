@@ -28,7 +28,7 @@ bool PolicyCheckerTyped<PolicyItemType>::init(
     }
     _policyItem = std::tr1::dynamic_pointer_cast<PolicyItemType>(_requestPackage->getPolicyItem());
     if (_policyItem == NULL) {
-        RA_LOG(ERROR, "Cannot initialize policy checker: policy item is NULL");
+        LOG(ERROR) << "Cannot initialize policy checker: policy item is NULL";
         return false;
     }
     return true;

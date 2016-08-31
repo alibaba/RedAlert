@@ -26,7 +26,7 @@ bool CheckerManager::init(size_t threadNum, size_t queueSize,
                           AlarmManager* alarmManager)
 {
     if (NULL == alarmManager) {
-        RA_LOG(ERROR, "alarmManager is NULL , init CheckerManager failed");
+        LOG(ERROR) << "alarmManager is NULL , init CheckerManager failed";
         return false;
     }
     _threadNum = threadNum;
@@ -34,8 +34,7 @@ bool CheckerManager::init(size_t threadNum, size_t queueSize,
     _alarmManager = alarmManager;
     
 
-    RA_LOG(INFO, "Checker Manager inited success: threadNum:%zu, queueSize:%zu",
-           _threadNum, _queueSize);
+    LOG(INFO) << "Checker Manager inited success: threadNum:" << _threadNum <<", queueSize:" <<_queueSize;
 
     return true;
 }
@@ -43,22 +42,22 @@ bool CheckerManager::init(size_t threadNum, size_t queueSize,
 bool CheckerManager::start()
 {
     if (NULL == _alarmManager) {
-        RA_LOG(ERROR, "can not start CheckerManager without inited");
+        LOG(ERROR) << "can not start CheckerManager without inited";
         return false;
     }
     if (_started) {
-        RA_LOG(ERROR, "can not start CheckerManager thread twice");
+        LOG(ERROR) << "can not start CheckerManager thread twice";
         return false;
     }
     _checkerPool = new ThreadPool(_threadNum, _queueSize);
     if (_checkerPool == NULL || !_checkerPool->start()) {
-        RA_LOG(ERROR, "checker thread pool start fail!");
+        LOG(ERROR) << "checker thread pool start fail!";
         delete _checkerPool;
         _checkerPool = NULL;
         return false;
     }
     _started = true;
-    RA_LOG(INFO, "checker manager start success");
+    LOG(INFO) << "checker manager start success";
     return true;
 }
 
@@ -84,24 +83,24 @@ bool CheckerManager::pushProcessPackage(ProcessPackagePtr& processPackage)
 {
     ScopedLock lock(_mutex);
     if (!_started || NULL == _checkerPool) {
-        RA_LOG(ERROR, "can not push processPackage whithout started checker manager");
+        LOG(ERROR) << "can not push processPackage whithout started checker manager";
         return false;
     }
     CheckerWorkItem *workItem = new CheckerWorkItem();
     assert(NULL != workItem);
     if (!workItem->init(_alarmManager, processPackage)) {
         delete workItem;
-        RA_LOG(ERROR, "init check workitem failed");
+        LOG(ERROR) << "init check workitem failed";
         return false;
     }
     if (!_checkerPool->push(workItem, _isBlocked)) {
         delete workItem;
-        RA_LOG(ERROR, "push process package to  checker pool failed");
+        LOG(ERROR) << "push process package to  checker pool failed";
         return false;
     }
-    RA_LOG(DEBUG, "push process package to checker pool success, metric:%s, id:%u", 
-           processPackage->getRequestPackage()->getPolicyItem()->getMetric().c_str(),
-           processPackage->getRequestPackage()->getPolicyItem()->getId());
+    VLOG(1) << "push process package to checker pool success, metric:" 
+	    << processPackage->getRequestPackage()->getPolicyItem()->getMetric() 
+	    <<", id:" << processPackage->getRequestPackage()->getPolicyItem()->getId();
     return true;
 }
 

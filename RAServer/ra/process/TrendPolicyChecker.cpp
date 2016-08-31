@@ -41,20 +41,19 @@ bool TrendPolicyChecker::checkValue(const string& metric,
 {
     TrendDataPtr trendData = _processPackage->getTrendData();
     if (trendData == NULL) {
-        RA_LOG(WARN, "Cannot check value: trend data is NULL");
+        LOG(WARNING) << "Cannot check value: trend data is NULL";
         return false;
     }
     double forecastValue = 0.0;
     TrendKey key;
     key.host = dataItem.host;
     key.metric = metric;
-    RA_LOG(DEBUG, "metric:%s, host:%u, value:%.2lf, time:%"PRIu64, 
-           metric.c_str(), dataItem.host, dataItem.value, dataItem.time);
+    VLOG(1) << "metric:" << metric << ", host:" <<dataItem.host 
+	    <<", value: " << dataItem.value << ", time:" << dataItem.time;
     if (trendData->getForecastVal(key, dataItem.time, forecastValue)) {
-        RA_LOG(DEBUG, "forcastValue:%.2lf", forecastValue);
+        VLOG(1) << "forcastValue:" << forecastValue;
         assert(NULL != _policyItem);
         if (_policyItem->isDiffTooMuch(dataItem.value, forecastValue)) {
-            RA_LOG(DEBUG, "diff too much");
             std::map<uint32_t, AbnormalVal>& abnormalHosts = _abnormalInfo[metric];
             assert(abnormalHosts.find(dataItem.host) == abnormalHosts.end());
             AbnormalVal abnormalVal;

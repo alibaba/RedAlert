@@ -26,16 +26,12 @@ FetcherManagerTest::~FetcherManagerTest() {
 }
 
 void FetcherManagerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void FetcherManagerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void FetcherManagerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
 }
 
 void FetcherManagerTest::testStartStop()

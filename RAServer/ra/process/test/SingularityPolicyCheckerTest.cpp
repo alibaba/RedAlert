@@ -23,15 +23,12 @@ SingularityPolicyCheckerTest::~SingularityPolicyCheckerTest() {
 }
 
 void SingularityPolicyCheckerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void SingularityPolicyCheckerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void SingularityPolicyCheckerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void SingularityPolicyCheckerTest::testInit()

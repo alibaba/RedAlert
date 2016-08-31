@@ -15,16 +15,12 @@ NormalizedMetricDataTest::~NormalizedMetricDataTest() {
 }
 
 void NormalizedMetricDataTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void NormalizedMetricDataTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void NormalizedMetricDataTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     NormalizedMetricData metricData;
     CPPUNIT_ASSERT(metricData.empty());
     MetricDataItem item1;

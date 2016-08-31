@@ -25,16 +25,12 @@ FetcherWorkItemTest::~FetcherWorkItemTest() {
 }
 
 void FetcherWorkItemTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void FetcherWorkItemTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void FetcherWorkItemTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     FetcherManager fetcherManager;
     PolicyConfigItemBasePtr policyItem = TestUtil::generatePolicyItem(METRIC_ROOT_NODE_LABEL, 15, 1, 0);
     ConfigWrapperPtr config(new ConfigWrapper);

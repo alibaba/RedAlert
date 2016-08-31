@@ -24,11 +24,11 @@ CheckerWorkItem::~CheckerWorkItem()
 bool CheckerWorkItem::init(AlarmManager* alarmManager, ProcessPackagePtr& processPackage)
 {
     if (NULL == alarmManager) {
-        RA_LOG(ERROR, "alarm manager is NULL, init CheckerWorkItem failed");
+        LOG(ERROR) << "alarm manager is NULL, init CheckerWorkItem failed";
         return false;
     }
     if (NULL == processPackage) {
-        RA_LOG(ERROR, "processPackage is NULL, init CheckerWorkItem failed");
+        LOG(ERROR) << "processPackage is NULL, init CheckerWorkItem failed";
         return false;
     }
     _alarmManager = alarmManager;
@@ -36,26 +36,27 @@ bool CheckerWorkItem::init(AlarmManager* alarmManager, ProcessPackagePtr& proces
 
     const RequestPackagePtr& requestPackage = _processPackage->getRequestPackage();
     if (NULL == requestPackage) {
-        RA_LOG(ERROR, "requestPackage in processPackage is NULL, init CheckerWorkItem failed");
+        LOG(ERROR) << "requestPackage in processPackage is NULL, init CheckerWorkItem failed";
         return false;
     }
     const PolicyConfigItemBasePtr& policyConfigItemBase = requestPackage->getPolicyItem();
     if (NULL == policyConfigItemBase) {
-        RA_LOG(ERROR, "policyConfigItem in processPackage is NULL, init CheckerWorkItem failed");
+        LOG(ERROR) << "policyConfigItem in processPackage is NULL, init CheckerWorkItem failed";
         return false;
     }
 
     _policyChecker = PolicyCheckerFactory::createPolicyChecker(
         policyConfigItemBase->getTriggerType());
     if (NULL == _policyChecker) {
-        RA_LOG(ERROR, "create policyChecker failed, init CheckerWorkItem failed, metric[%s], id[%u]",
-               policyConfigItemBase->getMetric().c_str(), policyConfigItemBase->getId());
+        LOG(ERROR) << "create policyChecker failed, init CheckerWorkItem failed, metric["
+		   << policyConfigItemBase->getMetric() << "], id[" 
+		   << policyConfigItemBase->getId() << "]";
         return false;
     }
     if (!_policyChecker->init(_processPackage)) {
-        RA_LOG(ERROR, "init policy checker failed failed, init CheckerWorkItem failed,"
-               " metric[%s], id[%u]",policyConfigItemBase->getMetric().c_str(),
-               policyConfigItemBase->getId());
+        LOG(ERROR) << "init policy checker failed failed, init CheckerWorkItem failed,"
+		   << " metric[" << policyConfigItemBase->getMetric() <<"], id[" 
+		   <<  policyConfigItemBase->getId() <<"]";
         return false;
     }
 
@@ -75,8 +76,9 @@ void CheckerWorkItem::process()
             assert(NULL != requestPackage);
             const PolicyConfigItemBasePtr& policyConfigItemBase = requestPackage->getPolicyItem();
             assert(NULL != policyConfigItemBase);
-            RA_LOG(ERROR, "push alarmMsg failed, metric[%s], id[%u]",
-                   policyConfigItemBase->getMetric().c_str(), policyConfigItemBase->getId());
+            LOG(ERROR) << "push alarmMsg failed, metric[" 
+		       << policyConfigItemBase->getMetric() << "], id[" 
+		       << policyConfigItemBase->getId()<< "]";
         }
     }
 }

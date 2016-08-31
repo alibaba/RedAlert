@@ -36,28 +36,24 @@ bool TrendData::getForecastVal(const TrendKey& k, uint64_t curTime,
     ScopedLock lock(_mutex);
     map<TrendKey, TrendMeta>::iterator it = _data.find(k);
     if (it == _data.end()) {
-        RA_LOG(INFO, "has no trend data of metric:%s, host:%u",
-               k.metric.c_str(), k.host);
+        LOG(INFO) << "has no trend data of metric:" << k.metric << ", host:" << k.host;
         return false;
     }
     TrendMeta& meta = it->second;
     if (!meta.init || 0 == meta.lastInterval) {
-        RA_LOG(INFO, "trend data of metric:%s, host:%u is not inited",
-               k.metric.c_str(), k.host);
+        LOG(INFO) << "trend data of metric:" << k.metric << ", host:" << k.host <<" is not inited";
         return false;
     }
     if (curTime < meta.lastTime) {
-        RA_LOG(WARN, "metric:%s, host:%u, trendLastTime:%"PRIu64
-               " bigger than curTime:%"PRIu64, 
-               k.metric.c_str(), k.host, meta.lastTime, curTime);
+        LOG(WARNING) << "metric:" << k.metric << ", host:" << k.host  << ", trendLastTime:" 
+		     << meta.lastTime <<" bigger than curTime:" << curTime;
         forecastVal = meta.smoothedValue;
         return true;
     }
     if (curTime - meta.lastTime > _autoExpireTimeUs) {
-        RA_LOG(WARN, "metric:%s, host:%u, curTime:%"PRIu64
-               " - trendLastTime:%"PRIu64" < autoExpirTime:%"PRIu64
-               ", trend meta reseted!", k.metric.c_str(), k.host,
-               curTime, meta.lastTime, _autoExpireTimeUs);
+        LOG(ERROR) << "metric:" << k.metric << ", host:" << k.host << ", curTime:" << curTime
+		   << " - trendLastTime:" << meta.lastTime  << " < autoExpirTime:" 
+		   << _autoExpireTimeUs << ", trend meta reseted!";
         meta.reset();
         return false;
     }

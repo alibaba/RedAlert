@@ -29,11 +29,9 @@ PolicyCheckerTest::~PolicyCheckerTest() {
 }
 
 void PolicyCheckerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void PolicyCheckerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 std::string PolicyCheckerTest::makeMetricPath(const std::string& serviceName,
@@ -44,7 +42,6 @@ std::string PolicyCheckerTest::makeMetricPath(const std::string& serviceName,
 }
 
 void PolicyCheckerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 MetricNodePtr PolicyCheckerTest::generateMetricData(
@@ -148,7 +145,7 @@ void PolicyCheckerTest::testGenOneNormalizedData()
     path.pop_back();
     CPPUNIT_ASSERT(MetricTreeUtil::insertPath(root, path));
 
-    RA_LOG(INFO, "metric tree:\n%s", root->toDebugString().c_str());
+    LOG(INFO) << "metric tree:\n" << root->toDebugString();
     policyChecker.genNormalizedData(root, normalizedMetricData);
     CPPUNIT_ASSERT_EQUAL((size_t)2, normalizedMetricData->getMetricCount());
     
@@ -199,7 +196,7 @@ void PolicyCheckerTest::testGenMultiNormalizedData()
     vector<MetricNodePtr> dataRoots(3);
     dataRoots[2] = generateMetricData("s3", "n1", 10000, "m2", vector<uint64_t>(2, 2), vector<double>(2, 10.0));
     processPackage->setMetricDataRoots(dataRoots);
-    RA_LOG(INFO, "metric tree:\n%s", dataRoots[2]->toDebugString().c_str());
+    LOG(INFO)<< "metric tree:\n" << dataRoots[2]->toDebugString();
 
     FakePolicyChecker policyChecker;
     CPPUNIT_ASSERT(policyChecker.init(processPackage));

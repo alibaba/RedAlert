@@ -51,13 +51,12 @@ bool CyclePolicyChecker::checkHost(const string& metric,
             snprintf(buffer, sizeof(buffer), "%d ", missedCycle[i]);
         }
         if (isTotal) {
-            RA_LOG(WARN, "metric:%s, miss history cyclye[%s]",
-                   metric.c_str(), buffer);
+            LOG(WARNING) << "metric:" << metric <<", miss history cyclye " << buffer;
         } else {
             string hostIpStr;
             Util::IPToString(hostData.host, hostIpStr);
-            RA_LOG(WARN, "metric:%s, host:%s, miss history cyclye[%s]",
-                   metric.c_str(), hostIpStr.c_str(), buffer);
+            LOG(WARNING) << "metric:" << metric << ", host:" 
+			 << hostIpStr << ", miss history cyclye[" << buffer << "]";
         }
     }
     if(historyValVec.empty()) {
@@ -104,7 +103,7 @@ bool CyclePolicyChecker::checkMetricTotalVal(const MetricDataItem& metricTotalDa
         for (size_t i = 0; i < missedCycle.size(); ++i) {
             snprintf(buffer, sizeof(buffer), "%d ", missedCycle[i]);
         }
-        RA_LOG(WARN, "metric:%s, miss history cyclye[%s]", metric.c_str(), buffer);
+        LOG(WARNING) << "metric:" << metric << ", miss history cyclye[" << buffer << "]";
     }
     if(historyValVec.empty()) {
         return true;

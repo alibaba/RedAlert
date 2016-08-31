@@ -23,15 +23,12 @@ CyclePolicyCheckerTest::~CyclePolicyCheckerTest() {
 }
 
 void CyclePolicyCheckerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void CyclePolicyCheckerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void CyclePolicyCheckerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void CyclePolicyCheckerTest::testInit()

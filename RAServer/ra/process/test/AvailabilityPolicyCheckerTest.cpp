@@ -23,15 +23,12 @@ AvailabilityPolicyCheckerTest::~AvailabilityPolicyCheckerTest() {
 }
 
 void AvailabilityPolicyCheckerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void AvailabilityPolicyCheckerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void AvailabilityPolicyCheckerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void AvailabilityPolicyCheckerTest::testInit()

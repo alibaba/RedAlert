@@ -28,23 +28,23 @@ bool PolicyChecker::init(
     const tree::ProcessPackagePtr &processPackage)
 {
     if (processPackage == NULL) {
-        RA_LOG(ERROR, "Cannot initialize policy checker: process package is NULL");
+        LOG(ERROR) << "Cannot initialize policy checker: process package is NULL";
         return false;
     }
     _processPackage = processPackage;
     _requestPackage = _processPackage->getRequestPackage();
     if (_requestPackage == NULL) {
-        RA_LOG(ERROR, "Cannot initialize policy checker: request package is NULL");
+        LOG(ERROR) << "Cannot initialize policy checker: request package is NULL";
         return false;
     }
     _configWrapper = _requestPackage->getConfig();
     if (_configWrapper == NULL) {
-        RA_LOG(ERROR, "Cannot initialize policy checker: config wrapper is NULL");
+        LOG(ERROR) << "Cannot initialize policy checker: config wrapper is NULL";
         return false;
     }
     _alarmMsg.reset(new AlarmMsg(_processPackage, CODE_CRITICAL));
     if (_alarmMsg == NULL) {
-        RA_LOG(ERROR, "Cannot initialize policy checker: alarm message is NULL");
+        LOG(ERROR) << "Cannot initialize policy checker: alarm message is NULL";
         return false;
     }
     return true;
@@ -53,13 +53,13 @@ bool PolicyChecker::init(
 alarm::AlarmMsgPtr PolicyChecker::check()
 {
     if (NULL == _processPackage) {
-        RA_LOG(ERROR, "cannot do check without init PolicyChecker");
+        LOG(ERROR) << "cannot do check without init PolicyChecker";
         return _alarmMsg;
     }
     vector<NormalizedMetricDataPtr> normalizedMetricDataVec;
     genNormalizedData(normalizedMetricDataVec);
     if (normalizedMetricDataVec.empty()) {
-        RA_LOG(WARN, "cannot find any metric data");
+        LOG(WARNING) << "cannot find any metric data";
         return _alarmMsg;
     }
     
@@ -80,7 +80,7 @@ alarm::AlarmMsgPtr PolicyChecker::check()
         checkMetricTotal(normalizedMetricDataVec);
         break;
     default:
-        RA_LOG(ERROR, "unkown checkType, can not check");
+        LOG(ERROR) << "unkown checkType, can not check";
         break;
     }
     time_t curTime = Util::currentTimeInSeconds();
@@ -112,7 +112,7 @@ void PolicyChecker::checkSingleHost(const vector<NormalizedMetricDataPtr> &metri
         const string& metric = *metricIter;
         dataItemSet = currMetricData->getMetricData(metric);
         if (dataItemSet.empty()) {
-            RA_LOG(WARN, "metric:%s has no valid data", metric.c_str());
+            LOG(WARNING) << "metric:" << metric << " has no valid data";
             continue;
         }
         set<MetricDataItem>::const_iterator dataIter = dataItemSet.begin();
@@ -190,7 +190,7 @@ void PolicyChecker::genNormalizedData(vector<NormalizedMetricDataPtr>& normalize
 {
     assert(NULL != _processPackage);
     const vector<MetricNodePtr>& dataRoots = _processPackage->getMetricDataRoots();
-    RA_LOG(DEBUG, "Get %zu metric data roots", dataRoots.size());
+    VLOG(1) << "Get " << dataRoots.size() <<" metric data roots";
     normalizedMetricDataVec.assign(dataRoots.size(), NormalizedMetricDataPtr());
     for (size_t i = 0; i < dataRoots.size(); ++i) {
         normalizedMetricDataVec[i].reset(new NormalizedMetricData());
@@ -225,7 +225,7 @@ bool PolicyChecker::genNormalizedDataFromMetric(
     }
     string metricStr = Util::joinString(metricPathStr, METRIC_NODE_PATH_SEP);
     if (metricData == NULL) {
-        RA_LOG(WARN, "metric:%s has no valid data node", metricStr.c_str());
+        LOG(WARNING) << "metric:" << metricStr << " has no valid data node";
         return true;
     }
 
@@ -233,12 +233,12 @@ bool PolicyChecker::genNormalizedDataFromMetric(
     uint32_t hostIp = 0U;
     Util::StringToIP(hostStr, hostIp);
     if (isFiltered(metricStr, hostIp)) {
-        RA_LOG(DEBUG, "data of metric:%s, host:%s is filted", metricStr.c_str(), hostStr.c_str());
+        VLOG(1) << "data of metric:" << metricStr << ", host:" << hostStr <<" is filted";
         return true;
     }
     double value = NormalizedMetricData::getValue(*metricData->values);
     if (value == INVALID_METRIC_DATA) {
-        RA_LOG(WARN, "metric:%s, host:%s has no valid data", metricStr.c_str(), hostStr.c_str());
+        LOG(WARNING) << "metric:" << metricStr << ", host:" << hostStr << " has no valid data";
         if (updateFetchNoValidData) {
             _fetchNoValidDataMap[metricStr].insert(hostIp);
         }
@@ -252,11 +252,10 @@ bool PolicyChecker::genNormalizedDataFromMetric(
     item.value = value;
     item.rawValue = metricData->values;
     item.rawTime = metricData->times;
-    RA_LOG(DEBUG, "Normalized metric data item, metric: '%s', host: '%s', value: %lf, time: %ld",
-           metricStr.c_str(), hostStr.c_str(), value, time);
+    VLOG(1) << "Normalized metric data item, metric: '" << metricStr 
+	    <<"', host: '" << hostStr <<"', value: " << value << ", time: " << time;
     if (!normalizedMetricData->addMetricData(metricStr, item)) {
-        RA_LOG(WARN, "metric[%s], host[%s] is retrived by multi amonitor",
-               metricStr.c_str(), hostStr.c_str());
+        LOG(WARNING) <<  "metric[" << metricStr << "], host[" << hostStr <<"] is retrived by multi amonitor";
     }
     return true;
 }
@@ -290,7 +289,7 @@ string PolicyChecker::getAlarmMsgContent(time_t curTime)
     if (_hasNoMetric) {
         uint32_t host = 0;
         if (config->isShielded(curTime, group, policyMetric, host)) {
-            RA_LOG(INFO, "%s:has no matched metric, but is shielded!", policyMetric.c_str());
+            LOG(INFO) << policyMetric << ":has no matched metric, but is shielded!";
         }
         else {
             ret.append(policyMetric + ":has no matched metric");
@@ -299,7 +298,7 @@ string PolicyChecker::getAlarmMsgContent(time_t curTime)
     }
     
     map<string, set<uint32_t> >::iterator metricIter =  _fetchNoValidDataMap.begin();
-    RA_LOG(ERROR, "_fetchNoValidDataMap size=%zu", _fetchNoValidDataMap.size());
+    LOG(ERROR) << "_fetchNoValidDataMap size=" << _fetchNoValidDataMap.size();
     while(metricIter != _fetchNoValidDataMap.end()) {
         const string& metric = metricIter->first;
         set<uint32_t>& hostSet = metricIter->second;
@@ -308,7 +307,7 @@ string PolicyChecker::getAlarmMsgContent(time_t curTime)
         while(hostIter != hostSet.end()) {
             uint32_t host = *hostIter;
             if (config->isShielded(curTime, group, metric, host)) {
-                RA_LOG(INFO, "%s.%s.%u is shielded", group.c_str(), metric.c_str(), host);
+                LOG(INFO) << group << "." << metric << "." << host <<" is shielded";
                 hostSet.erase(hostIter++);
             }
             else {
@@ -340,8 +339,7 @@ string PolicyChecker::getAlarmMsgContent(time_t curTime)
         const string& metric = *it;
         uint32_t host = 0;
         if (config->isShielded(curTime, group, metric, host)) {
-            RA_LOG(INFO, "%s.%s fetch no valid data, but is shielded", 
-                   group.c_str(), metric.c_str());
+            LOG(INFO) << group << "." << metric << " fetch no valid data, but is shielded";
             _missedMetric.erase(it++);
         }
         else {

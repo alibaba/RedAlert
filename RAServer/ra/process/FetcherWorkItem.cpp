@@ -34,8 +34,8 @@ void FetcherWorkItem::process()
         assert(NULL != requestPackage);
         const PolicyConfigItemBasePtr& policyConfigItemBase = requestPackage->getPolicyItem();
         assert(NULL != policyConfigItemBase);
-        RA_LOG(ERROR, "retrieve metrics failed, metric:%s, id:%u",
-               policyConfigItemBase->getMetric().c_str(), policyConfigItemBase->getId());
+        LOG(ERROR) << "retrieve metrics failed, metric:" << policyConfigItemBase->getMetric() 
+		   <<", id:" <<  policyConfigItemBase->getId();
         //update state
         _processPackage->setState(ProcessPackage::PPS_IDLE);
     }
@@ -44,7 +44,7 @@ void FetcherWorkItem::process()
         _processPackage->setLastRetrieveTimeUs(curTimeUs);
         assert(NULL != _checkerManager);
         if (!_checkerManager->pushProcessPackage(_processPackage)) {
-            RA_LOG(ERROR, "push process package to check pool failed");
+            LOG(ERROR) << "push process package to check pool failed";
             //update state
             _processPackage->setState(ProcessPackage::PPS_IDLE);
         }

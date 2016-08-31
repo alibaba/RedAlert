@@ -16,16 +16,12 @@ TrendDataTest::~TrendDataTest() {
 }
 
 void TrendDataTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void TrendDataTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void TrendDataTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
 }
 
 void TrendDataTest::testGetForecastVal() 

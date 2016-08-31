@@ -23,15 +23,12 @@ ThresholdPolicyCheckerTest::~ThresholdPolicyCheckerTest() {
 }
 
 void ThresholdPolicyCheckerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void ThresholdPolicyCheckerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void ThresholdPolicyCheckerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void ThresholdPolicyCheckerTest::testInit()

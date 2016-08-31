@@ -23,15 +23,12 @@ TrendPolicyCheckerTest::~TrendPolicyCheckerTest() {
 }
 
 void TrendPolicyCheckerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void TrendPolicyCheckerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void TrendPolicyCheckerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void TrendPolicyCheckerTest::testInit()

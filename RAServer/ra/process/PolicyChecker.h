@@ -118,7 +118,7 @@ void PolicyChecker::removeShieldAbnormalInfo(time_t curTime,
         while(hostIter != hostMap.end()) {
             uint32_t host = hostIter->first;
             if (config->isShielded(curTime, group, metric, host)) {
-                RA_LOG(INFO, "%s.%s.%u is shielded", group.c_str(), metric.c_str(), host);
+                LOG(INFO) << group << "." << metric <<"." << metric << " is shielded";
                 hostMap.erase(hostIter++);
             }
             else {

@@ -23,16 +23,12 @@ CheckerManagerTest::~CheckerManagerTest() {
 }
 
 void CheckerManagerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void CheckerManagerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void CheckerManagerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
 }
 
 void CheckerManagerTest::testStartStop()

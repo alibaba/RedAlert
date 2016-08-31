@@ -24,15 +24,12 @@ CheckerWorkItemTest::~CheckerWorkItemTest() {
 }
 
 void CheckerWorkItemTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void CheckerWorkItemTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void CheckerWorkItemTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void CheckerWorkItemTest::testInit()
