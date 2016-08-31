@@ -18,16 +18,12 @@ BootstrapConfigTest::~BootstrapConfigTest() {
 }
 
 void BootstrapConfigTest::setUp() {
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void BootstrapConfigTest::tearDown() {
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void BootstrapConfigTest::testSimpleProcess() {
-    RA_LOG(DEBUG, "Begin Test!");
-    
     string jsonStr = "{"
 	    "\"aliMonitorUrl\":\"alimonitorurl\","
             "\"alarmQueueSize\":1024,"

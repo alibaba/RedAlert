@@ -19,17 +19,14 @@ ThresholdPolicyItemTest::~ThresholdPolicyItemTest()
 
 void ThresholdPolicyItemTest::setUp()
 {
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void ThresholdPolicyItemTest::tearDown()
 {
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void ThresholdPolicyItemTest::testSimpleProcess()
 {
-    RA_LOG(DEBUG, "Begin Test!");
     std::string jsonStr = "{"
                           "\"alarmLevel\": \"warning\","
                           "\"alarmGroup\": \"dev\","

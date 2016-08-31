@@ -20,15 +20,12 @@ CyclePolicyItemTest::~CyclePolicyItemTest() {
 }
 
 void CyclePolicyItemTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void CyclePolicyItemTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void CyclePolicyItemTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
     std::string jsonStr = "{"
                           "\"group\":\"default\","
                           "\"metric\":\"test_2\","

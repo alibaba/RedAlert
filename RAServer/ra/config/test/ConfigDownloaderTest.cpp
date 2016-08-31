@@ -24,7 +24,6 @@ ConfigDownloaderTest::~ConfigDownloaderTest() {
 }
 
 void ConfigDownloaderTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
     //create temp cache dir
     char cacheDir[1024];
     snprintf(cacheDir, sizeof(cacheDir), "%s/config_downloader/cache_XXXXXX", TEST_DATA_PATH);
@@ -37,7 +36,6 @@ void ConfigDownloaderTest::setUp() {
 }
 
 void ConfigDownloaderTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
     if (!_cacheDir.empty()) {
         string cmdBuffer;
         cmdBuffer.append("rm -rvf ");
@@ -48,8 +46,6 @@ void ConfigDownloaderTest::tearDown() {
 }
 
 void ConfigDownloaderTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     ConfigDownloader downloader;
     CPPUNIT_ASSERT(downloader.init("./conf"));
     CPPUNIT_ASSERT_EQUAL(INVALID_CONFIG_VERSION, downloader.getVersion());

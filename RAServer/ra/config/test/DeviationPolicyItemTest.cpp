@@ -19,17 +19,14 @@ DeviationPolicyItemTest::~DeviationPolicyItemTest()
 
 void DeviationPolicyItemTest::setUp()
 {
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void DeviationPolicyItemTest::tearDown()
 {
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void DeviationPolicyItemTest::testSimpleProcess()
 {
-    RA_LOG(DEBUG, "Begin Test!");
     std::string jsonStr = "{"
             "\"alarmLevel\":\"warning\","
             "\"alarmGroup\":\"dev\","

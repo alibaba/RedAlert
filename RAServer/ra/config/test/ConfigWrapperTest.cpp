@@ -16,15 +16,15 @@ ConfigWrapperTest::~ConfigWrapperTest() {
 }
 
 void ConfigWrapperTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
+    VLOG(1) << "setUp!";
 }
 
 void ConfigWrapperTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
+    VLOG(1) << "tearDown!";
 }
 
 void ConfigWrapperTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
+    VLOG(1) << "Begin Test!";
 
     // CPPUNIT_ASSERT(false);
     // CPPUNIT_ASSERT_EQUAL(0, 1);

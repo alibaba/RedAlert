@@ -83,8 +83,8 @@ bool PolicyConfigItemBase::fromJson(const common::JsonObjectPtr& json) {
     json->get("policyFilter", _policyFilterVec);
 
     if (_fetchInterval <= 0) {
-        RA_LOG(ERROR, "fetch interval[%d] is negative, illegal, set to be default 15",
-               _fetchInterval);
+        LOG(ERROR) << "fetch interval[" << _fetchInterval 
+		   << "] is negative, illegal, set to be default 15";
         _fetchInterval = 15;
     }
     RetrieveTimeRange retrieveTimeRange;

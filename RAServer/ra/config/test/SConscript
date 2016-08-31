@@ -15,7 +15,6 @@ ra_config_test_sources=  [
     'AvailabilityPolicyItemTest.cpp',
     'ThresholdPolicyItemTest.cpp',
     'ConfigDownloaderTest.cpp',
-    'HostItemTest.cpp',
     'PolicyConfigTest.cpp',
     'TimeRangeTest.cpp',
     'BootstrapConfigTest.cpp',
@@ -27,7 +26,7 @@ ra_config_test_sources=  [
     'PolicyConfigItemBaseTest.cpp',
     ]
 
-libsname = ['ra_fetcher', 'ra_config', 'ra_common','contrib_filesystem', 'ra_util', 'log4cplus', 'cppunit']
+libsname = ['ra_fetcher', 'ra_config', 'ra_common','contrib_filesystem', 'ra_util', 'log4cplus', 'glog', 'cppunit']
 ra_config_test = env.UnitTest(target = 'ra_config_test',
                               source = ra_config_test_sources,
                               LIBS = libsname)

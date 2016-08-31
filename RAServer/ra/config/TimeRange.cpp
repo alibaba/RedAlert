@@ -1,5 +1,6 @@
 #include <ra/config/TimeRange.h>
 #include <time.h>
+#include <glog/logging.h>
 
 using namespace std;
 
@@ -26,12 +27,14 @@ bool TimeRange::fromJson(const common::JsonObjectPtr& json) {
     int begHour, endHour, begMin, endMin;
     if (!formatTime(begin, begHour, begMin)
         || !formatTime(end, endHour, endMin)) {
-        RA_LOG(ERROR, "invalid time range format, begin(%s), end(%s)", begin.c_str(), end.c_str());
+        LOG(ERROR) << "invalid time range format, begin(" 
+		   << begin << "), end(" << end << ")";
         return true;
     }
 
     if (begMin + begHour*60 > endMin + endHour*60) {
-        RA_LOG(ERROR, "begintime(%s) should less than endtime(%s), we give it fullday instead", begin.c_str(), end.c_str());
+            LOG(ERROR) << "begintime(" << begin << ") should less than endtime("
+                       << end << "), we give it fullday instead";
         return true;
     }
 
@@ -47,7 +50,7 @@ bool TimeRange::isInRange(time_t time) const
     tm t;
     memset(&t, 0, sizeof(t));
     if (NULL == localtime_r(&time, &t)) {
-        RA_LOG(ERROR, "invalid time_t %lld", (long long int)time);
+        LOG(ERROR) << "invalid time_t" << time;
         return false;
     }
 

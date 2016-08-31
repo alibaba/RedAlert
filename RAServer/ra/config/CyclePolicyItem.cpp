@@ -40,13 +40,13 @@ bool CyclePolicyItem::fromJson(const common::JsonObjectPtr& json) {
     json->get("cycleCount", _cycleCount, 3);
 
     if (_cycleTime <= 0) {
-        RA_LOG(ERROR, "cycleTime[%d] is negative, illegal, set to be default 86400",
-               _cycleTime);
+        LOG(ERROR) << "cycleTime[" << _cycleTime
+		   << "] is negative, illegal, set to be default 86400";
         _cycleTime = 86400;
     }
     if (_cycleCount <= 0) {
-        RA_LOG(ERROR, "cycleCount[%d] is negative, illegal, set to be default 3",
-               _cycleCount);
+        LOG(ERROR) << "cycleCount[" << _cycleCount 
+		   << "] is negative, illegal, set to be default 3";
         _cycleCount = 3;
     }
 

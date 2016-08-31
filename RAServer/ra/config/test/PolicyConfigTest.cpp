@@ -22,11 +22,9 @@ PolicyConfigTest::~PolicyConfigTest() {
 }
 
 void PolicyConfigTest::setUp() {
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void PolicyConfigTest::tearDown() {
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void PolicyConfigTest::testLoadConfig()

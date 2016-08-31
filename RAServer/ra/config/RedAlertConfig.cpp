@@ -26,18 +26,18 @@ bool RedAlertConfig::loadConfig(const string& configFilePath, const string& loca
     int32_t columnCount = sizeof(columns)/sizeof(columns[0]);
     bool ret = sqlData.load(TABLE_NAME_RA, vector<string>(columns, columns + columnCount));
     if (!ret) {
-        RA_LOG(ERROR, "load table[%s] failed", TABLE_NAME_RA.c_str());
+        LOG(ERROR) << "load table[" << TABLE_NAME_RA << "] failed";
         return false;
     }
     int32_t rowNum = sqlData.getRow();
     int32_t colNum = sqlData.getCol();
     if (rowNum == 0) {
-        RA_LOG(ERROR, "table[%s] is empty", TABLE_NAME_RA.c_str());
+        LOG(ERROR) << "table[" << TABLE_NAME_RA << "] is empty";
         return true;
     }
     if (columnCount != colNum) {
-        RA_LOG(ERROR, "table[%s] format is illegal, colNum[%d] is not 6", 
-               TABLE_NAME_RA.c_str(), colNum);
+        LOG(ERROR) << "table[" << TABLE_NAME_RA << "] format is illegal, colNum["
+		      << colNum << "] is not 6";
         return false;
     }
 
@@ -46,7 +46,7 @@ bool RedAlertConfig::loadConfig(const string& configFilePath, const string& loca
     for (int32_t rowIndex = 0; rowIndex < rowNum; ++rowIndex) {
         ret = sqlData.getRow(rowIndex, rowVals);
         if (!ret) {
-            RA_LOG(ERROR, "read table[%s] row failed", TABLE_NAME_RA.c_str());
+            LOG(ERROR) << "read table[" << TABLE_NAME_RA << "] row failed";
             return false;
         }
         uint32_t id = 0;
@@ -87,7 +87,7 @@ void RedAlertConfig::initHash()
 bool RedAlertConfig::isMyMetric(const string& metricPath) const
 {
     if (_consistentHash.empty()) {
-        RA_LOG(WARN, "no consistent hash provided");
+        LOG(WARNING) << "no consistent hash provided";
         return true;
     }
     uint32_t key = _hashMethod(metricPath.c_str(), 0);

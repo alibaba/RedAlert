@@ -15,11 +15,9 @@ DataSourceConfigTest::~DataSourceConfigTest() {
 }
 
 void DataSourceConfigTest::setUp() {
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void DataSourceConfigTest::tearDown() {
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void DataSourceConfigTest::testLoadConfig()

@@ -19,15 +19,12 @@ PolicyConfigItemBaseTest::~PolicyConfigItemBaseTest() {
 }
 
 void PolicyConfigItemBaseTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void PolicyConfigItemBaseTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void PolicyConfigItemBaseTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void PolicyConfigItemBaseTest::testPolicyFilterItemJsonize()

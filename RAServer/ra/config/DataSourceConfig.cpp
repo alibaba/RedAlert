@@ -26,18 +26,18 @@ bool DataSourceConfig::loadConfig(const string& configFilePath)
     int32_t columnCount = sizeof(columns)/sizeof(columns[0]);
     bool ret = sqlData.load(TABLE_NAME_DATA_SOURCE, vector<string>(columns, columns + columnCount));
     if (!ret) {
-        RA_LOG(ERROR, "load table[%s] failed", TABLE_NAME_DATA_SOURCE.c_str());
+        LOG(ERROR) << "load table[" << TABLE_NAME_DATA_SOURCE << "] failed";
         return false;
     }
     int32_t rowNum = sqlData.getRow();
     int32_t colNum = sqlData.getCol();
     if (rowNum == 0) {
-        RA_LOG(WARN, "table[%s] is empty", TABLE_NAME_DATA_SOURCE.c_str());
+        LOG(WARNING) << "table[" << TABLE_NAME_DATA_SOURCE << "] is empty";
         return true;
     }
     if (columnCount != colNum) {
-        RA_LOG(ERROR, "table[%s] format is illegal, colNum[%d] is not 5",
-               TABLE_NAME_DATA_SOURCE.c_str(), colNum);
+        LOG(ERROR) << "table[" << TABLE_NAME_DATA_SOURCE << "] format is illegal, colNum[" 
+		   << colNum << "] is not 5";
         return false;
     }
 
@@ -47,7 +47,7 @@ bool DataSourceConfig::loadConfig(const string& configFilePath)
     for (int32_t rowIndex = 0; rowIndex < rowNum; ++rowIndex) {
         ret = sqlData.getRow(rowIndex, rowVals);
         if (!ret) {
-            RA_LOG(ERROR, "read table[%s] row failed", TABLE_NAME_DATA_SOURCE.c_str());
+            LOG(ERROR) << "read table[" << TABLE_NAME_DATA_SOURCE << "] row failed";
             return false;
         }
         uint32_t id = 0;
@@ -64,7 +64,7 @@ bool DataSourceConfig::loadConfig(const string& configFilePath)
         }
         OptionMap options;
         if (!fromJson(json, options)) {
-            RA_LOG(ERROR, "cannot read fetcher options from json string '%s'", optionString.c_str());
+            LOG(ERROR) << "cannot read fetcher options from json string '" << optionString << "'";
             return false;
         }
         if (options.find(FETCHER_OPTION_NAME_KEY) == options.end()) options[FETCHER_OPTION_NAME_KEY] = serviceName;
@@ -72,7 +72,8 @@ bool DataSourceConfig::loadConfig(const string& configFilePath)
         if (options.find(FETCHER_OPTION_ADDR_KEY) == options.end()) options[FETCHER_OPTION_ADDR_KEY] = address;
         MetricFetcherPtr fetcher = MetricFetcherFactory::create(fetcherType);
         if (fetcher == NULL || !fetcher->init(options)) {
-            RA_LOG(ERROR, "cannot create and initialize fetcher, addr: %s, type: %s", address.c_str(), fetcherType.c_str());
+            LOG(ERROR) << "cannot create and initialize fetcher, addr: "
+		       << address << ", type: " << fetcherType;
             return false;
         }
         HostItem item(address, serviceName, id);
@@ -81,7 +82,7 @@ bool DataSourceConfig::loadConfig(const string& configFilePath)
     }
 
     if (_hostVec.size() != _metricFetcherMap.size()) {
-        RA_LOG(ERROR, "There are duplicate fetcher specs in fetcher table, load failed");
+        LOG(ERROR) << "There are duplicate fetcher specs in fetcher table, load failed";
         return false;
     }
 
@@ -104,7 +105,7 @@ MetricFetcherPtr DataSourceConfig::getMetricFetcher(const std::string& spec) con
     ScopedLock lock(_mutex);
     MetricFetcherMap::const_iterator it = _metricFetcherMap.find(spec);
     if (it == _metricFetcherMap.end()) {
-        RA_LOG(ERROR, "request illegal fetcher spec[%s]", spec.c_str());
+        LOG(ERROR) << "request illegal fetcher spec[" << spec << "]";
         return MetricFetcherPtr();
     }
     return it->second;

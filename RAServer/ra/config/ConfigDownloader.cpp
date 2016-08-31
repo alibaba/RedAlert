@@ -22,7 +22,8 @@ bool ConfigDownloader::init(const string& localConfPath)
 {
     _localConfPath = localConfPath;
     if (!ConfigUtil::prepareConfigRoot(_localConfPath)) {
-        RA_LOG(ERROR, "prepare local config root[%s] failed", _localConfPath.c_str());
+        LOG(ERROR) << "prepare local config root[" 
+		   << _localConfPath << "] failed";
     }
     _version = ConfigUtil::getMaxConfigVersion(_localConfPath);
     return true;
@@ -32,23 +33,25 @@ int32_t ConfigDownloader::downloadConf(const string& versionConfigDir)
 {
     int32_t remoteConfVer = ConfigUtil::extractVersion(versionConfigDir);
     if (remoteConfVer == INVALID_CONFIG_VERSION) {
-        RA_LOG(ERROR, "can not extract version from %s", versionConfigDir.c_str());
+        LOG(ERROR) << "can not extract version from " << versionConfigDir;
         return -1;
     }
 
     if (!FileUtil::isExist(versionConfigDir)) {
-        RA_LOG(ERROR, "config path '%s' does not exist", versionConfigDir.c_str());
+        LOG(ERROR) << "config path '" << versionConfigDir
+		   <<"' does not exist";
         return -1;
     }
 
     if (!FileUtil::isDir(versionConfigDir)) {
-        RA_LOG(ERROR, "config path '%s' is not a folder!", versionConfigDir.c_str());
+        LOG(ERROR) << "config path '" << versionConfigDir << "' is not a folder!";
         return -1;
     }
 
     if (INVALID_CONFIG_VERSION != _version && remoteConfVer <= _version) {
-        RA_LOG(WARN, "remote config version[%d], not bigger than local "
-               "config version[%d], do nothing!", remoteConfVer, _version);
+        LOG(WARNING) << "remote config version[" << remoteConfVer 
+		     << "], not bigger than local config version["
+		     << _version << "], do nothing!";
         return 0;
     }
 
@@ -57,14 +60,15 @@ int32_t ConfigDownloader::downloadConf(const string& versionConfigDir)
     snprintf(confDir, sizeof(confDir), "%s/XXXXXX", _localConfPath.c_str());
     char* tempDir = mkdtemp(confDir);
     if (NULL == tempDir) {
-        RA_LOG(ERROR, "tempdir not created, errno %d", errno);
+        LOG(ERROR) << "tempdir not created, errno " << errno;
         return -1;
     }
 
     int32_t ret = -1;
     do {
         if (!FileUtil::copy(versionConfigDir, tempDir)) {
-            RA_LOG(ERROR, "copy from %s to %s fail", versionConfigDir.c_str(), tempDir);
+            LOG(ERROR) << "copy from " << versionConfigDir << " to "
+		       << tempDir << " fail";
             break;
         }
 
@@ -73,7 +77,8 @@ int32_t ConfigDownloader::downloadConf(const string& versionConfigDir)
         char dstDir[1024];
         snprintf(dstDir, sizeof(dstDir), "%s/%d", _localConfPath.c_str(), remoteConfVer);
         if (!FileUtil::move(srcDir, dstDir)) {
-            RA_LOG(ERROR, "move from %s to %s fail", srcDir, dstDir);
+            LOG(ERROR) << "move from " << srcDir << " to "
+		       << dstDir << " fail";
             break;
         }
         // TODO: add checksum?

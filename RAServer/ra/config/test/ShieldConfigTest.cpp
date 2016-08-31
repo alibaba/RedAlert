@@ -19,11 +19,9 @@ ShieldConfigTest::~ShieldConfigTest() {
 }
 
 void ShieldConfigTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void ShieldConfigTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void ShieldConfigTest::testLoadConfig()

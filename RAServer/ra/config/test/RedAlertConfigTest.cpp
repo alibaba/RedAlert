@@ -15,11 +15,9 @@ RedAlertConfigTest::~RedAlertConfigTest() {
 }
 
 void RedAlertConfigTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void RedAlertConfigTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void RedAlertConfigTest::testLoadConfig()

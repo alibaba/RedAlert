@@ -26,7 +26,7 @@ void PolicyConfig::clear()
 void PolicyConfig::filterMetrics(
         const std::tr1::function<bool (const std::string&)>& isMyMetric)
 {
-    RA_LOG(INFO, "Total number of policies before filter: %zu", _policyItemVec.size());
+    LOG(INFO) << "Total number of policies before filter: " << _policyItemVec.size();
     vector<PolicyConfigItemBasePtr>::iterator it = _policyItemVec.end();
     while(it != _policyItemVec.begin()) {
         --it;
@@ -35,7 +35,7 @@ void PolicyConfig::filterMetrics(
             _policyItemVec.erase(it);
         }
     }
-    RA_LOG(INFO, "Total number of policies after filter: %zu", _policyItemVec.size());
+    LOG(INFO) << "Total number of policies after filter: " << _policyItemVec.size();
 }
 
 bool PolicyConfig::loadConfig(const std::string& configFilePath)
@@ -46,25 +46,25 @@ bool PolicyConfig::loadConfig(const std::string& configFilePath)
     int32_t columnCount = sizeof(columns)/sizeof(columns[0]);
     bool ret = sqlData.load(TABLE_NAME_POLICY, vector<string>(columns, columns + columnCount));
     if (!ret) {
-        RA_LOG(ERROR, "load table[%s] failed", TABLE_NAME_POLICY.c_str());
+        LOG(ERROR) << "load table[" << TABLE_NAME_POLICY <<"] failed";
         return false;
     }
     int32_t rowNum = sqlData.getRow();
     int32_t colNum = sqlData.getCol();
     if (rowNum == 0) {
-        RA_LOG(WARN, "table[%s] is empty", TABLE_NAME_POLICY.c_str());
+        LOG(WARNING) << "table[" << TABLE_NAME_POLICY << "] is empty";
         return true;
     }
     if (columnCount != colNum) {
-        RA_LOG(ERROR, "table[%s] format is illegal, colNum[%d] is not 8",
-               TABLE_NAME_POLICY.c_str(), colNum);
+        LOG(ERROR) <<  "table[" << TABLE_NAME_POLICY << "] format is illegal, colNum[" 
+		   << colNum << "] is not 8";
         return false;
     }
     vector<string> rowVals;
     for (int32_t rowIndex = 0; rowIndex < rowNum; ++rowIndex) {
         ret = sqlData.getRow(rowIndex, rowVals);
         if (!ret) {
-            RA_LOG(ERROR, "read table[%s] row failed", TABLE_NAME_POLICY.c_str());
+            LOG(ERROR) << "read table[" << TABLE_NAME_POLICY << "] row failed";
             return false;
         }
         uint32_t id = 0;
@@ -74,9 +74,9 @@ bool PolicyConfig::loadConfig(const std::string& configFilePath)
         const string& policyType = rowVals[3];
         time_t validTime = 0;
         if (!Util::formatTime(rowVals[4], validTime)) {
-            RA_LOG(ERROR, "validTime format is not correct in policy config, "
-                   "id[%u], %s.%s, set it to current time", id, group.c_str(),
-                   metric.c_str());
+            LOG(ERROR) << "validTime format is not correct in policy config, "
+		"id[" << id << "], " << group << "." 
+		       << metric << ", set it to current time";
             validTime = Util::currentTimeInSeconds();
         }
         
@@ -88,13 +88,13 @@ bool PolicyConfig::loadConfig(const std::string& configFilePath)
 
         const string& content = rowVals[5];
         if (NULL == policyItem) {
-            RA_LOG(ERROR, "create [%s] policy item failed", policyType.c_str());
+            LOG(ERROR) << "create [" << policyType << "] policy item failed";
             return false;
         }
 
         JsonPtr json = Json::load(content);
         if (!fromJson(json, *policyItem)) {
-            RA_LOG(ERROR, "cannot load policy [%s]", content.c_str());
+            LOG(ERROR) << "cannot load policy [" << content << "]";
             return false;
         }
         _policyItemVec.push_back(policyItem);
@@ -120,7 +120,7 @@ PolicyConfigItemBasePtr PolicyConfig::createPolicyItem(
     if (policyType == POLICY_TYPE_CYCLE) {
         return CyclePolicyItemPtr(new CyclePolicyItem());
     } 
-    RA_LOG(ERROR, "unkown polcy type [%s]", policyType.c_str());
+    LOG(ERROR) << "unkown polcy type [" << policyType << "]";
     return PolicyConfigItemBasePtr();
 }
 
@@ -130,7 +130,8 @@ bool PolicyConfig::isMonitored(const std::string& metric) const
     while(it != _policyItemVec.end()) {
         const string& metricPattern = (*it)->getMetric();
         if (Util::isPatternMatch(metricPattern, metric)) {
-            RA_LOG(DEBUG, "pattern: '%s', metric: '%s'", metricPattern.c_str(), metric.c_str());
+            VLOG(1) << "pattern: '" << metricPattern << "', metric: '" 
+		    << metric <<"'";
             return true;
         }
         ++it;

@@ -18,15 +18,12 @@ TimeRangeTest::~TimeRangeTest() {
 }
 
 void TimeRangeTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void TimeRangeTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void TimeRangeTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
     TimeRange config;
     string jsonStr = "{"
             "\"begin\":\"21:40\","

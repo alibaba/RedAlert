@@ -40,41 +40,41 @@ bool ConfigWrapper::loadConfig(const string& configRoot, int32_t configVersion,
     // load red alert config
     bool ret = _redAlertConfig.loadConfig(configFilePath, localAddress);
     if (!ret) {
-        RA_LOG(ERROR, "load red alert config failed");
+        LOG(ERROR) << "load red alert config failed";
         return false;
     }
     if (!_redAlertConfig.containThisServer()) {
         _configVersion = configVersion;
-        RA_LOG(WARN, "red alert config has no this server, "
-               "this server will do nothing");
+        LOG(WARNING) << "red alert config has no this server, "
+	    "this server will do nothing";
         return true;
     }
 
     //load amonitor config
     ret = _dataSourceConfig.loadConfig(configFilePath);
     if (!ret) {
-        RA_LOG(ERROR, "load amonitor config failed");
+        LOG(ERROR) << "load amonitor config failed";
         return false;
     }
 
     //load pair values
     ret = loadPairVals(configFilePath);
     if (!ret) {
-        RA_LOG(ERROR, "load pair values failed");
+        LOG(ERROR) << "load pair values failed";
         return false;
     }
 
     //load shield config
     ret = _shieldConfig.loadConfig(configFilePath);
     if (!ret) {
-        RA_LOG(ERROR, "load shield config failed");
+        LOG(ERROR) << "load shield config failed";
         return false;
     }
 
     //load policy config
     ret = _policyConfig.loadConfig(configFilePath);
     if (!ret) {
-        RA_LOG(ERROR, "load policy Config config failed");
+        LOG(ERROR) << "load policy Config config failed";
         return false;
     }
 
@@ -94,42 +94,42 @@ bool ConfigWrapper::loadPairVals(const string& configFilePath)
     int32_t columnCount = sizeof(columns)/sizeof(columns[0]);
     bool ret = sqlData.load(TABLE_NAME_PAIR, vector<string>(columns, columns + columnCount));
     if (!ret) {
-        RA_LOG(ERROR, "load table[%s] failed", TABLE_NAME_PAIR.c_str());
+        LOG(ERROR) << "load table[" << TABLE_NAME_PAIR << "] failed";
         return false;
     }
     int32_t rowNum = sqlData.getRow();
     int32_t colNum = sqlData.getCol();
     if (rowNum < expectLoadCount) {
-        RA_LOG(ERROR, "load pair failed, because miss config item");
+        LOG(ERROR) << "load pair failed, because miss config item";
         return false;
     }
     if (columnCount != colNum) {
-        RA_LOG(ERROR, "table[%s] format is illegal, colNum[%d] is not 5",
-               TABLE_NAME_PAIR.c_str(), colNum);
+        LOG(ERROR) << "table[" << TABLE_NAME_PAIR << "] format is illegal, colNum["
+		   << colNum << "] is not 5";
         return false;
     }
     vector<string> rowVals;
     for (int32_t rowIndex = 0; rowIndex < rowNum; ++rowIndex) {
         ret = sqlData.getRow(rowIndex, rowVals);
         if (!ret) {
-            RA_LOG(ERROR, "read table[%s] row failed", TABLE_NAME_PAIR.c_str());
+            LOG(ERROR) << "read table[" << TABLE_NAME_PAIR << "] row failed";
             return false;
         }
         const string& key = rowVals[1];
         const string& val = rowVals[2];
         if (key == "smoothingFactor") {
             Util::fromString(val, _smoothingFactor);
-            RA_LOG(INFO, "smoothingFactor:%.2lf", _smoothingFactor);
+            LOG(INFO) << "smoothingFactor:" << _smoothingFactor;
             --expectLoadCount;
         }
         else if (key == "trendFactor") {
             Util::fromString(val, _trendFactor);
-            RA_LOG(INFO, "trendFactor:%.2lf", _trendFactor);
+            LOG(INFO) << "trendFactor:" << _trendFactor;
             --expectLoadCount;
         }
     }
     if (expectLoadCount != 0) {
-        RA_LOG(ERROR, "load pair failed, because miss config item");
+        LOG(INFO) << "load pair failed, because miss config item";
         return false;
     }
     return true;

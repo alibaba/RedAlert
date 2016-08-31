@@ -31,38 +31,39 @@ bool ShieldConfig::loadConfig(const std::string& configFilePath)
     int32_t columnCount = sizeof(columns)/sizeof(columns[0]);
     bool ret = sqlData.load(TABLE_NAME_SHIELD, vector<string>(columns, columns + columnCount));
     if (!ret) {
-        RA_LOG(ERROR, "load table[%s] failed", TABLE_NAME_SHIELD.c_str());
+        LOG(ERROR) << "load table[" << TABLE_NAME_SHIELD << "] failed";
         return false;
     }
     int32_t rowNum = sqlData.getRow();
     int32_t colNum = sqlData.getCol();
     if (rowNum == 0) {
-        RA_LOG(WARN, "table[%s] is empty", TABLE_NAME_SHIELD.c_str());
+        LOG(WARNING) << "table[" << TABLE_NAME_SHIELD << "] is empty";
         return true;
     }
     if (columnCount != colNum) {
-        RA_LOG(ERROR, "table[%s] format is illegal, colNum[%d] is not 7", 
-               TABLE_NAME_SHIELD.c_str(), colNum);
+        LOG(ERROR) << "table[" << TABLE_NAME_SHIELD << "] format is illegal, colNum[" 
+		   << colNum <<"] is not 7";
         return false;
     }
     vector<string> rowVals;
     for (int32_t rowIndex = 0; rowIndex < rowNum; ++rowIndex) {
         ret = sqlData.getRow(rowIndex, rowVals);
         if (!ret) {
-            RA_LOG(ERROR, "read table[%s] row failed", TABLE_NAME_SHIELD.c_str());
+            LOG(ERROR) << "read table[" << TABLE_NAME_SHIELD <<"] row failed";
             return false;
         }
         ShieldItem item;
-        RA_LOG(INFO, "shieldConfig:group[%s]metric[%s]host[%s]", rowVals[1].c_str(),
-               rowVals[2].c_str(), rowVals[3].c_str());
+        LOG(INFO) << "shieldConfig:group[" << rowVals[1] << "]metric["
+		  << rowVals[2] << "]host[" << rowVals[3] << "]";
         Util::fromString(rowVals[0], item.id);
         item.group = rowVals[1];
         item.metric = rowVals[2];
         const vector<string>& hostVec = Util::splitString(rowVals[3], ",");
         item.hostSet.insert(hostVec.begin(), hostVec.end());
         if (!Util::formatTime(rowVals[4], item.endTime)) {
-            RA_LOG(ERROR, "invalid timeformat for shield config, id[%u], %s.%s,"
-                   " set it to 0(no shield)", item.id, item.group.c_str(), item.metric.c_str());
+            LOG(ERROR) << "invalid timeformat for shield config, id["
+		       << item.id << "], " << item.group << "." 
+		       << item.metric << ", set it to 0(no shield)";
             item.endTime = 0;
         }
         _shieldItemVec.push_back(item);

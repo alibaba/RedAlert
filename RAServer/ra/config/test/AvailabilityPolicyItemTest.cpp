@@ -19,17 +19,14 @@ AvailabilityPolicyItemTest::~AvailabilityPolicyItemTest()
 
 void AvailabilityPolicyItemTest::setUp()
 {
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void AvailabilityPolicyItemTest::tearDown()
 {
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void AvailabilityPolicyItemTest::testSimpleProcess()
 {
-    RA_LOG(DEBUG, "Begin Test!");
     std::string jsonStr = "{"
                           "\"alarmLevel\": \"warning\","
                           "\"alarmGroup\": \"dev\","
