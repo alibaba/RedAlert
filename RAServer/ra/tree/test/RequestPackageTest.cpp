@@ -21,16 +21,12 @@ RequestPackageTest::~RequestPackageTest() {
 }
 
 void RequestPackageTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void RequestPackageTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void RequestPackageTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     ConfigWrapperPtr config(new ConfigWrapper);
     PolicyConfigItemBasePtr policyItem(new PolicyConfigItemBase);
     RequestPackage requestPackage(config, policyItem);

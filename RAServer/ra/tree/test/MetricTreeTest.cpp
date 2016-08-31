@@ -21,11 +21,9 @@ MetricTreeTest::~MetricTreeTest() {
 }
 
 void MetricTreeTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void MetricTreeTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 static string pattern = "";
@@ -35,7 +33,6 @@ bool isMonitored(const string& str)
 }
 
 void MetricTreeTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
     MetricTree tree;
     CPPUNIT_ASSERT_EQUAL((size_t)0, tree._metricSpecMap.size());
 

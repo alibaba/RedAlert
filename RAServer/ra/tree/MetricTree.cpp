@@ -67,7 +67,7 @@ void MetricTree::updateMetricPath(const std::string& metric, const fetcher::Metr
     if (it != _metricPathMap.end()) {
         const fetcher::MetricPath& oldPath = it->second;
         if (MetricTreeUtil::comparePath(oldPath, path) == 0) {
-            RA_LOG(WARN, "Find duplicate metric '%s'", metric.c_str());
+            LOG(WARNING) << "Find duplicate metric " << metric;
         }
     }
     _metricPathMap[metric] = path;
@@ -91,7 +91,8 @@ void MetricTree::filterTree(const tr1::function<bool (const string&)>& isMonitor
             ++keepCount;
         }
     }
-    RA_LOG(INFO, "After filter tree, keep count[%d], erase count[%d]", keepCount, eraseCount);
+    LOG(INFO) << "After filter tree, keep count[" 
+	      << keepCount <<"], erase count[" << eraseCount <<"]";
 }
 
 uint64_t MetricTree::getHashValue() const

@@ -33,14 +33,14 @@ void ProcessPackage::setRandomLastRetrieveTime(int64_t curTimeUs,
     
     if (randomMaxVal <= 0) {
         setLastRetrieveTimeUs(0);
-        RA_LOG(INFO, "set random last retrive time(us):0");
+        LOG(INFO) << "set random last retrive time(us):0";
     }
     else {
         int64_t currentTime = Util::currentTimeInMicroseconds();
         srand(currentTime);
         int64_t lastRetrieveTimeUs = curTimeUs - rand() % randomMaxVal + 1;
         setLastRetrieveTimeUs(lastRetrieveTimeUs);
-        RA_LOG(INFO, "set random last retrive time(us):%"PRId64, lastRetrieveTimeUs);
+        LOG(INFO) << "set random last retrive time(us):" << lastRetrieveTimeUs;
     }
 }
 

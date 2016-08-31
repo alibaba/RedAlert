@@ -18,16 +18,12 @@ ProcessPackageTest::~ProcessPackageTest() {
 }
 
 void ProcessPackageTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void ProcessPackageTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void ProcessPackageTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
-
     ConfigWrapperPtr config(new ConfigWrapper);
     PolicyConfigItemBasePtr policyItem(new PolicyConfigItemBase);
     policyItem->setFetchInterval(30);

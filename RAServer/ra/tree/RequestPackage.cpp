@@ -40,7 +40,7 @@ void RequestPackage::getSpecs(StringSet& specSet) const
 void RequestPackage::getRetrieveTimeRange(vector<RetrieveTimeRange>& retrieveTimeRangeVec) const
 {
     if (NULL == _policyItem){
-        RA_LOG(ERROR, "policyItem is NULL, can not get getRetrieveTimeRange");
+        LOG(ERROR) << "policyItem is NULL, can not get getRetrieveTimeRange";
         retrieveTimeRangeVec.clear();
     }
     else {

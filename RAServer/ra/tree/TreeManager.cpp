@@ -37,17 +37,17 @@ bool TreeManager::init(RaApp *app, FetcherManager* fetcherManager,
                        int32_t maxRandomLastRetriveTimeValueSec)
 {
     if (NULL == app) {
-        RA_LOG(ERROR, "app ptr is NULL, init tree manager failed");
+        LOG(ERROR) << "app ptr is NULL, init tree manager failed";
         return false;
     }
     if (NULL == fetcherManager) {
-        RA_LOG(ERROR, "fetcher manager ptr is NULL, init tree manager failed");
+        LOG(ERROR) << "fetcher manager ptr is NULL, init tree manager failed";
         return false;
     }
 
     if (reloadTreeIntervalSec <= 0) {
-        RA_LOG(ERROR, "reloadTreeIntervalSec must be bigger than 0, "
-               "init tree manager failed");
+        LOG(ERROR) << "reloadTreeIntervalSec must be bigger than 0, "
+	    "init tree manager failed";
         return false;
     }
     _maxRandomLastRetriveTimeValueSec = maxRandomLastRetriveTimeValueSec;
@@ -56,29 +56,29 @@ bool TreeManager::init(RaApp *app, FetcherManager* fetcherManager,
     _fetcherManager = fetcherManager;
 
     
-    RA_LOG(INFO, "Tree Manager inited success: reloadTreeIntervalSec:%"PRId64
-           ",maxRandomLastRetriveTimeValueSec:%d", _reloadTreeIntervalSec,
-           _maxRandomLastRetriveTimeValueSec);
+    LOG(INFO) << "Tree Manager inited success: reloadTreeIntervalSec:" << _reloadTreeIntervalSec
+	      << ",maxRandomLastRetriveTimeValueSec:" 
+	      << _maxRandomLastRetriveTimeValueSec;
     return true;
 }
 
 bool TreeManager::start()
 {
     if (NULL == _app) {
-        RA_LOG(ERROR, "can not start tree manager thread whithout inited");
+        LOG(ERROR) << "can not start tree manager thread whithout inited";
         return false;
     }
     if (_running) {
-        RA_LOG(ERROR, "can not start tree manager thread twice");
+        LOG(ERROR) << "can not start tree manager thread twice";
         return false;
     }
     int err = pthread_create(&_thread, NULL, &TreeManager::workLoop, this);
     if (err != 0) {
-        RA_LOG(ERROR, "create tree manager thread failed");
+        LOG(ERROR) << "create tree manager thread failed";
         return false;
     }
     _running = true;
-    RA_LOG(INFO, "Tree manager start success!");
+    LOG(INFO) << "Tree manager start success!";
     return true;
 }
 
@@ -87,7 +87,7 @@ void TreeManager::stop()
     if (!_running) return;
     _running = false;
     pthread_join(_thread, NULL);
-    RA_LOG(INFO, "tree manager thread stopped");
+    LOG(INFO) << "tree manager thread stopped";
 }
 
 void TreeManager::clear()
@@ -137,7 +137,7 @@ bool TreeManager::doWorkLoop(int64_t curTimeUs)
     // fetch latest metric tree
     MetricRootMap metricRootMap;
     if (!getMetricTree(specSet, start, end, configPtr, metricRootMap)) {
-        RA_LOG(ERROR, "get metric tree failed, will reload tree again");
+        LOG(ERROR) << "get metric tree failed, will reload tree again";
         return false;
     }
 
@@ -148,15 +148,15 @@ bool TreeManager::doWorkLoop(int64_t curTimeUs)
         masterTree = MetricTreeUtil::mergeTree(masterTree, iter->second);
     }
     setMasterMetricTree(masterTree);
-    RA_LOG(INFO, "fetch and construct the latest master tree from %zu roots", metricRootMap.size());
+    LOG(INFO) << "fetch and construct the latest master tree from " << metricRootMap.size() << " roots";
 
     // check if there is any policy
     int32_t configVersion = configPtr->getConfigVersion();
     if (configPtr->isEmptyConfig()) {
         clear();
         updateState(configVersion, curTimeUs, INVALID_HASH_VALUE);
-        RA_LOG(WARN, "empty policy config or not used server, "
-               "this server will do nothing");
+        LOG(WARNING) << "empty policy config or not used server, "
+	    "this server will do nothing";
         return true;
     }
 
@@ -167,7 +167,7 @@ bool TreeManager::doWorkLoop(int64_t curTimeUs)
     if (0 == tree.getTreeSize()) {
         clear();
         updateState(configVersion, curTimeUs, INVALID_HASH_VALUE);
-        RA_LOG(ERROR, "fatal, tree is empty, please check amonitor config");
+        LOG(ERROR) << "fatal, tree is empty, please check amonitor config";
         return true;
     }
 
@@ -184,7 +184,7 @@ bool TreeManager::doWorkLoop(int64_t curTimeUs)
         && _lastTreeHashValue == hashValue)
     {
         updateState(configVersion, curTimeUs, hashValue);
-        RA_LOG(INFO, "new tree hash value not changed, not generate packages");
+        LOG(INFO) << "new tree hash value not changed, not generate packages";
         return false;
     }
 
@@ -200,8 +200,8 @@ bool TreeManager::doWorkLoop(int64_t curTimeUs)
     updateState(configVersion, curTimeUs, hashValue);
     setProcessPackageMap(processPackageMapPtr);
 
-    RA_LOG(INFO, "reload tree and reconstruct packages success, request packages: %zu, process packages: %zu",
-           requestPackageVec.size(), processPackageMapPtr->size());
+    LOG(INFO) << "reload tree and reconstruct packages success, request packages: "
+	      << requestPackageVec.size() << ", process packages: " << processPackageMapPtr->size();
     return true;
 }
 
@@ -326,11 +326,11 @@ MetricNodePtr TreeManager::genMetricSubtree(const MetricTree& tree, const String
         const string& metric = *it;
         MetricPath metricPath;
         if (!tree.getMericPath(metric, metricPath)) {
-            RA_LOG(WARN, "Cannot get metric path '%s'", metric.c_str());
+            LOG(WARNING) << "Cannot get metric path " << metric;
             continue;
         }
         if (!MetricTreeUtil::insertPath(root, metricPath)) {
-            RA_LOG(WARN, "Cannot insert metric path '%s'", metric.c_str());
+            LOG(WARNING) << "Cannot insert metric path " << metric;
             continue;
         }
     }
@@ -387,9 +387,10 @@ void TreeManager::genProcessPackages(
         trendData->setAutoExpireTimeUs(trendAutoExpireTimeUs);
         processPackagePtr->setTrendData(trendData);
         if (PT_TREND == requestPackagePtr->getTriggerType()) {
-            RA_LOG(INFO, "id:%u, metric:%s, set smoothingFactor:%.2lf, trendFactor:%.2lf, autoExpireTimeUs:%"PRIu64,
-                   key.id, key.metric.c_str(), smoothingFactor, 
-                   trendFactor, trendAutoExpireTimeUs);
+            LOG(INFO) << "id:" << key.id <<", metric:"
+		      << key.metric <<", set smoothingFactor:"
+		      << smoothingFactor << ", trendFactor:" 
+		      << trendFactor <<", autoExpireTimeUs:" << trendAutoExpireTimeUs;
         }
         processPackageMap[key] = processPackagePtr;
     }

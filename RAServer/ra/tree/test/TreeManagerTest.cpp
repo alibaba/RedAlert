@@ -29,15 +29,12 @@ TreeManagerTest::~TreeManagerTest() {
 }
 
 void TreeManagerTest::setUp() { 
-    RA_LOG(INFO, "setUp!");
 }
 
 void TreeManagerTest::tearDown() { 
-    RA_LOG(INFO, "tearDown!");
 }
 
 void TreeManagerTest::testSimpleProcess() { 
-    RA_LOG(INFO, "Begin Test!");
 }
 
 void TreeManagerTest::testStartStop()
@@ -440,18 +437,16 @@ void TreeManagerTest::testWorkLoop()
     CPPUNIT_ASSERT(treeManager.init(&app, &fetcher, reloadTreeIntervalSec, 
             DEFAULT_LAST_RETRIEVE_TIME_RANDOM_VALUE));
 
-    RA_LOG(INFO, "test: config is NULL");
     int64_t curTimeUs = 100 * MICROSECONDS;
     CPPUNIT_ASSERT(!treeManager.doWorkLoop(curTimeUs));
 
-    RA_LOG(INFO, "test: config not NULL, but has no policy item");
     app._configWrapper.reset(new ConfigWrapper());
     app._configWrapper->_configVersion = 5;
     CPPUNIT_ASSERT(treeManager.doWorkLoop(curTimeUs));
     CPPUNIT_ASSERT_EQUAL(5, treeManager._configVersion);
     CPPUNIT_ASSERT_EQUAL((int64_t)100 * MICROSECONDS, treeManager._lastReloadTreeTimeUs);
 
-    RA_LOG(INFO, "test: no amonitor spec");
+    
     treeManager._configVersion = 0;
     treeManager._lastReloadTreeTimeUs = 0;
     PolicyConfigItemBasePtr policyItem = TestUtil::generatePolicyItem("node999.*", 5, 1, 66);
@@ -461,7 +456,6 @@ void TreeManagerTest::testWorkLoop()
     CPPUNIT_ASSERT_EQUAL(5, treeManager._configVersion);
     CPPUNIT_ASSERT_EQUAL((int64_t)100 * MICROSECONDS, treeManager._lastReloadTreeTimeUs);
 
-    RA_LOG(INFO, "test: metric fetcher is NULL");
     treeManager._configVersion = 0;
     treeManager._lastReloadTreeTimeUs = 0;
     app._configWrapper->_dataSourceConfig._metricFetcherMap["spec1"].reset();
@@ -470,7 +464,6 @@ void TreeManagerTest::testWorkLoop()
     CPPUNIT_ASSERT_EQUAL(0, treeManager._configVersion);
     CPPUNIT_ASSERT_EQUAL((int64_t)0, treeManager._lastReloadTreeTimeUs);
 
-    RA_LOG(INFO, "test: cannot allocate tree");
     FakeMetricFetcherPtr fakeFetcher(new FakeMetricFetcher());
     OptionMap options;
     options["tree_depth"] = "3";
@@ -482,13 +475,11 @@ void TreeManagerTest::testWorkLoop()
     CPPUNIT_ASSERT_EQUAL(0, treeManager._configVersion);
     CPPUNIT_ASSERT_EQUAL((int64_t)0, treeManager._lastReloadTreeTimeUs);
 
-    RA_LOG(INFO, "test: all tree is filtered");
     fakeFetcher->allocOK = true;
     CPPUNIT_ASSERT(treeManager.doWorkLoop(curTimeUs));
     CPPUNIT_ASSERT_EQUAL(5, treeManager._configVersion);
     CPPUNIT_ASSERT_EQUAL((int64_t)100 * MICROSECONDS, treeManager._lastReloadTreeTimeUs);
 
-    RA_LOG(INFO, "test: tree hashValue, configVersion is same");
     treeManager._configVersion = 5;
     treeManager._lastReloadTreeTimeUs = 0;
     app._configWrapper->_policyConfig._policyItemVec[0]->setMetric("node1.*.node3");
@@ -501,7 +492,6 @@ void TreeManagerTest::testWorkLoop()
     CPPUNIT_ASSERT_EQUAL(5, treeManager._configVersion);
     CPPUNIT_ASSERT_EQUAL((int64_t)100 * MICROSECONDS, treeManager._lastReloadTreeTimeUs);
     
-    RA_LOG(INFO, "test: normal");
     treeManager._lastTreeHashValue = INVALID_HASH_VALUE;
     treeManager._configVersion = 0;
     treeManager._lastReloadTreeTimeUs = 0;

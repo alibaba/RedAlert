@@ -17,7 +17,7 @@ ra_tree_test_sources=  [
     'TreeManagerTest.cpp',
     ]
 
-libsname = ['contrib_filesystem', 'ra_app', 'ra_tree', 'ra_service', 'ra_process', 'ra_test_util', 'ra_config', 'ra_util', 'ra_fetcher','log4cplus', 'cppunit']
+libsname = ['contrib_filesystem', 'ra_app', 'ra_tree', 'ra_service', 'ra_process', 'ra_test_util', 'ra_config', 'ra_util', 'ra_fetcher','log4cplus', 'glog', 'cppunit']
 ra_tree_test = env.UnitTest(target = 'ra_tree_test',
                             source = ra_tree_test_sources,
                             LIBS = libsname)
