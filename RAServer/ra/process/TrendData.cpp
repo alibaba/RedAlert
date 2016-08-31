@@ -5,7 +5,6 @@ using namespace std;
 
 RA_BEGIN_NAMESPACE(process);
 RA_USE_NAMESPACE(util);
-RA_LOG_SETUP(process, TrendData);
 
 TrendData::TrendData()
     : _autoExpireTimeUs(MAX_TREND_HISTORY_MS)

@@ -7,7 +7,6 @@ using namespace std;
 RA_USE_NAMESPACE(config);
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, ProcessPackageTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ProcessPackageTest);
 

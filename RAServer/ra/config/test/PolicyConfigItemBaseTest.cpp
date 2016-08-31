@@ -8,7 +8,6 @@ using namespace std;
 RA_USE_NAMESPACE(util);
 RA_USE_NAMESPACE(common);
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, PolicyConfigItemBaseTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PolicyConfigItemBaseTest);
 

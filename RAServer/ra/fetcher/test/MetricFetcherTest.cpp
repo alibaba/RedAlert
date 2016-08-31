@@ -8,7 +8,6 @@
 #include <ra/fetcher/test/MetricFetcherTest.h>
 
 RA_BEGIN_NAMESPACE(fetcher);
-RA_LOG_SETUP(fetcher, MetricFetcherTest);
 RA_USE_NAMESPACE(test_util);
 RA_USE_NAMESPACE(util);
 using namespace std;
@@ -22,11 +21,9 @@ MetricFetcherTest::~MetricFetcherTest() {
 }
 
 void MetricFetcherTest::setUp() { 
-    RA_LOG(INFO, "setUp!");
 }
 
 void MetricFetcherTest::tearDown() { 
-    RA_LOG(INFO, "tearDown!");
 }
 
 void MetricFetcherTest::testAllocTree() { 
@@ -59,7 +56,7 @@ void MetricFetcherTest::testRetrieve() {
 
 bool MetricFetcherTest::printPath(const MetricPath& path) {
     vector<string> labels = MetricTreeUtil::pathToLabelVec(path);
-    RA_LOG(INFO, "Path: %s", Util::joinString(labels, ".").c_str());
+    LOG(INFO) << "Path: " << Util::joinString(labels, ".");
     return true;
 }
 

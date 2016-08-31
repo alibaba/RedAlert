@@ -4,7 +4,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, MailSender);
 
 MailSender::MailSender(const string& mailUser, 
                        const string& mailPwd, 
@@ -25,8 +24,8 @@ size_t MailSender::readMailPayload(void *ptr, size_t size, size_t nmemb, void* u
     char* buffer = (char*)ptr;
     size_t bufferLen = size * nmemb;
     if (NULL == self || NULL == ptr || bufferLen <= 0) {
-        RA_LOG(ERROR, "invalid payload param, self=%p, ptr=%p, bufsize=%ld", 
-               self, ptr, (long int)bufferLen);
+        LOG(ERROR) << "invalid payload param, self=" << self << ", ptr= " 
+		   << ptr << ", bufsize=" << bufferLen; 
         return 0;
     }
 
@@ -82,7 +81,7 @@ bool MailSender::sendMail(const vector<string>& addressVec,
 
     curlHandler = curl_easy_init();
     if (NULL == curlHandler) {
-        RA_LOG(ERROR, "curl_easy_init failure");
+        LOG(ERROR) << "curl_easy_init failure";
         return false;
     }
 
@@ -111,12 +110,11 @@ bool MailSender::sendMail(const vector<string>& addressVec,
 
     res = curl_easy_perform(curlHandler);
     if (CURLE_OK != res) {
-        RA_LOG(WARN, "send mail failure, curl_easy_perform error: %s", curl_easy_strerror(res));
+        LOG(WARNING) << "send mail failure, curl_easy_perform error: " << curl_easy_strerror(res);
     }
-    // else {
-    //     RA_LOG(INFO, "alarm msg (%s) delivered to %s!", 
-    //            getContent().c_str(), getAlarmGroup().c_str());
-    // }
+    else {
+        VLOG(1) << "alarm msg (" << _body << ") delivered to " << _rcpt;
+    }
     curl_slist_free_all(recipients);
     curl_easy_cleanup(curlHandler);
     return CURLE_OK == res;

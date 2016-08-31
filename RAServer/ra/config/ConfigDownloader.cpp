@@ -8,7 +8,6 @@ using namespace std;
 RA_USE_NAMESPACE(util);
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, ConfigDownloader);
 
 ConfigDownloader::ConfigDownloader() 
     : _version(INVALID_CONFIG_VERSION)

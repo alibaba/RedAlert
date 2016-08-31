@@ -23,7 +23,6 @@ public:
     void testRequestHandler();
 
 private:
-    RA_LOG_DECLARE();
     static void LibeventLogCallback(int severity, const char *msg);
 };
 

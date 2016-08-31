@@ -27,9 +27,6 @@ public:
     void testClearExpiredRecordTime();
     void testPushAlarmMsg();
     void testRaiseUcmtAlarm();
-    
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(alarm);

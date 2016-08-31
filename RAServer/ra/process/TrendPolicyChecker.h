@@ -51,9 +51,6 @@ private:
 
 private:
     std::map<std::string, std::map<uint32_t, AbnormalVal> > _abnormalInfo;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(TrendPolicyChecker);

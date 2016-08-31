@@ -31,9 +31,6 @@ public:
     void testSampleValues();
     void testGenNormalizedTotalValue();
     void testGetTotalValue();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(process);

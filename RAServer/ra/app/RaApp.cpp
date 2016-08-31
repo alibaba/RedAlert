@@ -30,7 +30,6 @@ RA_USE_NAMESPACE(process);
 RA_USE_NAMESPACE(alarm);
 
 RA_BEGIN_NAMESPACE(app);
-RA_LOG_SETUP(app, RaApp);
 using namespace std;
 volatile bool isStop = false;
 static void handleSignal(int sig) {
@@ -77,26 +76,26 @@ bool RaApp::init(int argc, char** argv) {
         return false;
     }
 
-    string consoleLogConf = "log4cplus.rootLogger=INFO, raAppender\n\
-log4cplus.appender.raAppender=log4cplus::ConsoleAppender\n\
-log4cplus.appender.raAppender.layout=log4cplus::PatternLayout\n\
-log4cplus.appender.raAppender.layout.ConversionPattern=[%D{%Y-%m-%d %H:%M:%Q}] [%p] [%T,%F -- %M:%L] %m%n";
-    istringstream confStream(consoleLogConf);
-    RA_LOG_CONFIG_WITH_CONTENT(confStream);
+    // TODO
+//     string consoleLogConf = "log4cplus.rootLogger=INFO, raAppender\n\
+// log4cplus.appender.raAppender=log4cplus::ConsoleAppender\n\
+// log4cplus.appender.raAppender.layout=log4cplus::PatternLayout\n\
+// log4cplus.appender.raAppender.layout.ConversionPattern=[%D{%Y-%m-%d %H:%M:%Q}] [%p] [%T,%F -- %M:%L] %m%n";
+//     istringstream confStream(consoleLogConf);
 
     FileSystemPtr fs = FileSystemFactory::create(_fileSystem);
     if (fs == NULL || !FileUtil::init(fs)) {
-        RA_LOG(ERROR, "initialize file util fail, file system: '%s'\n", _fileSystem.c_str());
+        LOG(ERROR) << "initialize file util fail, file system: " << _fileSystem;
         return false;
     }
 
     if (!initLog()) {
-        RA_LOG(ERROR, "initialize ra log failed\n");
+        LOG(ERROR) << "initialize ra log failed";
         return false;
     }
 
     if (!loadBootstrapConf(_bootstrapConfFile)) {
-        RA_LOG(ERROR, "load bootstrap config failed, path: '%s'", _bootstrapConfFile.c_str());
+        LOG(ERROR) << "load bootstrap config failed, path: " << _bootstrapConfFile;
         return false;
     }
 
@@ -104,7 +103,7 @@ log4cplus.appender.raAppender.layout.ConversionPattern=[%D{%Y-%m-%d %H:%M:%Q}] [
     uint16_t hbServerPort = _bootstrapConfig.getHeartbeatPort();
     string hostStr;
     if (!Util::getLocalAddress(hbServerHost, hbServerPort, hostStr)) {
-        RA_LOG(ERROR, "get local address failed");
+        LOG(ERROR) << "get local address failed";
         return false;
     }
     stringstream portStr;
@@ -118,14 +117,14 @@ log4cplus.appender.raAppender.layout.ConversionPattern=[%D{%Y-%m-%d %H:%M:%Q}] [
                             _bootstrapConfig.getMailPwd(),
                             _bootstrapConfig.getMailServerUrl()))
     {
-        RA_LOG(ERROR, "init alarmManager failed");
+        LOG(ERROR) << "init alarmManager failed";
         return false;
     }
     if (!_checkerManager.init(_bootstrapConfig.getCheckerThreadNum(),
                               _bootstrapConfig.getCheckerQueueSize(),
                               &_alarmManager))
     {
-        RA_LOG(ERROR, "init checkerManager failed");
+        LOG(ERROR) << "init checkerManager failed";
         return false;
     }
     if (!_fetcherManager.init(&_alarmManager, 
@@ -138,52 +137,52 @@ log4cplus.appender.raAppender.layout.ConversionPattern=[%D{%Y-%m-%d %H:%M:%Q}] [
             &_checkerManager
             ))
     {
-        RA_LOG(ERROR, "init fetcherManager failed");
+        LOG(ERROR) << "init fetcherManager failed";
         return false;
     }
     if (!_treeManager.init(this, &_fetcherManager,
                            _bootstrapConfig.getReloadTreeIntervalSec(),
                            _bootstrapConfig.getMaxRandomLastRetriveTimeValueSec()))
     {
-        RA_LOG(ERROR, "init treeManager failed");
+        LOG(ERROR) << "init treeManager failed";
         return false;
     }
     
     _httpServer = new common::HttpServer();
     if (_httpServer == NULL || !_httpServer->init("0.0.0.0", _port)) {
-        RA_LOG(ERROR, "initialize http server failed");
+        LOG(ERROR) << "initialize http server failed";
         return false;
     }
     _listMetricHandler = new ListMetricHandler(&_treeManager);
     _loadConfigHandler = new LoadConfigHandler(this);
     if (!_httpServer->registerHandler(HTTP_API_PATH_LIST_METRIC, _listMetricHandler)) {
-        RA_LOG(ERROR, "register handler for http path '%s' failed", HTTP_API_PATH_LIST_METRIC.c_str());
+        LOG(ERROR) << "register handler for http path '" << HTTP_API_PATH_LIST_METRIC <<"' failed";
         return false;
     }
     if (!_httpServer->registerHandler(HTTP_API_PATH_LOAD_CONFIG, _loadConfigHandler)) {
-        RA_LOG(ERROR, "register handler for http path '%s' failed", HTTP_API_PATH_LOAD_CONFIG.c_str());
+        LOG(ERROR) << "register handler for http path '" << HTTP_API_PATH_LOAD_CONFIG <<"' failed";
         return false;
     }
 
     _heartbeatClient = new HeartbeatClient(this, hbServerHost, hbServerPort, _localAddress);
     if (_heartbeatClient == NULL || !_heartbeatClient->init()) {
-        RA_LOG(ERROR, "initialize heartbeat client failed");
+        LOG(ERROR) << "initialize heartbeat client failed";
         return false;
     }
 
     //auto load Config
     if (!loadConfig()) {
-        RA_LOG(ERROR, "load local config when init failed");
+        LOG(ERROR) << "load local config when init failed";
     }
 
-    RA_LOG(INFO, "App init success");
+    LOG(INFO) << "App init success";
     return true;
 }
 
 bool RaApp::run() {
     registerSignalHandler();
     if (!start()) {
-        RA_LOG(ERROR, "start app fail");
+        LOG(ERROR) << "start app fail";
         return false;
     }
 
@@ -215,49 +214,49 @@ bool RaApp::start() {
     curl_global_init(CURL_GLOBAL_ALL);
 
     if (!_httpServer->start()) {
-        RA_LOG(ERROR, "start http server '%s:%d' fail", "0.0.0.0", _port);
+        LOG(ERROR) << "start http server '0.0.0.0:" << _port <<"' fail";
         return false;
     }
-    RA_LOG(INFO, "start http server '%s:%d' succ", "0.0.0.0", _port);
+    LOG(INFO) << "start http server '0.0.0.0:" << _port <<"' succ";
 
     if (!_alarmManager.start()) {
-        RA_LOG(ERROR, "alarmManager start failed");
+        LOG(ERROR) << "alarmManager start failed";
         return false;
     }
     if (!_checkerManager.start()) {
-        RA_LOG(ERROR, "checkerManager start failed");
+        LOG(ERROR) << "checkerManager start failed";
         return false;
     }
     if (!_fetcherManager.start()) {
-        RA_LOG(ERROR, "fetcherManager start failed");
+        LOG(ERROR) << "fetcherManager start failed";
         return false;
     }
     if (!_treeManager.start()) {
-        RA_LOG(ERROR, "treeManager start failed");
+        LOG(ERROR) << "treeManager start failed";
         return false;
     }
     if (!_heartbeatClient->start()) {
-        RA_LOG(ERROR, "heartbeatClient start failed");
+        LOG(ERROR) << "heartbeatClient start failed";
         return false;
     }
-    RA_LOG(INFO, "RaApp start succ!");
+    LOG(INFO) << "RaApp start succ!";
     return true;
 }
 
 bool RaApp::stop() {
-    RA_LOG(INFO, "RaApp stop");
+    LOG(INFO) << "RaApp stop";
     if (!_httpServer->stop()) {
-        RA_LOG(ERROR, "stop http server '%s:%d' fail", "0.0.0.0", _port);
+        LOG(ERROR) << "stop http server '0.0.0.0:" << _port << "' fail";
     }
     if (!_heartbeatClient->stop()) {
-        RA_LOG(ERROR, "stop heartbeat client");
+        LOG(ERROR) << "stop heartbeat client";
     }
     _alarmManager.stop();
     _checkerManager.stop();
     _fetcherManager.stop();
     _treeManager.stop();
     _configWrapper.reset();
-    RA_LOG(INFO, "RA server stops");
+    LOG(INFO) << "RA server stops";
     isStop = true;
     return true;
 }
@@ -339,17 +338,18 @@ void RaApp::printUsage(const char* cmd) {
 }
 
 bool RaApp::initLog() {
-    if (_logConfFile.empty()) {
-        RA_LOG(INFO, "log config file path is empty, skipping configuration\n");
-        return true;
-    }
-    string fileContent;
-    if (!FileUtil::readFileContent(_logConfFile, fileContent)) {
-        RA_LOG(WARN, "cannot read content of log config, file path: '%s'\n", _logConfFile.c_str());
-        return false;
-    }
-    istringstream istream(fileContent);
-    RA_LOG_CONFIG_WITH_CONTENT(istream);
+    // TODO
+    // if (_logConfFile.empty()) {
+    //     LOG(INFO) << "log config file path is empty, skipping configuration";
+    //     return true;
+    // }
+    // string fileContent;
+    // if (!FileUtil::readFileContent(_logConfFile, fileContent)) {
+    //     LOG(ERROR) << "cannot read content of log config, file path:" << _logConfFile;
+    //     return false;
+    // }
+    // istringstream istream(fileContent);
+    // RA_LOG_CONFIG_WITH_CONTENT(istream);
     return true;
 }
 
@@ -370,12 +370,12 @@ bool RaApp::getCwd(std::string& cwd) {
 
     for (buf = ptr = NULL; ptr == NULL; size *= 2) {
         if ((buf = (char *)realloc(buf, size)) == NULL) {
-            RA_LOG(ERROR, "cannot allocate memory for cwd buffer");
+            LOG(ERROR) << "cannot allocate memory for cwd buffer";
             return false;
         }
         ptr = getcwd(buf, size);
         if (ptr == NULL && errno != ERANGE) {
-            RA_LOG(ERROR, "cannot get cwd, errno: %d", errno);
+            LOG(ERROR) << "cannot get cwd, errno: " << errno;
             return false;
         }
     }
@@ -388,7 +388,7 @@ bool RaApp::loadConfig()
 {
     const string& localConfPath = getLocalConfPath();
     if (!ConfigUtil::prepareConfigRoot(localConfPath)) {
-        RA_LOG(ERROR, "prepare local config root error, load config failed");
+        LOG(ERROR) << "prepare local config root error, load config failed";
         return false;
     }
     int32_t configVersion = ConfigUtil::getMaxConfigVersion(localConfPath);
@@ -398,25 +398,25 @@ bool RaApp::loadConfig()
 bool RaApp::loadConfig(int32_t configVersion)
 {
     if (INVALID_CONFIG_VERSION == configVersion) {
-        RA_LOG(ERROR, "can not load invalid config version");
+        LOG(ERROR) << "can not load invalid config version";
         return false;
     }
 
     if (NULL != _configWrapper && _configWrapper->getConfigVersion() == configVersion) {
-        RA_LOG(WARN, "ra is loading config of version == current config version, do nothing!");
+        LOG(WARNING) << "ra is loading config of version == current config version, do nothing!";
         return true;
     }
 
     if (NULL != _configWrapper && _configWrapper->getConfigVersion() > configVersion) {
-        RA_LOG(WARN, "ra is loading config of version smaller than current config version");
+        LOG(WARNING) << "ra is loading config of version smaller than current config version";
     }
 
     ConfigWrapperPtr tmpConfigWrapper(new ConfigWrapper);
     const string& localConfPath = getLocalConfPath();
     bool ret = tmpConfigWrapper->loadConfig(localConfPath, configVersion, _localAddress);
     if (!ret) {
-        RA_LOG(ERROR, "load config failed, config root[%s], configVersion[%d]", 
-               localConfPath.c_str(), configVersion);
+        LOG(ERROR) << "load config failed, config root[" 
+		   << localConfPath <<"], configVersion[" << configVersion << "]";
         return false;
     }
     setConfigWrapper(tmpConfigWrapper);
@@ -427,12 +427,12 @@ bool RaApp::loadBootstrapConf(const string& bootstrapPath)
 {
     std::string content;
     if (!FileUtil::readFileContent(bootstrapPath, content)) {
-        RA_LOG(ERROR, "read bootstrap file[%s] failed", bootstrapPath.c_str());
+        LOG(ERROR) << "read bootstrap file[" << bootstrapPath <<"] failed";
         return false;
     }
     JsonPtr json = Json::load(content);
     if (!fromJson(json, _bootstrapConfig)) {
-        RA_LOG(ERROR, "cannot load bootstrap file[%s]", bootstrapPath.c_str());
+        LOG(ERROR) << "cannot load bootstrap file[" << bootstrapPath <<"]";
         return false;
     }
     return true;

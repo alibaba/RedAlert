@@ -2,7 +2,6 @@
 #include <ra/util/ConsistentHash.h>
 
 RA_BEGIN_NAMESPACE(util);
-RA_LOG_SETUP(util, ConsistentHash);
 
 ConsistentHash::ConsistentHash() { 
 }

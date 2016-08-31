@@ -19,9 +19,6 @@ public:
     void tearDown();
 
     void testHeartbeat();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(service);

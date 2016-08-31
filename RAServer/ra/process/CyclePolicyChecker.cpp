@@ -8,7 +8,6 @@ RA_USE_NAMESPACE(alarm);
 RA_USE_NAMESPACE(util);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, CyclePolicyChecker);
 
 CyclePolicyChecker::CyclePolicyChecker() { 
 }

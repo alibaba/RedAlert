@@ -91,9 +91,6 @@ private:
     friend class SingularityPolicyCheckerTest;
     friend class ThresholdPolicyCheckerTest;
     friend class TrendPolicyCheckerTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 template<typename T>

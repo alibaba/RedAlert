@@ -31,8 +31,6 @@ private:
     std::string _logConfFile;
     uint32_t _port;
     char _portStr[10];
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(app);

@@ -97,9 +97,6 @@ private:
     MetricDataItemPtr _metricTotalData;
     double _sumValue;
     size_t _hostCount;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(NormalizedMetricData);

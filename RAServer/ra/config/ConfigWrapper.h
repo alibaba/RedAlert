@@ -106,9 +106,6 @@ private:
     friend class process::PolicyCheckerTest;
     friend class process::FetcherManagerTest;
     friend class process::FetcherWorkItemTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(ConfigWrapper);

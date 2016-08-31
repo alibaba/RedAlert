@@ -2,7 +2,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, HostItem);
 
 HostItem::HostItem()
     : _hostID(0),

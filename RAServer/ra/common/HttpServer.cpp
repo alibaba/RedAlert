@@ -8,7 +8,6 @@
 #include <ra/common/HttpClient.h>
 
 RA_BEGIN_NAMESPACE(common);
-RA_LOG_SETUP(common, HttpServer);
 RA_USE_NAMESPACE(util);
 using namespace std;
 
@@ -41,12 +40,9 @@ protected:
     static void sendResponse(struct evhttp_request *request, int status, const char *message, struct evbuffer *databuf = NULL);
 
 protected:
-    RA_LOG_DECLARE();
     HttpServer *_server;
     HttpRequestHandler *_userHandler;
 };
-
-RA_LOG_SETUP(common, InternalRequestHandler);
 
 bool InternalRequestHandler::convertEvhttpRequest(struct evhttp_request* request, HttpRequest* httpRequest) {
     httpRequest->method = (enum HTTP_REQUEST_TYPE)evhttp_request_get_command(request);

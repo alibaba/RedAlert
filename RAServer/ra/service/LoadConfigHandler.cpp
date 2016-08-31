@@ -11,8 +11,6 @@ RA_USE_NAMESPACE(config);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(service, LoadConfigHandler);
-
 LoadConfigHandler::LoadConfigHandler(ra::app::RaApp *app): _app(app) {
 }
 

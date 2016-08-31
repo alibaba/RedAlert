@@ -28,9 +28,6 @@ public:
 private:
     int32_t _version;
     std::string _localConfPath;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(ConfigDownloader);

@@ -2,7 +2,6 @@
 
 RA_USE_NAMESPACE(util);
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, DeviationPolicyItem);
 
 DeviationPolicyItem::DeviationPolicyItem():
         _ascDiffRatio(0.0),

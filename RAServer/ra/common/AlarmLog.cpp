@@ -1,7 +1,6 @@
 #include <ra/common/AlarmLog.h>
 
 RA_BEGIN_NAMESPACE(common);
-RA_LOG_SETUP(common, AlarmLog);
 
 AlarmLog::AlarmLog() 
 { 

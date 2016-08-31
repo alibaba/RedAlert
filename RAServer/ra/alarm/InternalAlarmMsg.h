@@ -63,9 +63,6 @@ private:
     std::string _alarmLevel;
     int32_t _interalMinAlarmInterval;
     config::ConfigWrapperPtr _config;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(InternalAlarmMsg);

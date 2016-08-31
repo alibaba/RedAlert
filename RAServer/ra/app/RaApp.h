@@ -96,8 +96,6 @@ private:
     friend class tree::TreeManagerTest;
     friend class service::HeartbeatClientTest;
     friend class service::LoadConfigHandlerTest;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(RaApp);

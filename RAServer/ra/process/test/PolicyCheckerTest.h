@@ -54,9 +54,6 @@ private:
         uint32_t host, const std::string& metric,
         const fetcher::MetricData::TimeVec& timeVec,
         const fetcher::MetricData::ValueVec& valVec) const;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(process);

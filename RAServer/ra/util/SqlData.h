@@ -37,8 +37,6 @@ private:
     bool _isLoad;
 private:
     friend class SqlDataTest;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(SqlData);

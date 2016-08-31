@@ -5,7 +5,6 @@
 
 RA_BEGIN_NAMESPACE(config);
 RA_USE_NAMESPACE(common);
-RA_LOG_SETUP(config, ThresholdPolicyItemTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ThresholdPolicyItemTest);
 

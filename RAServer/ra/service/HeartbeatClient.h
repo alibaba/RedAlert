@@ -39,7 +39,6 @@ private:
     }
 
 private:
-    RA_LOG_DECLARE();
     pthread_t _thread;
     common::HttpClient _client;
     app::RaApp *_app;

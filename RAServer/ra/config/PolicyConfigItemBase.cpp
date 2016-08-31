@@ -2,7 +2,6 @@
 #include <ra/config/PolicyConfigItemBase.h>
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, PolicyConfigItemBase);
 
 using namespace std;
 RA_USE_NAMESPACE(util);

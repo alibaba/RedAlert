@@ -7,7 +7,6 @@ RA_USE_NAMESPACE(config);
 RA_USE_NAMESPACE(alarm);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, TrendPolicyChecker);
 
 TrendPolicyChecker::TrendPolicyChecker() { 
 }

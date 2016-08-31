@@ -14,7 +14,6 @@ RA_USE_NAMESPACE(alarm);
 RA_USE_NAMESPACE(config);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, PolicyChecker);
 
 PolicyChecker::PolicyChecker() 
     : _hasNoMetric(false)

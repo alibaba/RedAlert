@@ -4,8 +4,6 @@
 RA_BEGIN_NAMESPACE(common);
 using namespace std;
 
-RA_LOG_SETUP(common, Json);
-
 static JsonPtr toJson(json_t *raw) {
     if (json_is_null(raw)) {
         return JsonPtr(new JsonNull());

@@ -45,9 +45,6 @@ public:
     std::vector<process::MetricDataItem> checkMetricTotaltValueVec;
 
     int32_t totalCheckCount;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(FakePolicyChecker);

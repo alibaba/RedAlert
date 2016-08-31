@@ -2,7 +2,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, NormalizedMetricData);
 
 NormalizedMetricData::NormalizedMetricData() 
     : _sumValue(0.0)

@@ -27,8 +27,6 @@ public:
     void testCheckValue();
     void testGetAlarmMsgContent();
     void testGetAlarmMsgPrefix();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(process);

@@ -4,7 +4,6 @@
 
 RA_BEGIN_NAMESPACE(util);
 RA_USE_NAMESPACE(fs);
-RA_LOG_SETUP(util, FileUtil);
 
 using namespace std;
 

@@ -160,9 +160,6 @@ private:
     friend class tree::TreeManagerTest;
     friend class test_util::TestUtil;
     friend class process::PolicyCheckerTest;
-    
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(PolicyConfigItemBase);

@@ -12,8 +12,6 @@ RA_USE_NAMESPACE(util);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(service, HeartbeatClient);
-
 HeartbeatClient::HeartbeatClient(
     app::RaApp *app, string remoteHost, uint16_t remotePort, string localAddress, uint32_t heartbeatInterval)
     : _app(app), _remoteHost(remoteHost), _remotePort(remotePort), _localAddress(localAddress),

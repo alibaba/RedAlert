@@ -11,9 +11,6 @@ class TrendPolicyItem: public DeviationPolicyItem
 public:
     TrendPolicyItem();
     ~TrendPolicyItem();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(TrendPolicyItem);

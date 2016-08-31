@@ -10,7 +10,6 @@ RA_USE_NAMESPACE(util);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, MetricTreeTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(MetricTreeTest);
 

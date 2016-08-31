@@ -57,9 +57,6 @@ private:
     friend class RedAlertConfigTest;
     friend class tree::TreeManagerTest;
     friend class process::FetcherManagerTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(RedAlertConfig);

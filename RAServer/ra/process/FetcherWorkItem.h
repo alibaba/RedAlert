@@ -34,9 +34,6 @@ private:
 
 private:
     friend class FetcherWorkItemTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(FetcherWorkItem);

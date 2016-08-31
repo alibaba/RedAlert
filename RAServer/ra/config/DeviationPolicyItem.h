@@ -93,8 +93,6 @@ private:
     double _ascDiffValue;
     double _descDiffRatio;
     double _descDiffValue;
-
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(DeviationPolicyItem);

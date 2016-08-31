@@ -25,8 +25,6 @@ public:
     void testGetForecastVal();
     void testFeedTrend();
     void testClearExpiredData();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(process);

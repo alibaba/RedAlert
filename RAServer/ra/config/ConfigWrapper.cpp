@@ -4,7 +4,6 @@
 #include <ra/util/SqlData.h>
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, ConfigWrapper);
 
 using namespace std;
 RA_USE_NAMESPACE(util);

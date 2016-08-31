@@ -29,9 +29,6 @@ public:
     void testObject();
     void testFromJson();
     void testToJson();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(common);

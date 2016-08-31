@@ -19,9 +19,6 @@ private:
 
 public:
     static PolicyCheckerPtr createPolicyChecker(config::PolicyTrigger policyTriger);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(PolicyCheckerFactory);

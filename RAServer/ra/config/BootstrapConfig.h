@@ -127,8 +127,6 @@ private:
     std::string _heartbeatHost;
     uint32_t _heartbeatPort;
 
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(BootstrapConfig);

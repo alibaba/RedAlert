@@ -10,7 +10,6 @@ RA_USE_NAMESPACE(alarm);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, FetcherManager);
 
 FetcherManager::FetcherManager() 
     : _alarmManager(NULL)

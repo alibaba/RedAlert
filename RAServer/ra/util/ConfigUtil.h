@@ -20,9 +20,6 @@ public:
     static bool prepareConfigRoot(const std::string& configRoot);
     static int32_t extractVersion(const std::string& versionConfigDir);
     static std::string getConfigFilePath(const std::string& configRoot, int32_t configVersion);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(util);

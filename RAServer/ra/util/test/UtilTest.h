@@ -33,8 +33,6 @@ public:
     void testJoinString();
     void testSplitString();
     void testGetLocalAddress();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(util);

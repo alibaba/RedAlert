@@ -15,7 +15,6 @@ RA_USE_NAMESPACE(fetcher);
 RA_USE_NAMESPACE(test_util);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, FetcherManagerTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FetcherManagerTest);
 

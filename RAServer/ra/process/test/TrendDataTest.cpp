@@ -5,7 +5,6 @@
 
 using namespace std;
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, TrendDataTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TrendDataTest);
 

@@ -37,7 +37,6 @@ private:
 
 private:
     friend class InternalRequestHandler;
-    RA_LOG_DECLARE();
 
     pthread_t _thread;
     std::string _host;

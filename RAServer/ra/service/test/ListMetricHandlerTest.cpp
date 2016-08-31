@@ -13,7 +13,6 @@ RA_USE_NAMESPACE(tree);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(service, ListMetricHandlerTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(ListMetricHandlerTest);
 
 ListMetricHandlerTest::ListMetricHandlerTest() {

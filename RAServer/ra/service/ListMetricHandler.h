@@ -15,7 +15,6 @@ public:
     virtual void process(const common::HttpRequest* request, common::HttpResponse* response);
 
 private:
-    RA_LOG_DECLARE();
     const tree::TreeManager *_treeManager;
 };
 

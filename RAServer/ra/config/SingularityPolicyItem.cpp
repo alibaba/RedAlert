@@ -1,7 +1,6 @@
 #include <ra/config/SingularityPolicyItem.h>
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, SingularityPolicyItem);
 
 SingularityPolicyItem::SingularityPolicyItem()
 {

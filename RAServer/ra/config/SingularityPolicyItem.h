@@ -13,9 +13,6 @@ public:
     ~SingularityPolicyItem();
 
     bool fromJson(const common::JsonObjectPtr& json);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(SingularityPolicyItem);

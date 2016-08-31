@@ -12,7 +12,6 @@ RA_BEGIN_NAMESPACE(common);
 RA_USE_NAMESPACE(util);
 using namespace std;
 
-RA_LOG_SETUP(common, HttpServerTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(HttpServerTest);
 
 class EchoHandler: public HttpRequestHandler {
@@ -25,12 +24,7 @@ public:
         response->message = "OK";
         response->body = request->body;
     }
-
-private:
-    RA_LOG_DECLARE();
 };
-
-RA_LOG_SETUP(common, EchoHandler);
 
 HttpServerTest::HttpServerTest() {
 }

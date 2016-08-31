@@ -12,7 +12,6 @@ RA_USE_NAMESPACE(fetcher);
 RA_USE_NAMESPACE(test_util);
 
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, AlarmMsgTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AlarmMsgTest);
 
@@ -23,15 +22,12 @@ AlarmMsgTest::~AlarmMsgTest() {
 }
 
 void AlarmMsgTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void AlarmMsgTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void AlarmMsgTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void AlarmMsgTest::testGetDescription()

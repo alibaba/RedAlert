@@ -8,7 +8,6 @@ RA_USE_NAMESPACE(util);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, MetricTree);
 
 MetricTree::MetricTree() { 
 }

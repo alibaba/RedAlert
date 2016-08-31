@@ -27,7 +27,6 @@ public:
 private:
     int32_t _minHostNum;
     int32_t _maxMissHostNum;
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(AvailabilityPolicyItem);

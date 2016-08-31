@@ -14,7 +14,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(util);
-RA_LOG_SETUP(util, Util);
 
 Util::Util() { 
 }

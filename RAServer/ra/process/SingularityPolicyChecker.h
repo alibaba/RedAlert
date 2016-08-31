@@ -42,9 +42,6 @@ private:
 private:
     std::map<std::string, std::map<uint32_t, double> > _abnormalInfo;
     double _avgValue;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(SingularityPolicyChecker);

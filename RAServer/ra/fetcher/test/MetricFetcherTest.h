@@ -29,9 +29,6 @@ public:
     void testTraverse();
 
     bool printPath(const MetricPath& path);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(fetcher);

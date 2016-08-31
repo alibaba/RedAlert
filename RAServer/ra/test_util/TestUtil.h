@@ -19,8 +19,6 @@ private:
 public:
     static config::PolicyConfigItemBasePtr generatePolicyItem(const std::string& metric, 
             int32_t fetchInterval, int32_t timeRangeCount, int32_t id = 0, config::PolicyTrigger pt = config::PT_THRESHOLD);
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(TestUtil);

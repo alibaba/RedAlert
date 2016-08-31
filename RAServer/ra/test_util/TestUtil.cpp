@@ -10,7 +10,6 @@ using namespace std;
 RA_USE_NAMESPACE(config);
 
 RA_BEGIN_NAMESPACE(test_util);
-RA_LOG_SETUP(test_util, TestUtil);
 
 TestUtil::TestUtil() { 
 }

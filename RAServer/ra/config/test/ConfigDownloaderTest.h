@@ -27,7 +27,6 @@ public:
     void testRemoteVersionIsSmaller();
 private:
     std::string _cacheDir;
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(config);

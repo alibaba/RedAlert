@@ -118,9 +118,6 @@ private:
 private:
     friend class TreeManagerTest;
     friend class service::ListMetricHandlerTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(TreeManager);

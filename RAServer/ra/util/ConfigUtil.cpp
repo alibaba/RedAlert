@@ -4,7 +4,6 @@
 #include <ra/common/CommonDefine.h>
 
 RA_BEGIN_NAMESPACE(util);
-RA_LOG_SETUP(util, ConfigUtil);
 
 using namespace std;
 

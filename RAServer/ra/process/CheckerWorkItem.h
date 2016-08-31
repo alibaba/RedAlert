@@ -31,9 +31,6 @@ private:
 
 private:
     friend class CheckerWorkItemTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(CheckerWorkItem);

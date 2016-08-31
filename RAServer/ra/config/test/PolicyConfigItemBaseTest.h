@@ -27,8 +27,6 @@ public:
     void testPolicyFilterItemIsMatched();
     void testIsFiltered();
     void testJsonize();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(config);

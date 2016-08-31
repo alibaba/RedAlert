@@ -40,9 +40,6 @@ private:
 
 private:
     friend class MetricTreeTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(MetricTree);

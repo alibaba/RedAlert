@@ -30,9 +30,6 @@ public:
     void testInvalidRequest();
     void testLargeBody();
     void testEncodedQuery();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(common);

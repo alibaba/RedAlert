@@ -74,9 +74,6 @@ protected:
     tree::ProcessPackagePtr _processPackage;
     std::string _alarmMsgStr;
     MsgCode _code;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(AlarmMsg);

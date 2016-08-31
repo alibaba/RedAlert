@@ -9,7 +9,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(util);
-RA_LOG_SETUP(util, SqlData);
 
 SqlData::SqlData(const string& filePath)
     : _filePath(filePath)

@@ -36,7 +36,6 @@ private:
     std::string _serviceName;
     uint32_t _hostID;
     uint32_t _weight;
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(HostItem);

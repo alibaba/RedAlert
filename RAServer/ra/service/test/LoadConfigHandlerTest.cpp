@@ -16,7 +16,6 @@ RA_USE_NAMESPACE(util);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(service, LoadConfigHandlerTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(LoadConfigHandlerTest);
 
 LoadConfigHandlerTest::LoadConfigHandlerTest() {

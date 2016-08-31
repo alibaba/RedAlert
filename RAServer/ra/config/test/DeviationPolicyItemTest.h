@@ -32,8 +32,6 @@ public:
     void testDescRatioDiffTooMuch();
     void testDescValueDiffTooMuch();
     void testCompatible_010();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(config);

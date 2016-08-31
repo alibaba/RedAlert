@@ -1,7 +1,6 @@
 #include <ra/config/AvailabilityPolicyItem.h>
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, AvailabilityPolicyItem);
 
 AvailabilityPolicyItem::AvailabilityPolicyItem():
     _minHostNum(0),

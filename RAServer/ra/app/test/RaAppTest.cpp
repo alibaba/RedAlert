@@ -10,7 +10,6 @@
 RA_BEGIN_NAMESPACE(app);
 RA_USE_NAMESPACE(util);
 RA_USE_NAMESPACE(fs);
-RA_LOG_SETUP(app, RaAppTest);
 using namespace std;
 CPPUNIT_TEST_SUITE_REGISTRATION(RaAppTest);
 
@@ -23,38 +22,35 @@ RaAppTest::~RaAppTest() {
 }
 
 void RaAppTest::setUp() {
-    RA_LOG(INFO, "setUp!");
     _bootConfFile = string(TEST_DATA_PATH) + "/ra_app/bootstrap.json";
     _logConfFile = string(TEST_DATA_PATH) + "/ra_app/ra_log.conf";
 
     _port = selectPort();
     snprintf(_portStr, sizeof(_portStr), "%u", _port);
-    RA_LOG(INFO, "RA port: %s", _portStr);
     FileSystemPtr fs = FileSystemFactory::create(DEFAULT_FILE_SYSTEM);
     CPPUNIT_ASSERT(FileUtil::init(fs));
 }
 
 void RaAppTest::tearDown() {
-    RA_LOG(INFO, "tearDown!");
 }
 
 uint32_t RaAppTest::selectPort()
 {
         int32_t _mockfd = socket(PF_INET, SOCK_STREAM, 0);
         if (_mockfd < 0) {
-            RA_LOG(ERROR, "create socket error %d", errno);
+            LOG(ERROR) << "create socket error " << errno;
             return 0;
         }
 
         if (listen(_mockfd, 128) < 0) {
-            RA_LOG(ERROR, "listen socket error %d", errno);
+            LOG(ERROR) << "listen socket error " << errno;
             return 0;
         }
 
         sockaddr_in addr;
         socklen_t addrlen = sizeof(addr);
         if (getsockname(_mockfd,  (sockaddr*)&addr, &addrlen) < 0) {
-            RA_LOG(ERROR, "getpeername error %d", errno);
+            LOG(ERROR) << "getpeername error " << errno;
             return 0;
         }
 

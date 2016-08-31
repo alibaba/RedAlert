@@ -11,7 +11,6 @@
 #endif
 
 RA_BEGIN_NAMESPACE(common);
-RA_LOG_SETUP(common, HttpClient);
 using namespace std;
 
 std::string HttpUri::encode(const std::string& input) {

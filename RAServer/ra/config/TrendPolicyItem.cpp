@@ -2,7 +2,6 @@
 #include <ra/util/Util.h>
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, TrendPolicyItem);
 
 TrendPolicyItem::TrendPolicyItem()
 {

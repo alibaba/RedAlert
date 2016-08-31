@@ -5,7 +5,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, CyclePolicyItem);
 
 CyclePolicyItem::CyclePolicyItem():
         _cycleTime(86400)

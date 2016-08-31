@@ -104,9 +104,6 @@ private:
     process::TrendDataPtr _trendData;
     int64_t _lastNonOkAlarmTimeSec;
     std::vector<fetcher::MetricNodePtr> _metricDataRoots;
-    
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(ProcessPackage);

@@ -56,9 +56,6 @@ private:
 
 private:
     friend class AlarmManagerTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(AlarmManager);

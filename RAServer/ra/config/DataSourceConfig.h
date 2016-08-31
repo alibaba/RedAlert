@@ -51,9 +51,6 @@ private:
     friend class tree::TreeManagerTest;
     friend class process::FetcherManagerTest;
     friend class process::FetcherWorkItemTest;
-    
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(DataSourceConfig);

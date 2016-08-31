@@ -64,9 +64,6 @@ private:
     int32_t _interalMinAlarmInterval;
     bool _started;
     int64_t _lastNonOkAlarmTimeSec;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(FetcherManager);

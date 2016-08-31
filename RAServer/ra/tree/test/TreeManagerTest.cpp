@@ -18,7 +18,6 @@ RA_USE_NAMESPACE(process);
 RA_USE_NAMESPACE(test_util);
 using namespace std;
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, TreeManagerTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(TreeManagerTest);
 

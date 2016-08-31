@@ -14,7 +14,6 @@ RA_USE_NAMESPACE(tree);
 RA_USE_NAMESPACE(util);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, FetcherWorkItemTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(FetcherWorkItemTest);
 

@@ -68,9 +68,6 @@ private:
     std::vector<config::RetrieveTimeRange> _retrieveTimeRangeVec;
     fetcher::MetricRootMap _metricRootMap;
     StringSet _metricSet;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(RequestPackage);

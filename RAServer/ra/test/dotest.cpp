@@ -10,7 +10,7 @@ using namespace CppUnit;
 
 int main( int argc, char **argv)
 {
-    RA_LOG_CONFIG(DOTEST_LOGGER_CONF);
+    google::InitGoogleLogging(argv[0]);
     bool ok = false;
     {
         TextUi::TestRunner runner;

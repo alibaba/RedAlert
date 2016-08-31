@@ -24,9 +24,6 @@ public:
 
     void testIsShielded();
     void testShieldItem();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(config);

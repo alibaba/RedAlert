@@ -7,7 +7,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(util);
-RA_LOG_SETUP(util, SqlDataTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(SqlDataTest);
 

@@ -28,8 +28,6 @@ private:
     int _beginMin;
     int _endHour;
     int _endMin;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(TimeRange);

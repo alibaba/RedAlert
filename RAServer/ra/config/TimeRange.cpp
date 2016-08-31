@@ -5,7 +5,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, TimeRange);
 
 TimeRange::TimeRange():
         _beginHour(0),

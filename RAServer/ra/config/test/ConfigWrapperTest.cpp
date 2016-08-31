@@ -5,7 +5,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, ConfigWrapperTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ConfigWrapperTest);
 

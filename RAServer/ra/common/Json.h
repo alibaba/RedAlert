@@ -40,9 +40,6 @@ public:
     virtual bool isString() const { return false; }
     virtual bool isArray() const { return false; }
     virtual bool isObject() const { return false; }
-
-protected:
-    RA_LOG_DECLARE();
 };
 
 class JsonNull: public Json {

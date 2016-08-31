@@ -10,7 +10,6 @@ using namespace ra::util;
 RA_USE_NAMESPACE(util);
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, PolicyConfigTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PolicyConfigTest);
 

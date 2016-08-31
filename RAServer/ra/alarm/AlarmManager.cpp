@@ -10,7 +10,6 @@ RA_USE_NAMESPACE(util);
 RA_USE_NAMESPACE(common);
 using namespace std;
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, AlarmManager);
 
 AlarmManager::AlarmManager() 
     : _started(false)   
@@ -39,29 +38,28 @@ bool AlarmManager::init(size_t threadNum, size_t queueSize,
     _mailPwd = mailPwd;
     _mailServer = mailServer;
 
-    RA_LOG(INFO, "Alarm Manager inited success: threadNum:%zu, queueSize:%zu, "
-           "alimonitorUrl:%s, mailUser:%s, mailPwd:%s, mailServer:%s",
-           _threadNum, _queueSize, _alimonitorUrl.c_str(), _mailUser.c_str(), 
-           _mailPwd.c_str(), _mailServer.c_str());
-
+    LOG(INFO) << "Alarm Manager inited success: threadNum:" << _threadNum
+	      << ", queueSize:" << queueSize << ", alimonitorUrl:"
+	      << _alimonitorUrl << ", mailUser:" << _mailUser 
+	      << ", mailPwd:" << _mailPwd << ", mailServer:" << _mailServer;
     return true;
 }
 
 bool AlarmManager::start()
 {
     if (_started) {
-        RA_LOG(ERROR, "can not start AlarmManager thread twice");
+        LOG(ERROR) << "can not start AlarmManager thread twice";
         return false;
     }
     _alarmPool = new ThreadPool(_threadNum, _queueSize);
     if (_alarmPool == NULL || !_alarmPool->start()) {
-        RA_LOG(ERROR, "alarm thread pool start fail!");
+        LOG(ERROR) << "alarm thread pool start fail!";
         delete _alarmPool;
         _alarmPool = NULL;
         return false;
     }
     _started = true;
-    RA_LOG(INFO, "Alarm manager start success");
+    LOG(INFO) << "Alarm manager start success";
     return true;
 }
 
@@ -87,7 +85,7 @@ bool AlarmManager::pushAlarmMessage(AlarmMsgPtr& alarmMsg)
 {
     ScopedLock lock(_mutex);
     if (!_started || NULL == _alarmPool) {
-        RA_LOG(ERROR, "can not push alarmMsg whithout started alarm manager");
+        LOG(ERROR) << "can not push alarmMsg whithout started alarm manager";
         return false;
     }
 
@@ -102,10 +100,9 @@ bool AlarmManager::pushAlarmMessage(AlarmMsgPtr& alarmMsg)
         int64_t minAlarmIntervalSec = alarmMsg->getMinAlarmInterval();
         map<AlarmMsgKey, int64_t>::const_iterator it = _lastAlarmTime.find(key);
         if (it != _lastAlarmTime.end() && currTimeSec - it->second <  minAlarmIntervalSec) {
-            RA_LOG(INFO, "alarmMsg last alarm time:%"PRId64", restrained! metric:%s, "
-                   "id:%u, alarmMsg:%s",
-                   it->second, key.metric.c_str(), key.id, 
-                   alarmMsg->getAlarmMsgStr().c_str());
+            LOG(INFO) << "alarmMsg last alarm time:" << it->second << ", restrained! metric:"
+		      << key.metric << ", "
+		      << "id:" << key.id << ", alarmMsg:" << alarmMsg->getAlarmMsgStr();
             return true;
         }
         _lastAlarmTime[key] = currTimeSec;
@@ -114,11 +111,11 @@ bool AlarmManager::pushAlarmMessage(AlarmMsgPtr& alarmMsg)
     AlarmWorkItem *workItem = new AlarmWorkItem(this, alarmMsg);
     if (!_alarmPool->push(workItem)) {
         delete workItem;
-        RA_LOG(ERROR, "push alarmMsg to pool failed");
+        LOG(ERROR) << "push alarmMsg to pool failed";
         return false;
     }
-    RA_LOG(DEBUG, "push alarmMsg to alarm pool success, metric:%s, id:%u",
-           key.metric.c_str(), key.id);
+    VLOG(1) << "push alarmMsg to alarm pool success, metric:" 
+	    << key.metric << ", id:" << key.id;
     return true;
 }
 
@@ -151,9 +148,7 @@ void AlarmManager::raiseCurlMailAlarm(AlarmMsgPtr& alarmMsg)
     AlarmLog alarmLog;
     alarmLog.setAlarmMsg(body, alarmMsg->getAlarmLevel(), alarmGroupStr);
     alarmLog.setDescription(alarmMsg->getDescription());
-    RA_LOG(INFO, "Succesfully raise curlmail alarm to:[%s], msg:[%s]", 
-           alarmGroupStr.c_str(), body.c_str());
-
+    LOG(INFO) << "Succesfully raise curlmail alarm to:[" << alarmGroupStr << "], msg:[" << body <<"]";
 }
 
 void AlarmManager::raiseAlimonitorAlarm(AlarmMsgPtr& alarmMsg)
@@ -175,8 +170,8 @@ void AlarmManager::raiseAlimonitorAlarm(AlarmMsgPtr& alarmMsg)
                   "\"MSG\":[{\"status\":%d,\"output\":\"%s\"}]}",
                  code, truncateAlarmMsgStr.c_str());
         AlarmMsgKey key = alarmMsg->getKey();
-        RA_LOG(WARN, "alarmMsgStr is truncated to length:%zu, id:%u, metric:%s", 
-               truncateAlarmMsgStr.size(), key.id, key.metric.c_str());
+        LOG(WARNING) << "alarmMsgStr is truncated to length:"
+		  << truncateAlarmMsgStr.size() << ", id:" << key.id << ", metric:" << key.metric;
     }
     else {
         snprintf(jsonMsg, sizeof(jsonMsg),
@@ -185,27 +180,28 @@ void AlarmManager::raiseAlimonitorAlarm(AlarmMsgPtr& alarmMsg)
                   "\"MSG\":[{\"status\":%d,\"output\":\"%s\"}]}",
                  code, alarmMsgStr.c_str());        
     }
-    RA_LOG(DEBUG, "jsonMsg: %s", jsonMsg);
+    VLOG(1) << "jsonMsg: " << jsonMsg;
 
     for (; it != alarmGroupVec.end(); ++it) {
         const string& alarmGroup = *it;
         common::HttpClient httpClient(false, ALIMONITOR_HTTP_TIMEOUT_MS / 1000);
         string query = "/passive?name=" + alarmGroup + "&msg=" + Util::urlEncode(jsonMsg);
         if (!httpClient.init()) {
-            RA_LOG(ERROR, "http client init failed!");
+            LOG(ERROR) << "http client init failed!";
             return;
         }
         common::HttpResponse httpResponse;
         string url = _alimonitorUrl + query;
         bool ret = httpClient.get(url, &httpResponse);
         if (!ret) {
-            RA_LOG(ERROR, "get connection(%s) or send packets(%s) failed!, "
-                   "raise alimonitor alarm failed!", _alimonitorUrl.c_str(), query.c_str());
+            LOG(ERROR) << "get connection(" << _alimonitorUrl 
+		       << ") or send packets(" << query << ") failed!, "
+		       << "raise alimonitor alarm failed!";
             return;
         }
     }
-    RA_LOG(INFO, "Succesfully raise alimonitor alarm to:[%s], code:[%d], msg:[%s]", 
-           alarmGroupStr.c_str(), code, alarmMsgStr.c_str());
+    LOG(INFO) << "Succesfully raise alimonitor alarm to:[" << alarmGroupStr << "], code:[" 
+	      << code << "], msg:[" << alarmMsgStr << "]";
     if (code == CODE_OK) {
         alarmMsg->setPackageLastAlarmTimeSec(INVALID_TIME);
     }
@@ -227,8 +223,8 @@ void AlarmManager::raiseUcmtAlarm(AlarmMsgPtr& alarmMsg)
     if (alarmMsgStr.size() > MAX_ALARM_MESSEG_LENGTH) {
         alarmMsgStr = alarmMsgStr.substr(0, MAX_ALARM_MESSEG_LENGTH) + "...";
         AlarmMsgKey key = alarmMsg->getKey();
-        RA_LOG(WARN, "alarmMsgStr is truncated to length:%zu, id:%u, metric:%s", 
-               alarmMsgStr.size(), key.id, key.metric.c_str());
+        LOG(WARNING) << "alarmMsgStr is truncated to length:" << alarmMsgStr.size() 
+		     <<", id:" << key.id << ", metric:" << key.metric;
     }
 
     const vector<string>& alarmGroupVec = Util::splitString(alarmGroupStr, MULTI_ALARM_GROUP_SEP);
@@ -245,8 +241,7 @@ void AlarmManager::raiseUcmtAlarm(AlarmMsgPtr& alarmMsg)
 
         }
     }
-    RA_LOG(INFO, "Succesfully raise cumt alarm to:[%s], msg:[%s]", 
-           alarmGroupStr.c_str(), alarmMsgStr.c_str());
+    LOG(INFO) << "Succesfully raise cumt alarm to:[" << alarmGroupStr <<"], msg:["<< alarmMsgStr <<"]";
     AlarmLog alarmLog;
     alarmLog.setAlarmMsg(alarmMsgStr, alarmMsg->getAlarmLevel(), alarmGroupStr);
     alarmLog.setDescription(alarmMsg->getDescription());
@@ -260,7 +255,7 @@ bool AlarmManager::doUcmtAlarm(const string& alarmGroup, const string& alarmMsgS
         char hostNameBuff[128];
         int retCode = gethostname(hostNameBuff, sizeof(hostNameBuff));
         if (0 != retCode) {
-            RA_LOG(ERROR, "get host name failed, error[%s]", strerror(errno));
+            LOG(ERROR) << "get host name failed, error[" << strerror(errno) << "]";
             return false;
         }
         realHostName = string(hostNameBuff);
@@ -275,20 +270,21 @@ bool AlarmManager::doUcmtAlarm(const string& alarmGroup, const string& alarmMsgS
     common::HttpClient httpClient(false, UCMT_HTTP_TIMEOUT_MS / 1000);
     string uri = "/send_mon.php";
     if (!httpClient.init()) {
-        RA_LOG(ERROR, "http client init failed!");
+        LOG(ERROR) << "http client init failed!";
         return false;
     }
     string url = _alimonitorUrl + uri;
     string body = string(data);
     common::HttpResponse httpResponse;
     if (!httpClient.post(url, body, &httpResponse)) {
-        RA_LOG(ERROR, "get connection(%s) or send packets(%s) failed!, "
-               "raise cumt alarm failed!", _alimonitorUrl.c_str(), data);
+        LOG(ERROR) << "get connection(" << _alimonitorUrl << ") or send packets(" 
+		   << data <<") failed!, "
+		   << "raise cumt alarm failed!";
         return false;
     }
     const string &result = httpResponse.body;
     if (result.find("success=true") == string::npos) {
-        RA_LOG(ERROR, "send cumt alarm failed, result:%s", result.c_str());
+        LOG(ERROR) << "send cumt alarm failed, result:" << result;
         return false;
     }
     return true;

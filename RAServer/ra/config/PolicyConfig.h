@@ -51,9 +51,6 @@ private:
     friend class PolicyConfigTest;
     friend class ConfigWrapperTest;
     friend class tree::TreeManagerTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(PolicyConfig);

@@ -5,7 +5,6 @@ RA_USE_NAMESPACE(config);
 RA_USE_NAMESPACE(tree);
 
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, InternalAlarmMsg);
 
 InternalAlarmMsg::InternalAlarmMsg(const string& alarmGroup, 
         const string& alarmLevel, int32_t interalMinAlarmInterval,

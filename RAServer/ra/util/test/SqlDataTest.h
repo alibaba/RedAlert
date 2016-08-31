@@ -27,8 +27,6 @@ public:
     void testGetValue();
 private:
     std::string _filePath;
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(util);

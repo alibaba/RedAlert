@@ -7,7 +7,6 @@
 #include <ra/process/SingularityPolicyChecker.h>
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, PolicyCheckerFactory);
 
 PolicyCheckerFactory::PolicyCheckerFactory() { 
 }

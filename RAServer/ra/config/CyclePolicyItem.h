@@ -36,7 +36,6 @@ public:
 private:
     int32_t _cycleTime;// second
     int32_t _cycleCount;
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(CyclePolicyItem);

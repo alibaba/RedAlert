@@ -13,7 +13,6 @@ RA_USE_NAMESPACE(process);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, TreeManager);
 
 TreeManager::TreeManager() 
     : _running(false)

@@ -12,7 +12,6 @@ RA_USE_NAMESPACE(alarm);
 RA_USE_NAMESPACE(config);
 
 RA_BEGIN_NAMESPACE(process);
-RA_LOG_SETUP(process, CheckerManagerTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CheckerManagerTest);
 

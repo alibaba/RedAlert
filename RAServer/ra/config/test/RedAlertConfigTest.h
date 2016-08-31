@@ -21,9 +21,6 @@ public:
     void tearDown();
     void testLoadConfig();
     void testFilterMetrics();
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(config);

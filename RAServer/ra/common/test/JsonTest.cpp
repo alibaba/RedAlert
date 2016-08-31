@@ -8,7 +8,6 @@ RA_BEGIN_NAMESPACE(common);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(common, JsonTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(JsonTest);
 
 JsonTest::JsonTest() {

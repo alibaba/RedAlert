@@ -22,7 +22,6 @@ private:
     bool doLoadConfig(const std::string& configPathStr);
 
 private:
-    RA_LOG_DECLARE();
     ra::app::RaApp *_app;
 };
 

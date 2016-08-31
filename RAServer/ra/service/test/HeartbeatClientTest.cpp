@@ -13,7 +13,6 @@ RA_USE_NAMESPACE(common);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(service, HeartbeatClientTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(HeartbeatClientTest);
 
 class FakeHandler: public HttpRequestHandler {
@@ -49,12 +48,8 @@ public:
 
 public:
     int status;
-
-private:
-    RA_LOG_DECLARE();
 };
 
-RA_LOG_SETUP(common, FakeHandler);
 
 HeartbeatClientTest::HeartbeatClientTest() {
 }

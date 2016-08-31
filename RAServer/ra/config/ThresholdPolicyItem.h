@@ -32,8 +32,6 @@ private:
 private:
     double _upBound;
     double _downBound;
-
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(ThresholdPolicyItem);

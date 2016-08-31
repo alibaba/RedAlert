@@ -10,7 +10,6 @@ RA_USE_NAMESPACE(config);
 RA_USE_NAMESPACE(test_util);
 using namespace std;
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, AlarmManagerTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(AlarmManagerTest);
 
@@ -21,15 +20,12 @@ AlarmManagerTest::~AlarmManagerTest() {
 }
 
 void AlarmManagerTest::setUp() { 
-    RA_LOG(DEBUG, "setUp!");
 }
 
 void AlarmManagerTest::tearDown() { 
-    RA_LOG(DEBUG, "tearDown!");
 }
 
 void AlarmManagerTest::testSimpleProcess() { 
-    RA_LOG(DEBUG, "Begin Test!");
 }
 
 void AlarmManagerTest::testStartStop()

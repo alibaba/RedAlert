@@ -13,7 +13,6 @@ using namespace std;
 RA_BEGIN_NAMESPACE(config);
 RA_USE_NAMESPACE(util);
 RA_USE_NAMESPACE(fs);
-RA_LOG_SETUP(config, ConfigDownloaderTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ConfigDownloaderTest);
 

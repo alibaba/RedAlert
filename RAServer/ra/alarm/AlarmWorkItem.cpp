@@ -4,7 +4,6 @@ RA_USE_NAMESPACE(tree);
 RA_USE_NAMESPACE(config);
 using namespace std;
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, AlarmWorkItem);
 
 AlarmWorkItem::AlarmWorkItem(AlarmManager* alarmManager, AlarmMsgPtr& alarmMsg)
     : _alarmMsg(alarmMsg)
@@ -31,8 +30,7 @@ void AlarmWorkItem::process()
         _alarmManager->raiseUcmtAlarm(_alarmMsg);
     }
     else {
-        RA_LOG(ERROR, "unkown alarm level:%s, can not send alarm message", 
-               alarmLevel.c_str());
+        LOG(ERROR) << "unkown alarm level:" << alarmLevel << ", can not send alarm message";
     }
 }
 

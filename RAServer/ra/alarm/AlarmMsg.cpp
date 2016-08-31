@@ -9,7 +9,6 @@ RA_USE_NAMESPACE(config);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(alarm);
-RA_LOG_SETUP(alarm, AlarmMsg);
 
 AlarmMsg::AlarmMsg(ProcessPackagePtr processPackage, MsgCode code)
     : _processPackage(processPackage), _code(code)

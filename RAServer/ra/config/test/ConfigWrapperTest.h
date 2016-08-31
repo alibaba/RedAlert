@@ -25,8 +25,6 @@ public:
     void testLoadPairVals();
     void testLoadConfig();
     void testGetPolicyItems();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(config);

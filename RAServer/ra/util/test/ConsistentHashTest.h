@@ -21,8 +21,6 @@ public:
     void tearDown();
     void testSimpleProcess();
     void testGetService();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(util);

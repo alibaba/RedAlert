@@ -99,7 +99,6 @@ private:
     struct evhttp_connection *createConnection(std::string host, uint16_t port);
 
 private:
-    RA_LOG_DECLARE();
     friend class HttpClientTest;
 
     bool _persistentConn;

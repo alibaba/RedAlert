@@ -4,7 +4,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, RedAlertConfigTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(RedAlertConfigTest);
 

@@ -18,7 +18,9 @@ libsname = [
     'contrib_filesystem', 'contrib_fetcher',
     'ra_app', 'ra_service', 'ra_process', 'ra_alarm', 'ra_fetcher', 'ra_tree',
     'ra_config', 'ra_test_util', 'ra_util', 'ra_common',
-    'log4cplus',  'curl', 'sqlite3', 'cppunit', 'dl'
+    'glib-2.0','xml2',
+    'event', 'curl', 'jansson', 'rrd',  'log4cplus', 'glog',
+    'sqlite3', 'cppunit', 'dl', 
 ]
 
 ra_app_test = env.UnitTest(target = 'ra_app_test',

@@ -10,7 +10,6 @@ RA_BEGIN_NAMESPACE(common);
 RA_USE_NAMESPACE(util);
 using namespace std;
 
-RA_LOG_SETUP(common, HttpClientTest);
 CPPUNIT_TEST_SUITE_REGISTRATION(HttpClientTest);
 
 class FakeHandler: public HttpRequestHandler {
@@ -32,12 +31,7 @@ public:
 
 public:
     int status;
-
-private:
-    RA_LOG_DECLARE();
 };
-
-RA_LOG_SETUP(common, FakeHandler);
 
 HttpClientTest::HttpClientTest() { 
 }

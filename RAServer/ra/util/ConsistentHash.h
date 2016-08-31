@@ -30,7 +30,6 @@ private:
     UIntStringMap _hashRing;
 
     uint32_t DigestToUint(const uint8_t digest[16]);
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(ConsistentHash);

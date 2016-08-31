@@ -25,9 +25,6 @@ public:
     void testStartStop();
     void testGetMetricTree();
     void testRetrieveMetrics();
- 
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(process);

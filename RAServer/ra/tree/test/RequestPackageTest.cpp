@@ -10,7 +10,6 @@ RA_USE_NAMESPACE(config);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, RequestPackageTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(RequestPackageTest);
 

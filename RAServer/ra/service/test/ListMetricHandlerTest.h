@@ -22,9 +22,6 @@ public:
 
 private:
     common::JsonArrayPtr doTestList(common::HttpClient& client, const std::string& url);
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(service);

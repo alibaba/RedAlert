@@ -6,7 +6,6 @@
 using namespace std;
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, ProcessPackage);
 RA_USE_NAMESPACE(util);
 
 ProcessPackage::ProcessPackage(const RequestPackagePtr& requestPackage)

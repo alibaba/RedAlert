@@ -9,7 +9,6 @@ using namespace std;
 
 RA_BEGIN_NAMESPACE(config);
 RA_USE_NAMESPACE(common);
-RA_LOG_SETUP(config, CyclePolicyItemTest);
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CyclePolicyItemTest);
 

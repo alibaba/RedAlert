@@ -6,7 +6,6 @@ RA_USE_NAMESPACE(alarm);
 RA_USE_NAMESPACE(process);
 
 RA_BEGIN_NAMESPACE(test_util);
-RA_LOG_SETUP(test_util, FakePolicyChecker);
 
 FakePolicyChecker::FakePolicyChecker() 
 {

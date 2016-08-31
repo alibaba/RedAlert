@@ -45,9 +45,6 @@ public:
 
 private:
     void generateDefaultTree(MetricTree& tree, fetcher::MetricNodePtr &root) const;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(tree);

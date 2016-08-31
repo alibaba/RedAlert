@@ -74,9 +74,6 @@ private:
 private:
     friend class ShieldConfigTest;
     friend class process::PolicyCheckerTest;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 typedef std::vector<ShieldConfig> ShieldConfigList;

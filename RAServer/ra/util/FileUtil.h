@@ -45,7 +45,6 @@ private:
                         bool recursive);
 
 private:
-    RA_LOG_DECLARE();
     static const char DIR_DELIM = '/';
     static ra::fs::FileSystemPtr _fs;
 };

@@ -5,7 +5,6 @@
 #include <contrib/fetcher/MetricFetcherFactory.h>
 
 RA_BEGIN_NAMESPACE(config);
-RA_LOG_SETUP(config, DataSourceConfig);
 using namespace std;
 RA_USE_NAMESPACE(common);
 RA_USE_NAMESPACE(util);

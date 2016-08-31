@@ -13,8 +13,6 @@ RA_USE_NAMESPACE(fetcher);
 using namespace std;
 using namespace std::tr1;
 
-RA_LOG_SETUP(service, ListMetricHandler);
-
 ListMetricHandler::ListMetricHandler(const tree::TreeManager *treeManager): _treeManager(treeManager) {
 }
 

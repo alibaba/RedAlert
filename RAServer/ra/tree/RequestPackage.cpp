@@ -6,7 +6,6 @@ RA_USE_NAMESPACE(config);
 RA_USE_NAMESPACE(fetcher);
 
 RA_BEGIN_NAMESPACE(tree);
-RA_LOG_SETUP(tree, RequestPackage);
 
 RequestPackage::RequestPackage(const ConfigWrapperPtr& config, 
         const PolicyConfigItemBasePtr& policyItem)

@@ -38,9 +38,6 @@ private:
     std::string _alarmGroup;
     std::string _alarmMsg;
     std::string _description;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(AlarmLog);

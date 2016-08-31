@@ -23,8 +23,6 @@ public:
     void testSimpleProcess();
     void testStartStop();
     void testPushProcessPackage();
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_END_NAMESPACE(process);

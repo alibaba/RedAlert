@@ -46,9 +46,6 @@ private:
 
 private:
     int32_t _hostCount;
-
-private:
-    RA_LOG_DECLARE();
 };
 
 RA_TYPEDEF_PTR(AvailabilityPolicyChecker);
