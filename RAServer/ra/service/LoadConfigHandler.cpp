@@ -21,7 +21,7 @@ LoadConfigHandler::~LoadConfigHandler() {
 
 void LoadConfigHandler::process(const HttpRequest* request, HttpResponse* response) {
     if (request->method != HTTP_REQ_POST) {
-        RA_LOG(WARN, "Bad request method, expect POST");
+        LOG(ERROR) << "Bad request method, expect POST";
         sendResponse(response, HTTP_RESP_BADMETHOD, "Bad request method, expect POST");
         return;
     }
@@ -29,24 +29,24 @@ void LoadConfigHandler::process(const HttpRequest* request, HttpResponse* respon
     JsonPtr json = Json::load(body);
     JsonObjectPtr object = dynamic_pointer_cast<JsonObject>(json);
     if (json == NULL || object == NULL) {
-        RA_LOG(WARN, "Cannot load json in request, raw request: '%s'", body.c_str());
+        LOG(WARNING) <<  "Cannot load json in request, raw request: " << body;
         sendResponse(response, HTTP_RESP_BADREQUEST, "Cannot load json in request");
         return;
     }
     JsonObject::iterator iter = object->find(HTTP_API_LOAD_CONFIG_PATH_KEY.c_str());
     if (iter == object->end()) {
-        RA_LOG(WARN, "No config path in load request");
+        LOG(WARNING) << "No config path in load request";
         sendResponse(response, HTTP_RESP_BADREQUEST, "No config path in load request");
         return;
     }
     JsonStringPtr configPathPtr = dynamic_pointer_cast<JsonString>(iter->second);
     if (configPathPtr == NULL) {
-        RA_LOG(WARN, "Value of config path is not a string");
+        LOG(WARNING) << "Value of config path is not a string";
         sendResponse(response, HTTP_RESP_BADREQUEST, "Value of config path is not a string");
         return;
     }
     const string& configPathStr = *configPathPtr;
-    RA_LOG(INFO, "Try to load config at path '%s'", configPathStr.c_str());
+    LOG(INFO) << "Try to load config at path " << configPathStr;
     if (!doLoadConfig(configPathStr)) {
         sendResponse(response, HTTP_RESP_INTERNAL, "Error in loading config");
         return;
@@ -56,31 +56,29 @@ void LoadConfigHandler::process(const HttpRequest* request, HttpResponse* respon
 
 bool LoadConfigHandler::doLoadConfig(const string& configPathStr) {
     string localAddress = _app->getLocalAddress();
-    RA_LOG(INFO, "Try to load config in path '%s'", configPathStr.c_str());
+    LOG(INFO) << "Try to load config in path " << configPathStr;
     ConfigDownloader downloader;
     if (!downloader.init(_app->getLocalConfPath())) {
-        RA_LOG(WARN, "init downloader failed, ra[%s]", localAddress.c_str());
+        LOG(ERROR) << "init downloader failed, ra[" << localAddress <<"]";
         return false;
     }
     int32_t ret = downloader.downloadConf(configPathStr);
     if (ret < 0) {
-        RA_LOG(WARN, "download config [%s] failed, ra[%s]", configPathStr.c_str(), localAddress.c_str());
+        LOG(ERROR) << "download config [" << configPathStr <<"] failed, ra[" << localAddress << "]";
         return false;
     }
     if (ret == 0) {
-        RA_LOG(INFO, "reload config request version is not bigger than local config "
-                     "version[%d]", downloader.getVersion());
+        LOG(INFO) << "reload config request version is not bigger than local config "
+		  << "version " << downloader.getVersion();
     }
-    RA_LOG(INFO, "download config rev %d succ, ra[%s]",
-           downloader.getVersion(), localAddress.c_str());
+    LOG(INFO) << "download config rev " << downloader.getVersion() << " succ, ra[" << localAddress <<"]";
     int32_t configVersion = downloader.getVersion();
     assert(configVersion != INVALID_CONFIG_VERSION);
     if (!_app->loadConfig(configVersion)) {
-        RA_LOG(WARN, "load config failed, ra[%s]", localAddress.c_str());
+        LOG(ERROR) << "load config failed, ra[" << localAddress << "]";
         return false;
     }
-    RA_LOG(INFO, "reload config rev %d succ!, ra[%s]",
-           downloader.getVersion(), localAddress.c_str());
+    LOG(INFO) << "reload config rev " << downloader.getVersion() <<" succ!, ra[" << localAddress <<"]";
     return true;
 }
 

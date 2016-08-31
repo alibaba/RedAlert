@@ -26,13 +26,11 @@ LoadConfigHandlerTest::~LoadConfigHandlerTest() {
 }
 
 void LoadConfigHandlerTest::setUp() {
-    RA_LOG(INFO, "setUp!");
     FileSystemPtr fs = FileSystemFactory::create(DEFAULT_FILE_SYSTEM);
     CPPUNIT_ASSERT(FileUtil::init(fs));
 }
 
 void LoadConfigHandlerTest::tearDown() {
-    RA_LOG(INFO, "tearDown!");
 }
 
 void LoadConfigHandlerTest::testLoadConfig() {

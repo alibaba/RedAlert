@@ -21,7 +21,6 @@ public:
     FakeHandler() :status(0) { }
 
     virtual void process(const HttpRequest* request, HttpResponse* response) {
-        RA_LOG(INFO, "method %d, uri '%s', body '%s'", request->method, request->uri.serialize().c_str(), request->body.substr(0, 80).c_str());
         if (request->method != HTTP_REQ_POST) {
             sendResponse(response, HTTP_RESP_BADMETHOD, "Wrong http method, expect POST");
             return;
@@ -64,11 +63,9 @@ HeartbeatClientTest::~HeartbeatClientTest() {
 }
 
 void HeartbeatClientTest::setUp() {
-    RA_LOG(INFO, "setUp!");
 }
 
 void HeartbeatClientTest::tearDown() {
-    RA_LOG(INFO, "tearDown!");
 }
 
 void HeartbeatClientTest::testHeartbeat() {

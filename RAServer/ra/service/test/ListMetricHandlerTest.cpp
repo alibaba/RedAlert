@@ -23,18 +23,15 @@ ListMetricHandlerTest::~ListMetricHandlerTest() {
 }
 
 void ListMetricHandlerTest::setUp() {
-    RA_LOG(INFO, "setUp!");
 }
 
 void ListMetricHandlerTest::tearDown() {
-    RA_LOG(INFO, "tearDown!");
 }
 
 JsonArrayPtr ListMetricHandlerTest::doTestList(HttpClient& client, const string& url) {
     HttpResponse response;
     CPPUNIT_ASSERT(client.get(url, &response));
     CPPUNIT_ASSERT_EQUAL(HTTP_RESP_OK, response.status);
-    RA_LOG(INFO, "GET '%s': %s", url.c_str(), response.body.c_str());
     JsonPtr json = Json::load(response.body);
     JsonArrayPtr array = dynamic_pointer_cast<JsonArray>(json);
     return array;

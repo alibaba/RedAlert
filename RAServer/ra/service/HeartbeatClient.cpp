@@ -26,7 +26,7 @@ HeartbeatClient::~HeartbeatClient() {
 
 bool HeartbeatClient::init() {
     if (!_client.init()) {
-        RA_LOG(ERROR, "Cannot initialize http client for sending heartbeats");
+        LOG(ERROR) << "Cannot initialize http client for sending heartbeats";
         return false;
     }
     return true;
@@ -35,11 +35,11 @@ bool HeartbeatClient::init() {
 bool HeartbeatClient::start() {
     int err = pthread_create(&_thread, NULL, &HeartbeatClient::workLoop, this);
     if (err != 0) {
-        RA_LOG(ERROR, "Cannot start thread for heartbeat client");
+        LOG(ERROR) << "Cannot start thread for heartbeat client";
         return false;
     }
     _running = true;
-    RA_LOG(INFO, "Start sending heartbeats to '%s:%d'", _remoteHost.c_str(), _remotePort);
+    LOG(INFO) << "Start sending heartbeats to '" << _remoteHost << ":" << _remotePort << "'";
     return true;
 }
 
@@ -47,7 +47,7 @@ bool HeartbeatClient::stop() {
     if (!_running) return true;
     _running = false;
     pthread_join(_thread, NULL);
-    RA_LOG(INFO, "Stop sending heartbeats to '%s:%d'", _remoteHost.c_str(), _remotePort);
+    LOG(INFO) << "Stop sending heartbeats to '" << _remoteHost << ":" << _remotePort <<"'";
     return true;
 }
 
@@ -68,7 +68,7 @@ bool HeartbeatClient::parseResponseBody(const std::string& body, map<string, str
     JsonPtr json = Json::load(body);
     JsonArrayPtr array = dynamic_pointer_cast<JsonArray>(json);
     if (json == NULL || array == NULL) {
-        RA_LOG(WARN, "Cannot load response, raw response: '%s'", body.c_str());
+        LOG(ERROR) << "Cannot load response, raw response: " << body;
         return false;
     }
     JsonArray::iterator iter;
@@ -99,21 +99,22 @@ void* HeartbeatClient::workLoop(void *arg) {
         }
         lastTime = Util::currentTimeInSeconds();
         // send heartbeat
-        RA_LOG(DEBUG, "Send heartbeat to '%s:%d' at time %ld", remoteHost.c_str(), remotePort, curruntTime);
+        VLOG(1) << "Send heartbeat to '" << remoteHost << ":" << remotePort <<"' at time " << curruntTime;
         string requestBody = client->createRequestBody();
         HttpRequest request(HTTP_REQ_POST, remoteHost, remotePort, HEARTBEAT_API_PATH, requestBody);
         request.headers[HTTP_API_CONTENT_TYPE_KEY] = HTTP_API_JSON_CONTENT_TYPE;
         HttpResponse response;
         if (!client->_client.request(&request, &response)) {
-            RA_LOG(WARN, "Cannot send heartbeat to '%s:%d'", remoteHost.c_str(), remotePort);
+            LOG(WARNING) << "Cannot send heartbeat to '" << remoteHost <<":" << remotePort <<"'";
             continue;
         }
         if (response.status != HTTP_RESP_OK) {
-            RA_LOG(WARN, "Error response from '%s:%d', status: %d, message: '%s'",
-                   remoteHost.c_str(), remotePort, response.status, response.message.c_str());
+            LOG(ERROR) << "Error response from '" << remoteHost << ":" 
+		       << remotePort <<"', status: "<< response.status 
+		       <<", message: '" << response.message << "'";
             continue;
         }
-        RA_LOG(DEBUG, "Alive hosts: %s", response.body.c_str());
+        VLOG(1) <<  "Alive hosts: " << response.body;
         // parse response
         map<string, string> hostIds;
         if (client->parseResponseBody(response.body, hostIds)) {

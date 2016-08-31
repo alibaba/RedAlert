@@ -23,7 +23,7 @@ ListMetricHandler::~ListMetricHandler() {
 
 void ListMetricHandler::process(const common::HttpRequest* request, common::HttpResponse* response) {
     if (request->method != HTTP_REQ_GET) {
-        RA_LOG(WARN, "Bad request method, expect GET");
+        LOG(WARNING) << "Bad request method, expect GET";
         sendResponse(response, HTTP_RESP_BADMETHOD, "Bad request method, expect GET");
         return;
     }
@@ -36,14 +36,14 @@ void ListMetricHandler::process(const common::HttpRequest* request, common::Http
     fetcher::MetricNodePtr root = _treeManager->getMasterMetricTree();
     MetricNodePtr node = MetricTreeUtil::findNode(root, labels);
     if (node == NULL) {
-        RA_LOG(WARN, "Cannot find metric node for path '%s'", path.c_str());
+        LOG(WARNING) << "Cannot find metric node for path " << path.c_str();
         sendResponse(response, HTTP_RESP_NOTFOUND, "Cannot find metric node");
         return;
     }
     const vector<MetricNodePtr>& children = node->getChildren();
     JsonArrayPtr array(new JsonArray());
     if (array == NULL) {
-        RA_LOG(WARN, "Cannot create json for response");
+        LOG(WARNING) << "Cannot create json for response";
         sendResponse(response, HTTP_RESP_INTERNAL, "Cannot create json for response");
         return;
     }
@@ -51,7 +51,7 @@ void ListMetricHandler::process(const common::HttpRequest* request, common::Http
         const MetricNodePtr& child = children[i];
         JsonObjectPtr object(new JsonObject());
         if (object == NULL) {
-            RA_LOG(WARN, "Cannot create json for response");
+            LOG(WARNING) << "Cannot create json for response";
             sendResponse(response, HTTP_RESP_INTERNAL, "Cannot create json for response");
             return;
         }
@@ -61,7 +61,7 @@ void ListMetricHandler::process(const common::HttpRequest* request, common::Http
     }
     response->headers[HTTP_API_CONTENT_TYPE_KEY] = HTTP_API_JSON_CONTENT_TYPE;
     string responseBody = array->dump();
-    RA_LOG(DEBUG, "List path '%s': %s", path.c_str(), responseBody.c_str());
+    VLOG(1) << "List path '" << path <<"': " << responseBody;
     sendResponse(response, HTTP_RESP_OK, "OK List Metrics", responseBody);
 }
 
