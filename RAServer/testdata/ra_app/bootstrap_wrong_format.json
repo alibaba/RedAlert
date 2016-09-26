@@ -10,8 +10,8 @@
     "defAlarmLevel":"alimonitor",
     "amonitorAgentPort":10086,
     "sampleInterval_s":5,
-    "mailUser":"shenma-alarm@alibaba-inc.com",
-    "mailPassword":"ShenmaV587",
+    "mailUser":"alarm@example.com",
+    "mailPassword":"password",
     "mailServerUrl":"smtps://smtp.alibaba-inc.com"
     xxxxxxxxxxxx
 }
