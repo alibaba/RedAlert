@@ -68,7 +68,7 @@ As long as `DEFAULT` section has been configued, `Parameter` section would be ge
 `static` directory provide static files. Modify `ra_conf.js` file, `api_url` should be specifid to your `http://<ip>:<port>` address or url. It looks like this  
 
     var ra_conf = {     
-    	"api_url": "http://100.82.23.31:5011",   
+    	"api_url": "http://localhost:5011",   
     	"current_url": "http://0.0.0.0:5011/index.html",   
     	"buc_sso_url": "http://search-tools.yisou.com/buc_sso/index.php",   
     	"api_timeout": 3000,   
@@ -90,7 +90,7 @@ If you prefer to uwsgi server, we provide [uwsgi1.4](https://uwsgi-docs.readthed
     raweb_install_prefix = /var/www/html/red_alert_web
     check-static = %(raweb_install_prefix)s/static
     daemonize2 = ./uwsgi.log
-    http = 100.82.23.31:50007
+    http = localhost:50007
     log-maxsize = 1024000
     wsgi-file = %(raweb_install_prefix)/raweb/raweb.wsgi
     master = true
@@ -104,8 +104,8 @@ Creating your own `*.ini` conf file is a better way, [Quickstart for Python Appl
 
 Web service could alse be deployed on [Apache Server](https://httpd.apache.org/docs/2.2/).If you never run python program on Apache,you should install [mod-wsgi](http://werkzeug.pocoo.org/docs/0.11/deployment/mod_wsgi/) first. We provide a template, on `conf/` dir for reference which looks like: 
 
-    Listen 100.82.23.31:5011
-    <VirtualHost 100.82.23.31:5011>
+    Listen localhost:5011
+    <VirtualHost localhost:5011>
         ServerName www.raweb.com
 		   DocumentRoot /var/www/html/red_alert_web
 		   WSGIDaemonProcess red_alert_web python-path=/usr/ali/lib/python2.5/site-packages/:/var/www/html/red_alert_web

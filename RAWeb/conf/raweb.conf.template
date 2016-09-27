@@ -1,5 +1,5 @@
-Listen 100.82.23.31:5011
-<VirtualHost 100.82.23.31:5011>
+Listen localhost:5011
+<VirtualHost localhost:5011>
 	     ServerName www.raweb.com
 	     DocumentRoot /var/www/html/red_alert_web
 	     WSGIDaemonProcess red_alert_web python-path=/usr/ali/lib/python2.5/site-packages/:/var/www/html/red_alert_web
