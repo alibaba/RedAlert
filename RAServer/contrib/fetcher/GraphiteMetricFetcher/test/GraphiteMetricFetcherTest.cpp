@@ -243,46 +243,46 @@ void GraphiteMetricFetcherTest::testParseSubMetricData() {
 void GraphiteMetricFetcherTest::testGetDataURL() { 
     GraphiteMetricFetcher fetcher;
     OptionMap option;
-    option[ACCESS_HOST] = "http://100.82.23.31:8080/";
+    option[ACCESS_HOST] = "http://localhost:8080/";
     CPPUNIT_ASSERT(fetcher.init(option));
     const string metricPath = "test.random.diceroll.metric.cao.tt";
     string url;
     fetcher.getDataURL(metricPath, 0, 0, url);
-    CPPUNIT_ASSERT_EQUAL(string("http://100.82.23.31:8080/render?target=test.random.diceroll.metric.cao.tt&format=json"), url);
+    CPPUNIT_ASSERT_EQUAL(string("http://localhost:8080/render?target=test.random.diceroll.metric.cao.tt&format=json"), url);
     fetcher.getDataURL(metricPath, 100, 0, url);
-    CPPUNIT_ASSERT_EQUAL(string("http://100.82.23.31:8080/render?target=test.random.diceroll.metric.cao.tt&format=json&from=100"), url);
+    CPPUNIT_ASSERT_EQUAL(string("http://localhost:8080/render?target=test.random.diceroll.metric.cao.tt&format=json&from=100"), url);
     fetcher.getDataURL(metricPath, 0, 200, url);
-    CPPUNIT_ASSERT_EQUAL(string("http://100.82.23.31:8080/render?target=test.random.diceroll.metric.cao.tt&format=json&until=200"), url);
+    CPPUNIT_ASSERT_EQUAL(string("http://localhost:8080/render?target=test.random.diceroll.metric.cao.tt&format=json&until=200"), url);
     fetcher.getDataURL(metricPath, 100, 200, url);
-    CPPUNIT_ASSERT_EQUAL(string("http://100.82.23.31:8080/render?target=test.random.diceroll.metric.cao.tt&format=json&from=100&until=200"), url);
+    CPPUNIT_ASSERT_EQUAL(string("http://localhost:8080/render?target=test.random.diceroll.metric.cao.tt&format=json&from=100&until=200"), url);
 }
 
 void GraphiteMetricFetcherTest::testGetMetricsURL() { 
     GraphiteMetricFetcher fetcher;
     OptionMap option;
-    option[ACCESS_HOST] = "http://100.82.23.31:8080/";
+    option[ACCESS_HOST] = "http://localhost:8080/";
     CPPUNIT_ASSERT(fetcher.init(option));
     const string metricPath = "test.*";
     string url;
     fetcher.getMetricsURL(metricPath, url);
-    CPPUNIT_ASSERT_EQUAL(string("http://100.82.23.31:8080/metrics/find?query=test.*"), url);
+    CPPUNIT_ASSERT_EQUAL(string("http://localhost:8080/metrics/find?query=test.*"), url);
 }
 
 void GraphiteMetricFetcherTest::testGetAllMetricsURL(){
     GraphiteMetricFetcher fetcher;
     OptionMap option;
-    option[ACCESS_HOST] = "http://100.82.23.31:8080/";
+    option[ACCESS_HOST] = "http://localhost:8080/";
     CPPUNIT_ASSERT(fetcher.init(option));
     string url;
     fetcher.getAllMetricsURL(url);
-    CPPUNIT_ASSERT_EQUAL(string("http://100.82.23.31:8080/metrics/index.json"), url);
+    CPPUNIT_ASSERT_EQUAL(string("http://localhost:8080/metrics/index.json"), url);
 }
 
 void GraphiteMetricFetcherTest::testInit() { 
     GraphiteMetricFetcher fetcher;
     OptionMap option;
     CPPUNIT_ASSERT(!fetcher.init(option));
-    option[ACCESS_HOST] = "http://100.82.23.31:8080/";
+    option[ACCESS_HOST] = "http://localhost:8080/";
     CPPUNIT_ASSERT(fetcher.init(option));
 }
 
@@ -513,7 +513,7 @@ void GraphiteMetricFetcherTest::testReadGraphiteData() {
 void GraphiteMetricFetcherTest::testMain() {
     GraphiteMetricFetcher fetcher;
     OptionMap option;
-    option[ACCESS_HOST] = "http://100.82.23.31:8080/";
+    option[ACCESS_HOST] = "http://localhost:8080/";
     CPPUNIT_ASSERT(fetcher.init(option));
     MetricNodePtr rootNode = fetcher.allocTree(1,1);
     CPPUNIT_ASSERT(rootNode != NULL);
