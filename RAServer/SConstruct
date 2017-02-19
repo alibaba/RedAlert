@@ -38,7 +38,7 @@ env.SConscript(
     duplicate=1)
 
 
-dependLibs = [ 'curl','event','jansson','log4cplus']
+dependLibs = [ 'curl','event','jansson','glog']
 
 env.installDependLibrary("red_alert", dependLibs, "usr/local/lib64")
 env.installToPackage("red_alert", env["RA_TOP_DIR"] + "/conf/ra_log.conf", "usr/local/etc")

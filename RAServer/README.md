@@ -15,7 +15,7 @@ RA depends on rrd, sqlite3, etc. So the dependence should be installed before co
 sudo apt-get install librrd-dev crypto libssl-dev libldap-dev libidn11-dev libglib2.0-dev libsqlite3-dev
 ```
 
-RA depends on curl, jansson, libevent, log4cplus. 
+RA depends on curl, jansson, libevent, glog. 
 And the four modules are distributed under the "deps" directory. Compile these dependences by run compileDepend.sh
 ```bash
 sh compileDepend.sh
